@@ -115,8 +115,10 @@ V6  DEFERRED
 
 **Addendum 2026-09-17** : M6 v0.1 implémentée, alimentée par un corpus réel M4/M5,
 protocole de validation tierce préparé et auto-exécuté (**PASS_INDEPENDENT_SCOPE**, 13/13,
-clone Git frais). Étape INDEPENDENT HOLDOUT franchie structurellement (holdout non vide sur
-corpus v0.2) mais résultat de calibration dégénéré à ce stade — voir
-`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6. Prochaine étape : validation
-par un tiers réellement externe, et un mécanisme de preuve non dégénéré pour une mesure de
-calibration discriminante.
+clone Git frais). Étape INDEPENDENT HOLDOUT franchie structurellement, puis mécanisme de
+preuve non dégénéré conçu (corpus de vérification adversarial) et implémenté : premier
+résultat de calibration réellement informatif (Brier holdout = 0,4533, ECE = 0,067, 10
+`SUPPORTED` / 6 `CONTRADICTED` réels) — voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–7. Prochaine étape : validation
+par un tiers réellement externe, et extension du mécanisme non dégénéré au-delà des patterns
+de longueur 1.

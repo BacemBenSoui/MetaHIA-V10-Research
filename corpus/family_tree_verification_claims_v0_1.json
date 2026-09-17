@@ -1,0 +1,22 @@
+{
+  "corpus_id": "FAMILY-TREE-VERIFICATION-CLAIMS-V0.1",
+  "purpose": "Independent verification corpus for M6's non-degenerate evidence mechanism (m6_corpus_from_m4_m5_v0_2.py). Each entry is an independent witness claim about a single (subject, operator, direction) already structurally predictable from corpus/family_tree_facts_v0_2.json's discovery/evidence facts -- computed by actually running discover_paths/generalize_path_pattern/replay_path_pattern_holdout first, then authoring a claim against each real predicted_end. This corpus is deliberately adversarial: some claims agree with the structural prediction (verdict=TRUE), some are deliberately wrong (verdict=FALSE, claimed_object replaced with an unambiguous placeholder never used elsewhere in the project). The evidence mechanism only ever reads subject/operator/direction/claimed_object -- 'verdict' is documentation for the human reader, not read by any code path, so agreement/disagreement is discovered mechanically by comparing claimed_object to the real predicted_end, never injected directly.",
+  "claims": [
+    {"claim_id": "V01", "subject": "Mai",    "operator": "EPOUSE_DE", "direction": "FORWARD", "claimed_object": "Hoang",              "verdict": "TRUE",  "source_id": "witness_1"},
+    {"claim_id": "V02", "subject": "Hoang",  "operator": "EPOUSE_DE", "direction": "REVERSE", "claimed_object": "Mai",                "verdict": "TRUE",  "source_id": "witness_2"},
+    {"claim_id": "V03", "subject": "Hoang",  "operator": "EPOUX_DE",  "direction": "FORWARD", "claimed_object": "Mai",                "verdict": "TRUE",  "source_id": "witness_3"},
+    {"claim_id": "V04", "subject": "Thomas", "operator": "EPOUX_DE",  "direction": "FORWARD", "claimed_object": "Personne_Inconnue_1","verdict": "FALSE", "source_id": "witness_4"},
+    {"claim_id": "V05", "subject": "Celine", "operator": "EPOUX_DE",  "direction": "REVERSE", "claimed_object": "Thomas",             "verdict": "TRUE",  "source_id": "witness_5"},
+    {"claim_id": "V06", "subject": "Mai",    "operator": "EPOUX_DE",  "direction": "REVERSE", "claimed_object": "Personne_Inconnue_2","verdict": "FALSE", "source_id": "witness_6"},
+    {"claim_id": "V07", "subject": "Chloe",  "operator": "FILLE_DE",  "direction": "FORWARD", "claimed_object": "Julie",              "verdict": "TRUE",  "source_id": "witness_7"},
+    {"claim_id": "V08", "subject": "Linh",   "operator": "FILLE_DE",  "direction": "FORWARD", "claimed_object": "Personne_Inconnue_3","verdict": "FALSE", "source_id": "witness_8"},
+    {"claim_id": "V09", "subject": "Mai",    "operator": "FILLE_DE",  "direction": "REVERSE", "claimed_object": "Linh",               "verdict": "TRUE",  "source_id": "witness_9"},
+    {"claim_id": "V10", "subject": "Duc",    "operator": "FRERE_DE",  "direction": "FORWARD", "claimed_object": "Personne_Inconnue_4","verdict": "FALSE", "source_id": "witness_10"},
+    {"claim_id": "V11", "subject": "Linh",   "operator": "FRERE_DE",  "direction": "REVERSE", "claimed_object": "Duc",                "verdict": "TRUE",  "source_id": "witness_11"},
+    {"claim_id": "V12", "subject": "Alice",  "operator": "MERE_DE",   "direction": "FORWARD", "claimed_object": "Hugo",               "verdict": "TRUE",  "source_id": "witness_12"},
+    {"claim_id": "V13", "subject": "Duc",    "operator": "MERE_DE",   "direction": "REVERSE", "claimed_object": "Personne_Inconnue_5","verdict": "FALSE", "source_id": "witness_13"},
+    {"claim_id": "V14", "subject": "Linh",   "operator": "MERE_DE",   "direction": "REVERSE", "claimed_object": "Mai",                "verdict": "TRUE",  "source_id": "witness_14"},
+    {"claim_id": "V15", "subject": "Duc",    "operator": "PERE_DE",   "direction": "REVERSE", "claimed_object": "Hoang",              "verdict": "TRUE",  "source_id": "witness_15"},
+    {"claim_id": "V16", "subject": "Linh",   "operator": "PERE_DE",   "direction": "REVERSE", "claimed_object": "Personne_Inconnue_6","verdict": "FALSE", "source_id": "witness_16"}
+  ]
+}

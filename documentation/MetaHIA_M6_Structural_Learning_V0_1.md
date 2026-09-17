@@ -147,16 +147,61 @@ humaine indépendante), pas un corpus plus grand du même type — question ouve
 pas laissée implicite. Testé et rendu explicite par
 `tests/test_m6_real_corpus_v0_2_holdout_v0_1.py`.
 
-## 7. Résultat local
+## 7. Mécanisme de preuve non dégénéré (addendum 2026-09-17)
 
-324 tests passés (277 hérités + 24 invariants M6 + 5 intégration corpus réel v0.1 + 13
-validation critique C01–C09 + 5 holdout corpus v0.2), 0 échec, 0 régression.
+Option retenue (discutée et choisie explicitement avant implémentation, parmi trois : corpus
+de vérification adversarial / vérificateur de production / annotation humaine) : **corpus de
+vérification adversarial**, seule option réalisable dans le périmètre isolé du dépôt sans
+rouvrir la décision de zéro-couplage avec `MetaHIA-Consolidated-Repo`.
 
-## 8. Hors périmètre de cette version
+`m6_corpus_from_m4_m5_v0_2.py` sépare explicitement **prédiction structurelle** et
+**vérification indépendante** :
+
+```text
+kernel2 : rejeu contre evidence_facts (disjoints de discovery_facts, inchangé)
+        -> une prédiction structurelle (start, opérateur, direction) -> predicted_end
+                ↓
+corpus/family_tree_verification_claims_v0_1.json
+        -> une claim de témoin indépendant sur ce même (sujet, opérateur, direction),
+           délibérément parfois fausse (objet remplacé par un nom-placeholder sans
+           ambiguïté, jamais un vrai nom du corpus)
+                ↓
+claimed_object == predicted_end  -> preuve SUPPORT
+claimed_object != predicted_end  -> preuve CHALLENGE
+aucune claim correspondante      -> aucune preuve (exclu, comme en v0.1/v0.2)
+```
+
+Le champ `verdict` du fichier de claims est une annotation pour le lecteur humain — **jamais
+lu par le code**, qui ne fait que comparer `claimed_object` à `predicted_end` ; l'accord ou le
+désaccord est donc découvert mécaniquement, pas injecté.
+
+**Résultat réel, vérifié par exécution** : sur 69 patterns candidats, 55 sont exclus (longueur
+> 1, aucune claim disponible à cette profondeur pour l'instant), 3 exclus par absence de claim
+correspondante, et **16 obtiennent une preuve indépendante réelle — 10 `SUPPORTED`, 6
+`CONTRADICTED`, la première diversité d'issues non triviale de tout le pipeline M6.**
+
+Sur ce jeu (seed=0, split 10/3/3) : **Brier de holdout = 0,4533, ECE = 0,067** — ni 0 (parfait
+trivial) ni 2 (maximalement faux) : un résultat réellement informatif. `evaluate_promotion`
+répond correctement au seuil : bloque à `brier_threshold=0.4`, autorise à `0.6` — démontré,
+pas seulement affirmé, par `tests/test_m6_non_degenerate_evidence_v0_2.py`.
+
+**Limite assumée** : ce mécanisme ne couvre que les patterns de longueur 1 (un témoin énonce
+naturellement une relation simple, pas un composite dérivé à 2 sauts) — les patterns plus
+longs restent exclus, signalés, jamais fabriqués.
+
+## 8. Résultat local
+
+330 tests passés (324 précédents + 6 nouveaux pour le mécanisme de preuve non dégénéré), 0
+échec, 0 régression.
+
+## 9. Hors périmètre de cette version
 
 - Validation par un tiers réellement externe (l'auto-exécution du protocole ne clôt pas la
   independent gate — voir section 6) ;
-- un mécanisme de preuve capable de produire un `CONTRADICTED`/`UNKNOWN` réel et non
-  dégénéré — nécessaire pour une mesure de calibration discriminante, voir section 6 ;
+- couverture du mécanisme de preuve non dégénéré au-delà des patterns de longueur 1 (voir
+  section 7) ;
+- protocole de validation tierce couvrant explicitement le mécanisme v0.2 (celui déjà exécuté,
+  section 6, est gelé sur le corpus v0.1 et n'a pas besoin d'être refait, mais un futur
+  protocole pourrait vouloir couvrir aussi v0.2) ;
 - choix définitif des seuils de promotion (`brier_threshold`, `per_bucket_brier_threshold`) — laissés comme paramètres explicites de l'appelant, pas de valeur par défaut imposée silencieusement ;
 - réévaluation du gate M2/Phase 2 — M6 est un chantier de recherche K3 isolé, sans lien avec le gate empirique de la Phase 2 du dépôt de production.

@@ -92,16 +92,17 @@ Benchmark du scénario critique : coût dynamique −62,5 %, 70 % du gain conser
 
 ## 10. M6 — Structural Learning
 **Addendum 2026-09-17** : v0.1 implémentée localement (`m6_structural_learning_v0_1.py`),
-alimentée par un corpus réel M4/M5 (`m6_corpus_from_m4_m5_v0_1.py`,
-`corpus/family_tree_facts_v0_1.json`), protocole de validation tierce préparé et
-**auto-exécuté avec PASS_INDEPENDENT_SCOPE** (13/13 cas critiques C01–C09, clone Git frais —
-voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6 ; ne clôt pas la
-independent gate au sens strict). Étape INDEPENDENT HOLDOUT franchie structurellement avec
-`corpus/family_tree_facts_v0_2.json` (holdout non vide, 13/5/5) mais résultat de calibration
-dégénéré (issue unique `SUPPORTED`) — un mécanisme de preuve plus riche reste nécessaire pour
-une mesure discriminante, voir même section. 324 tests au total. Reste hors périmètre :
-validation par un tiers réellement externe, mécanisme de preuve non dégénéré, choix définitif
-des seuils de promotion.
+alimentée par un corpus réel M4/M5, protocole de validation tierce préparé et **auto-exécuté
+avec PASS_INDEPENDENT_SCOPE** (13/13 cas critiques C01–C09, clone Git frais ; ne clôt pas la
+independent gate au sens strict). Étape INDEPENDENT HOLDOUT franchie structurellement, puis
+**mécanisme de preuve non dégénéré conçu et implémenté** (`m6_corpus_from_m4_m5_v0_2.py`,
+corpus de vérification adversarial `family_tree_verification_claims_v0_1.json`) : 16
+enregistrements réels avec diversité d'issue authentique (10 `SUPPORTED`, 6 `CONTRADICTED`),
+**Brier de holdout = 0,4533, ECE = 0,067** — premier résultat de calibration réellement
+informatif de M6, non dégénéré. Voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`
+Sec. 6–7. 330 tests au total. Reste hors périmètre :
+validation par un tiers réellement externe, couverture du mécanisme non dégénéré au-delà des
+patterns de longueur 1, choix définitif des seuils de promotion.
 
 Apprendre :
 ```text
