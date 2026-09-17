@@ -113,7 +113,10 @@ M7  DEFERRED
 V6  DEFERRED
 ```
 
-**Addendum 2026-09-17** : M6 v0.1 implémentée localement puis alimentée par un corpus réel
-M4/M5, voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`. Protocole de validation
-tierce préparé : `documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md`.
-Prochaine étape : exécution effective de la validation tierce indépendante de M6.
+**Addendum 2026-09-17** : M6 v0.1 implémentée, alimentée par un corpus réel M4/M5,
+protocole de validation tierce préparé et auto-exécuté (**PASS_INDEPENDENT_SCOPE**, 13/13,
+clone Git frais). Étape INDEPENDENT HOLDOUT franchie structurellement (holdout non vide sur
+corpus v0.2) mais résultat de calibration dégénéré à ce stade — voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6. Prochaine étape : validation
+par un tiers réellement externe, et un mécanisme de preuve non dégénéré pour une mesure de
+calibration discriminante.

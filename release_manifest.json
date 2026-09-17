@@ -6,11 +6,11 @@
   "kernel2_sha256_original": "987839172357c4b0e43e5d3d03dcda32825f4da817dbb02390a5bc4c3f9ea3d9",
   "kernel2_sha256": "c76adfd2eed8e3ba6022200e7eba6c381f262602f626850cd80af65a0efc9aa9",
   "m5_sha256": "e12961da38edb1661632e91d4e2cc8c69f9423a8ad140994c3fb8d1666504698",
-  "file_count": 119,
-  "test_count": 319,
+  "file_count": 121,
+  "test_count": 324,
   "m6_added": "2026-09-17",
-  "m6_status": "IMPLEMENTATION (local), fed with a real M4/M5 corpus, third-party validation protocol prepared (not yet executed)",
-  "m6_protocol": "documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md -- 9 critical cases (C01-C09), tests/test_m6_critical_validation_v0_1.py",
-  "m6_real_corpus": "corpus/family_tree_facts_v0_1.json via m6_corpus_from_m4_m5_v0_1.py -- 2/28 candidate patterns reached real evidence (see MetaHIA_M6_Structural_Learning_V0_1.md Sec.5); holdout is empty at this corpus size, so promotion correctly stays blocked (EMPTY_HOLDOUT), not a bug.",
+  "m6_status": "IMPLEMENTATION (local), fed with a real M4/M5 corpus, third-party protocol self-executed PASS_INDEPENDENT_SCOPE, INDEPENDENT HOLDOUT step reached structurally -- genuine external validation and a non-degenerate evidence mechanism still pending",
+  "m6_protocol": "documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md -- 9 critical cases (C01-C09), tests/test_m6_critical_validation_v0_1.py. Self-executed in a fresh git clone: 13/13 PASS, 319/319 full suite. Found and fixed a real gap: frozen hashes did not match a plain `git clone` on Windows (core.autocrlf CRLF checkout) -- fixed via .gitattributes (* text=auto eol=lf), reconfirmed on a third fresh clone.",
+  "m6_real_corpus": "corpus/family_tree_facts_v0_1.json (frozen, used by the protocol) -- 2/28 candidate patterns reached real evidence, holdout empty (too few rules), EMPTY_HOLDOUT correctly blocks promotion. corpus/family_tree_facts_v0_2.json (larger, INDEPENDENT HOLDOUT step) -- 23/69 reached real evidence, genuine non-empty holdout (13/5/5), but holdout Brier/ECE=0.0 is a known DEGENERATE result (every record's outcome is SUPPORTED) -- the replay-based evidence mechanism cannot yet produce a real CONTRADICTED/UNKNOWN outcome on any internally-consistent corpus, regardless of size. See MetaHIA_M6_Structural_Learning_V0_1.md Sec.6.",
   "note": "Clean active-source package; historical backups/caches excluded. kernel2.py hash changed by the V10.0-update-1 pass -- see MIGRATION_V10_UPDATE_2026-09-17.md for the four confirmed bug fixes and the ported legacy K3-spike coverage that changed it. M6 (m6_structural_learning_v0_1.py) added on top of that update -- see documentation/MetaHIA_M6_Structural_Learning_V0_1.md."
 }

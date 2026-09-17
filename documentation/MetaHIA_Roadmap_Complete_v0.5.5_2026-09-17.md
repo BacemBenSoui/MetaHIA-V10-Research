@@ -92,12 +92,16 @@ Benchmark du scénario critique : coût dynamique −62,5 %, 70 % du gain conser
 
 ## 10. M6 — Structural Learning
 **Addendum 2026-09-17** : v0.1 implémentée localement (`m6_structural_learning_v0_1.py`),
-puis alimentée par un corpus réel M4/M5 (`m6_corpus_from_m4_m5_v0_1.py`,
-`corpus/family_tree_facts_v0_1.json`). Protocole de validation tierce préparé
-(`documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md`, 9 cas critiques C01–C09,
-`tests/test_m6_critical_validation_v0_1.py`). 319 tests au total. Reste hors périmètre :
-exécution effective de la validation tierce indépendante, un corpus réel assez grand pour un
-holdout non vide, choix définitif des seuils de promotion.
+alimentée par un corpus réel M4/M5 (`m6_corpus_from_m4_m5_v0_1.py`,
+`corpus/family_tree_facts_v0_1.json`), protocole de validation tierce préparé et
+**auto-exécuté avec PASS_INDEPENDENT_SCOPE** (13/13 cas critiques C01–C09, clone Git frais —
+voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6 ; ne clôt pas la
+independent gate au sens strict). Étape INDEPENDENT HOLDOUT franchie structurellement avec
+`corpus/family_tree_facts_v0_2.json` (holdout non vide, 13/5/5) mais résultat de calibration
+dégénéré (issue unique `SUPPORTED`) — un mécanisme de preuve plus riche reste nécessaire pour
+une mesure discriminante, voir même section. 324 tests au total. Reste hors périmètre :
+validation par un tiers réellement externe, mécanisme de preuve non dégénéré, choix définitif
+des seuils de promotion.
 
 Apprendre :
 ```text

@@ -104,15 +104,59 @@ corpus à lever en alimentant M6 avec un corpus réel plus grand (travail futur,
 pour ne pas fabriquer un résultat de calibration que les données ne permettent pas
 d'établir).
 
-## 6. Résultat local
+## 6. Validation tierce et étape INDEPENDENT HOLDOUT (addendum 2026-09-17)
 
-306 tests passés (277 hérités + 24 invariants M6 + 5 intégration corpus réel), 0 échec,
-0 régression.
+Le protocole `MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md` (9 cas critiques C01–C09,
+gelé sur le corpus v0.1) a été exécuté en jouant le rôle du tiers indépendant, dans un
+**clone Git frais**, pas la copie de travail de développement. **PASS_INDEPENDENT_SCOPE** :
+13/13 cas critiques, 319/319 tests complets, reproductible sur deux exécutions. Une
+divergence a été trouvée puis corrigée : les hashes gelés ne correspondaient pas à ceux
+d'un `git clone` standard sous Windows (`core.autocrlf=true` convertit en CRLF au
+checkout) — contenu identique, seule la matérialisation différait. Corrigé par
+`.gitattributes` (`* text=auto eol=lf`), reconfirmé sur un troisième clone frais.
 
-## 7. Hors périmètre de cette version
+**Rappel de gouvernance** : cette exécution, bien que rigoureuse, reste auto-exécutée —
+elle ne clôt pas la « independent gate » au sens strict (un tiers réellement externe reste
+requis pour cela), exactement comme documenté dans le protocole lui-même.
 
-- Validation tierce indépendante (étape suivante de la trajectoire, comme pour M3/M4/M5) ;
-- une mesure de calibration réellement généralisable (holdout non vide) — nécessite un
-  corpus réel plus large que les 22 faits actuels, voir section 5 ;
+### Étape suivante de la trajectoire : INDEPENDENT HOLDOUT
+
+Le corpus v0.1 (22 faits, gelé, ne pas modifier — il est référencé par le protocole ci-dessus)
+ne permet aucun holdout non vide (2 règles réelles seulement). `corpus/family_tree_facts_v0_2.json`
+l'étend avec deux branches familiales indépendantes supplémentaires (même nature de données
+qu'en v0.1, pas une nouvelle source) :
+
+| Mesure | v0.1 | v0.2 |
+|---|---|---|
+| Patterns candidats | 28 | 69 |
+| Règles avec preuve réelle | 2 | 23 |
+| Exclus (aucune preuve) | 26 | 46 |
+| Split train/val/holdout | impossible (holdout vide) | 13/5/5, non vide |
+| Brier holdout | — | 0,0 |
+
+**Honnêteté sur ce résultat** : un holdout non vide est nécessaire mais pas suffisant pour
+une mesure de calibration significative. Le Brier de 0,0 ici est un **cas dégénéré**, pas
+une preuve de compétence de calibration — parce que la totalité des 23 enregistrements ont
+la même issue (`SUPPORTED`) et la même provenance (`GROUNDED_DIRECT`). C'est une propriété
+structurelle du mécanisme de preuve par rejeu (déjà identifiée section 5) : sur un corpus
+familial interne cohérent, il ne peut produire que `SUPPORTED` ou aucune preuve — jamais un
+`CONTRADICTED` ni un `UNKNOWN` avec preuve réelle, quelle que soit la taille du corpus. Une
+démonstration de calibration réellement discriminante nécessite un **mécanisme de preuve
+plus riche** (par exemple relié à un vérificateur sémantique réel ou à une annotation
+humaine indépendante), pas un corpus plus grand du même type — question ouverte documentée,
+pas laissée implicite. Testé et rendu explicite par
+`tests/test_m6_real_corpus_v0_2_holdout_v0_1.py`.
+
+## 7. Résultat local
+
+324 tests passés (277 hérités + 24 invariants M6 + 5 intégration corpus réel v0.1 + 13
+validation critique C01–C09 + 5 holdout corpus v0.2), 0 échec, 0 régression.
+
+## 8. Hors périmètre de cette version
+
+- Validation par un tiers réellement externe (l'auto-exécution du protocole ne clôt pas la
+  independent gate — voir section 6) ;
+- un mécanisme de preuve capable de produire un `CONTRADICTED`/`UNKNOWN` réel et non
+  dégénéré — nécessaire pour une mesure de calibration discriminante, voir section 6 ;
 - choix définitif des seuils de promotion (`brier_threshold`, `per_bucket_brier_threshold`) — laissés comme paramètres explicites de l'appelant, pas de valeur par défaut imposée silencieusement ;
 - réévaluation du gate M2/Phase 2 — M6 est un chantier de recherche K3 isolé, sans lien avec le gate empirique de la Phase 2 du dépôt de production.
