@@ -1,0 +1,30 @@
+{
+  "corpus_id": "FAMILY-TREE-V0.1",
+  "purpose": "Real fact corpus (not synthetic-for-a-specific-test) used to feed M6 with genuine E20-D.12 path patterns and M4-resolved outcomes, reusing the same 22-fact family tree already independently traced against kernel2.py earlier in this project's history.",
+  "discovery_facts": [
+    ["F1", "MERE_DE", "Amanda", "David"],
+    ["F2", "MERE_DE", "Amanda", "Alice"],
+    ["F3", "PERE_DE", "Robert", "David"],
+    ["F4", "EPOUX_DE", "David", "Sophie"],
+    ["F5", "ENFANT_DE", "Lucas", "David"],
+    ["F6", "ENFANT_DE", "Lucas", "Sophie"],
+    ["F7", "ENFANT_DE", "Emma", "David"],
+    ["F8", "ENFANT_DE", "Emma", "Sophie"],
+    ["F9", "FILLE_DE", "Sophie", "Helene"],
+    ["F10", "FILLE_DE", "Sophie", "Georges"],
+    ["F11", "MERE_DE", "Helene", "Marc"],
+    ["F12", "PERE_DE", "Marc", "Lea"],
+    ["F13", "MERE_DE", "Ines", "Lea"],
+    ["F14", "FRERE_DE", "Cedric", "David"],
+    ["F15", "EPOUSE_DE", "Julie", "Cedric"],
+    ["F16", "FILLE_DE", "Chloe", "Cedric"]
+  ],
+  "evidence_facts": [
+    ["F17", "FILLE_DE", "Chloe", "Julie"],
+    ["F18", "SOEUR_DE", "Celine", "David"],
+    ["F19", "EPOUX_DE", "Thomas", "Celine"],
+    ["F20", "FILS_DE", "Nathan", "Celine"],
+    ["F21", "FILS_DE", "Nathan", "Thomas"],
+    ["F22", "MERE_DE", "Alice", "Hugo"]
+  ]
+}

@@ -33,7 +33,7 @@ brier_score_multiclass() / expected_calibration_error_top_label()
 
 ## 3. Décisions de conception (figées avant l'implémentation, 2026-09-17)
 
-1. **Identité de règle** : `structural_signature(pattern)` — jamais l'identité de référence de l'objet, jamais un nom sémantique.
+1. **Identité de règle** : `structural_signature(pattern)` pour un PATTERN/SHAPE_PATTERN (Node), ou `path_pattern_structural_form(pattern)` pour un `PathPattern` E20-D.12 — jamais l'identité de référence de l'objet, jamais un nom sémantique. *Élargi le 2026-09-17* : l'alimentation par corpus réel (section 5) a révélé que `generalize_path_pattern()` produit un `PathPattern`, pas un `Node`, et que l'égalité par défaut de `PathPattern` inclut `pattern_id`/`source_path_ids` (qui identifient l'événement de découverte, pas ce que le motif EST structurellement) — corrigé avant de construire le corpus réel dessus, avec 3 nouveaux tests d'invariant dédiés.
 2. **Contexte** : grossier par construction — 3 bandes (LOW/MED/HIGH) sur novelty et redundancy = 9 buckets. La `provenance` de l'apprentissage est le vocabulaire fermé de M4 (`GROUNDED_DIRECT`/`GROUNDED_ANALOGY`/`UNGROUNDED_HUMAN`), jamais le tuple `path.provenance` de M5 (unique par chaîne de faits, donc inutilisable comme clé de bucket).
 3. **Classes d'issue apprises** : exactement les 3 états stabilisés de M2/M4 — `SUPPORTED`, `CONTRADICTED`, `UNKNOWN`. `DERIVED` est explicitement exclu (état pré-évaluation, pas une issue).
 4. **Source du label** : doit venir de la résolution indépendante de M4, jamais de la simple existence d'un pattern dérivé — traduction directe de l'invariant M2 « une dérivation ne peut pas être sa propre preuve ».
@@ -43,7 +43,7 @@ brier_score_multiclass() / expected_calibration_error_top_label()
 
 ## 4. Invariants permanents testés
 
-`tests/test_m6_structural_learning_invariants_v0_1.py` (21 tests) :
+`tests/test_m6_structural_learning_invariants_v0_1.py` (24 tests) :
 - vocabulaires fermés (outcome/provenance), `DERIVED` toujours rejeté ;
 - identité de règle structurelle (deux instances différentes du même pattern → même bucket ; deux patterns différents → buckets différents) ;
 - `split_by_rule` ne scinde jamais une règle entre deux partitions, et est déterministe à seed fixée ;
@@ -53,13 +53,66 @@ brier_score_multiclass() / expected_calibration_error_top_label()
 - `calibration_report` signale explicitement les buckets à données insuffisantes ;
 - `evaluate_promotion` ferme sur holdout vide, seuil absolu dépassé, régression, bucket catastrophique suffisamment peuplé — et ne bloque jamais sur un bucket trop épars pour être fiable.
 
-## 5. Résultat local
+## 5. Alimentation par corpus réel M4/M5 (addendum 2026-09-17)
 
-298 tests passés (277 hérités + 21 nouveaux), 0 échec, 0 régression.
+`m6_corpus_from_m4_m5_v0_1.py` fait tourner le pipeline complet pour de vrai, plutôt que
+de construire des `StructuralOutcomeRecord` à la main par invariant :
 
-## 6. Hors périmètre de cette version
+```text
+corpus/family_tree_facts_v0_1.json (22 faits réels, déjà tracés indépendamment
+                                     plus tôt dans le projet)
+        ↓
+kernel2.build_structural_graph / discover_paths          (réel)
+        ↓
+kernel2.generalize_path_pattern                          (réel, E20-D.12)
+        ↓
+e20d_cognitive_control_v0_1.build_candidate / score_candidate  (réel, E20-D.19)
+        ↓
+m4_cold_start_evidence_v0_1.acquire_cold_start           (réel, M4)
+        ↓
+StructuralOutcomeRecord
+```
+
+**Indépendance de la preuve** : `discovery_facts` (16 faits) sont les seuls utilisés pour
+découvrir/généraliser un pattern. `evidence_facts` (6 faits, disjoints) sont la seule
+source que `acquire_cold_start()` a le droit de consulter — la même discipline de holdout
+que E20-D/M3 (« généralisation sur opérandes jamais vus »), réutilisée ici comme véritable
+source de preuve M4, pas comme simple assertion de test.
+
+**Résultat réel** (vérifié par exécution, pas supposé) : sur 28 patterns candidats (1 et 2
+sauts) découverts dans les faits d'entraînement, **seuls 2 trouvent une preuve** dans les
+faits de preuve — `MERE_DE` et `FILLE_DE`, les deux seuls types de relation dont
+`evidence_facts` contient effectivement une arête sortante correspondante. Les 26 autres
+sont explicitement exclus (« no admissible evidence from holdout replay »), jamais
+fabriqués. Les 2 enregistrements obtenus sont `SUPPORTED` / `GROUNDED_DIRECT`, profondeur 1.
+
+**Limite honnête découverte, pas contournée** : le mécanisme de preuve par rejeu
+(`replay_path_pattern_holdout`) ne peut, par construction, produire que `REPLAYED`
+(toujours une confirmation directe, puisque le graphe de rejeu est bâti uniquement à partir
+des faits de preuve réels) ou `NOT_FOUND`/`AMBIGUOUS` (aucune preuve) — jamais une
+prédiction rejouée mais fausse. Sur ce corpus familial interne cohérent, aucun `CONTRADICTED`
+réel n'est donc atteignable. `demo_contradicted_case()` vérifie séparément, avec un fait
+délibérément conflictuel, que le même mécanisme réel atteint bien `CONTRADICTED` quand un
+conflit existe réellement — **résultat explicitement écarté des statistiques du corpus réel**.
+
+**Avec seulement 2 règles réelles, `split_by_rule` ne peut produire aucun holdout** aux
+fractions par défaut (0,2/0,2) — `evaluate_promotion` refuse alors correctement la
+promotion (`EMPTY_HOLDOUT`), plutôt que de promouvoir sur un holdout vide. C'est le même
+garde-fou que `test_promotion_blocked_on_empty_holdout` teste synthétiquement, confirmé ici
+sur des données réelles authentiquement insuffisantes — pas un bug, une limite de taille de
+corpus à lever en alimentant M6 avec un corpus réel plus grand (travail futur, non fait ici
+pour ne pas fabriquer un résultat de calibration que les données ne permettent pas
+d'établir).
+
+## 6. Résultat local
+
+306 tests passés (277 hérités + 24 invariants M6 + 5 intégration corpus réel), 0 échec,
+0 régression.
+
+## 7. Hors périmètre de cette version
 
 - Validation tierce indépendante (étape suivante de la trajectoire, comme pour M3/M4/M5) ;
-- corpus réel M4/M5 → M6 (ce v0.1 est testé sur des enregistrements synthétiques construits pour chaque invariant, pas encore sur une trace de production) ;
+- une mesure de calibration réellement généralisable (holdout non vide) — nécessite un
+  corpus réel plus large que les 22 faits actuels, voir section 5 ;
 - choix définitif des seuils de promotion (`brier_threshold`, `per_bucket_brier_threshold`) — laissés comme paramètres explicites de l'appelant, pas de valeur par défaut imposée silencieusement ;
 - réévaluation du gate M2/Phase 2 — M6 est un chantier de recherche K3 isolé, sans lien avec le gate empirique de la Phase 2 du dépôt de production.

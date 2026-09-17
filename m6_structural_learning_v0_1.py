@@ -7,10 +7,16 @@ already produce -- it introduces no new epistemic vocabulary and no new
 
 Design decisions (fixed 2026-09-17, agreed before implementation):
 
-1. Rule identity is `structural_signature(pattern)` (kernel2.py), never
-   reference identity and never a human-assigned name -- two different Node
-   instances of the same abstract pattern must be the same rule for learning
-   purposes, and no domain vocabulary may leak into a rule's identity.
+1. Rule identity is structural, never reference identity and never a
+   human-assigned name: `structural_signature(pattern)` (kernel2.py) for a
+   Node-kind PATTERN/SHAPE_PATTERN, or `path_pattern_structural_form(pattern)`
+   for a `PathPattern` (E20-D.12 generalized path rule) -- widened 2026-09-17
+   when a real corpus surfaced that `generalize_path_pattern()` produces
+   `PathPattern`, not `Node`, and `PathPattern`'s own default dataclass
+   equality includes its per-discovery `pattern_id`/`source_path_ids`, which
+   would wrongly split one abstract rule into as many "rules" as discovery
+   events. Two different instances of the same abstract pattern, of either
+   kind, must be the same rule for learning purposes.
 
 2. Context is deliberately coarse (3 bands x 3 bands on novelty/redundancy =
    9 buckets), because the learning key is `Rule x Context x Depth x
@@ -67,7 +73,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 from typing import Dict, Mapping, Optional, Sequence, Tuple
 
-from kernel2 import Node, structural_signature
+from kernel2 import Node, PathPattern, path_pattern_structural_form, structural_signature
 from m4_cold_start_evidence_v0_1 import (
     CONTRADICTED,
     GROUNDED_ANALOGY,
@@ -97,6 +103,24 @@ def _band(value: float) -> str:
     return "HIGH"
 
 
+def _rule_signature(rule: object):
+    """Structural, reference-free identity for a rule of either supported kind.
+
+    `PathPattern` is a plain frozen dataclass whose default equality includes
+    `pattern_id`/`source_path_ids` -- fields that encode WHICH discovery event
+    produced it, not what the pattern structurally IS. Two PathPattern
+    instances describing the identical operator/direction/binding skeleton
+    but discovered from different paths must still be the SAME rule for
+    learning purposes, exactly like two Node-kind PATTERN instances already
+    are via `structural_signature()`. `path_pattern_structural_form()` is
+    kernel2.py's own purpose-built stripped-down form for this (fixed
+    2026-09-17, found while wiring in a real E20-D.12-generalized corpus).
+    """
+    if isinstance(rule, PathPattern):
+        return path_pattern_structural_form(rule)
+    return structural_signature(rule)
+
+
 @dataclass(frozen=True)
 class StructuralOutcomeRecord:
     """One independently-resolved (rule, context) observation for M6 to learn from.
@@ -106,7 +130,7 @@ class StructuralOutcomeRecord:
     """
 
     record_id: str
-    rule: Node
+    rule: object
     novelty: float
     redundancy: float
     depth: int
@@ -116,8 +140,11 @@ class StructuralOutcomeRecord:
     def __post_init__(self) -> None:
         if not self.record_id:
             raise ValueError("record_id is required")
-        if not isinstance(self.rule, Node):
-            raise ValueError("rule must be a kernel Node (PATTERN or SHAPE_PATTERN)")
+        if not isinstance(self.rule, (Node, PathPattern)):
+            raise ValueError(
+                "rule must be a kernel Node (PATTERN or SHAPE_PATTERN) or a "
+                "PathPattern (E20-D.12 generalized path rule)"
+            )
         if self.outcome not in OUTCOME_CLASSES:
             raise ValueError(
                 f"outcome must be one of {OUTCOME_CLASSES!r} (a settled, "
@@ -132,7 +159,7 @@ class StructuralOutcomeRecord:
     @property
     def rule_signature(self):
         """Structural, reference-free identity of this record's rule."""
-        return structural_signature(self.rule)
+        return _rule_signature(self.rule)
 
     def bucket_key(self) -> Tuple[object, str, str, int, str]:
         return (
@@ -229,8 +256,8 @@ class StructuralLearningPolicy:
         new._version = self._version + 1
         return new
 
-    def predict(self, rule: Node, novelty: float, redundancy: float, depth: int, provenance: str) -> StructuralPrediction:
-        sig = structural_signature(rule)
+    def predict(self, rule: object, novelty: float, redundancy: float, depth: int, provenance: str) -> StructuralPrediction:
+        sig = _rule_signature(rule)
         key = (sig, _band(novelty), _band(redundancy), int(depth), provenance)
 
         bucket = self._bucket_counts.get(key)

@@ -10,7 +10,15 @@ from __future__ import annotations
 
 import pytest
 
-from kernel2 import Node, OBSERVATION, compare, node_ref
+from kernel2 import (
+    Node,
+    OBSERVATION,
+    build_structural_graph,
+    compare,
+    discover_paths,
+    generalize_path_pattern,
+    node_ref,
+)
 from m4_cold_start_evidence_v0_1 import CONTRADICTED, DERIVED, GROUNDED_ANALOGY, GROUNDED_DIRECT, SUPPORTED, UNGROUNDED_HUMAN, UNKNOWN
 from m6_structural_learning_v0_1 import (
     OUTCOME_CLASSES,
@@ -104,6 +112,55 @@ def test_two_genuinely_different_patterns_have_different_rule_signatures():
     r1 = _record("diff1", rule=compare(a1, b1))
     r2 = _record("diff2", rule=compare(a2, b2))
     assert r1.rule_signature != r2.rule_signature
+
+
+def _path_pattern_chain(prefix: str, op_r: str, op_s: str):
+    """Two independent 2-hop chains sharing an R-then-S skeleton, real
+    E20-D.12 output via build_structural_graph/discover_paths/generalize_path_pattern
+    -- not a hand-built PathPattern."""
+    facts = [
+        Node(f"{prefix}1", OBSERVATION, (node_ref(op_r), node_ref(f"{prefix}A"), node_ref(f"{prefix}B")), provenance=(f"{prefix}1",)),
+        Node(f"{prefix}2", OBSERVATION, (node_ref(op_s), node_ref(f"{prefix}B"), node_ref(f"{prefix}C")), provenance=(f"{prefix}2",)),
+    ]
+    graph = build_structural_graph(facts)
+    paths = discover_paths(graph, start=node_ref(f"{prefix}A"), end=node_ref(f"{prefix}C"), max_depth=2)
+    assert len(paths) == 1
+    return paths[0]
+
+
+def test_two_different_pathpattern_instances_of_the_same_skeleton_share_one_rule_bucket():
+    path_1a = _path_pattern_chain("pp1", "R", "S")
+    path_1b = _path_pattern_chain("pp2", "R", "S")
+    pattern_1 = generalize_path_pattern([path_1a, path_1b], pattern_id="discovery_event_A")
+
+    path_2a = _path_pattern_chain("pp3", "R", "S")
+    path_2b = _path_pattern_chain("pp4", "R", "S")
+    pattern_2 = generalize_path_pattern([path_2a, path_2b], pattern_id="discovery_event_B")
+
+    assert pattern_1 is not pattern_2
+    assert pattern_1 != pattern_2  # different pattern_id/source_path_ids -- NOT dataclass-equal
+    r1 = _record("pp_same1", rule=pattern_1)
+    r2 = _record("pp_same2", rule=pattern_2)
+    assert r1.rule_signature == r2.rule_signature  # same abstract R-then-S skeleton
+
+
+def test_pathpattern_with_a_different_skeleton_has_a_different_rule_signature():
+    path_a = _path_pattern_chain("pp5", "R", "S")
+    path_b = _path_pattern_chain("pp6", "R", "S")
+    same_skeleton = generalize_path_pattern([path_a, path_b])
+
+    path_c = _path_pattern_chain("pp7", "T", "U")
+    path_d = _path_pattern_chain("pp8", "T", "U")
+    other_skeleton = generalize_path_pattern([path_c, path_d])
+
+    r1 = _record("pp_diff1", rule=same_skeleton)
+    r2 = _record("pp_diff2", rule=other_skeleton)
+    assert r1.rule_signature != r2.rule_signature
+
+
+def test_record_rejects_a_rule_that_is_neither_node_nor_pathpattern():
+    with pytest.raises(ValueError):
+        _record("bad_rule", rule="not a rule object")
 
 
 # ---------------------------------------------------------------------------
