@@ -46,8 +46,8 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M3 Recursive Closure v0.1 | PASS_INDEPENDENT_SCOPE | intégration M2+M3 plus large |
 | M4 Cold-start v0.1 | PASS_INDEPENDENT_SCOPE | mesure N_min et couverture sur corpus réels |
 | M5 Dynamic Controller v0.1 | PASS_INDEPENDENT_SCOPE | benchmark sur inférence relationnelle réelle |
-| M6 Structural Learning | IMPLEMENTATION (local, 2026-09-17) | validation tierce indépendante |
-| M7 LLM loop | DEFERRED | M6 + environnement multi-provider |
+| M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
+| M7 LLM loop | NEXT | environnement multi-provider + parseur texte→structure |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -101,10 +101,13 @@ même jour aux patterns de longueur > 1** (claims indexées par squelette comple
 seulement une relation directe) : 26 enregistrements réels avec diversité d'issue authentique
 aux deux profondeurs (16 `SUPPORTED`, 10 `CONTRADICTED`), **Brier de holdout = 0,48125, ECE =
 0,025** — résultat de calibration réellement informatif de M6, non dégénéré. Voir
-`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–8. 331 tests au total. Paquet en
-préparation pour évaluation par un tiers réellement externe (section 10 de la même doc). Reste
-hors périmètre : l'exécution effective de cette validation externe, choix définitif des seuils
-de promotion.
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–8. Paquet remis à un tiers
+externe (section 10 de la même doc) : deux exécutions externes indépendantes obtenues (13/13,
+7/7, 10/10, 24/24, 338/338 répété deux fois dans deux environnements différents), une
+divergence de hash trouvée et corrigée, revérifiée. **M6 = VALIDATED**, clôturé explicitement
+par le porteur du projet le 2026-09-17 — détail complet dans `JOURNAL_DE_BORD.md`. Reste hors
+périmètre : choix définitif des seuils de promotion (non bloquant pour la clôture de cette
+étape). **Prochaine étape : M7 — Empirical LLM Loop.**
 
 Apprendre :
 ```text
@@ -134,13 +137,13 @@ M4 VALIDATED
    ↓
 M5 VALIDATED
    ↓
-M6 IMPLEMENTATION
+M6 IMPLEMENTATION            [FAIT]
    ↓
-M6 THIRD-PARTY VALIDATION
+M6 THIRD-PARTY VALIDATION    [FAIT — clôturé par le porteur du projet 2026-09-17, JOURNAL_DE_BORD.md]
    ↓
-INDEPENDENT HOLDOUT
+INDEPENDENT HOLDOUT          [FAIT]
    ↓
-M7 EMPIRICAL LLM LOOP
+M7 EMPIRICAL LLM LOOP        [PROCHAINE ÉTAPE]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.

@@ -7,7 +7,8 @@
 - M3 : PASS_INDEPENDENT_SCOPE
 - M4 : PASS_INDEPENDENT_SCOPE
 - M5 : PASS_INDEPENDENT_SCOPE
-- M6 : **IMPLEMENTATION** (local uniquement — pas de validation tierce à ce stade)
+- M6 : **VALIDATED** (2026-09-17, clôturé explicitement par le porteur du projet sur preuves
+  d'exécution externes — voir Sec. 6 et `JOURNAL_DE_BORD.md`)
 - Kernel `kernel2.py` : inchangé par ce module (M6 ne fait qu'importer `structural_signature` et le vocabulaire de M4)
 
 ## 2. Objectif
@@ -136,9 +137,19 @@ que ce n'était pas réconcilié. Corrigé par retrait exact de l'ajout (`git sh
 d'origine du protocole, diff vérifié à deux lignes près, hash restauré et confirmé
 `f075f730...`) ; le test qui utilisait cette constante l'importe désormais localement au lieu
 de la lire dans le fichier gelé. Les 13 hashes des deux protocoles M6 (v0.1 et v0.2) ont été
-revérifiés un par un après correctif — tous conformes. **Un paquet zip corrigé a été renvoyé ;
-le verdict d'indépendance final reste la décision du tiers, sur re-exécution de ce paquet
-corrigé, pas une auto-déclaration.**
+revérifiés un par un après correctif — tous conformes. Un paquet zip corrigé a été renvoyé,
+revérifié en conditions isolées puis depuis le zip final avant envoi.
+
+Un second retour indépendant (environnement `Python 3.11.2` / `pytest 7.2.1`, distinct des
+deux précédents) a ensuite confirmé **338/338** sur ce paquet.
+
+**Clôture (2026-09-17)** : sur la base de ces deux exécutions externes réelles — 13/13, 7/7,
+10/10, 24/24, 338/338 répété deux fois, 0 fichier modifié, une divergence d'intégrité trouvée
+puis corrigée et revérifiée, et une confirmation dans un second environnement indépendant —
+**Bacem Ben Soui (porteur du projet) a explicitement validé la clôture de cette étape.**
+Détail complet dans `JOURNAL_DE_BORD.md`. **Statut M6 : `VALIDATED`** (base v0.1 + mécanisme
+non dégénéré v0.2). Cette clôture est une décision de gouvernance du porteur de projet, pas
+une auto-déclaration de l'assistant.
 
 ### Étape suivante de la trajectoire : INDEPENDENT HOLDOUT
 

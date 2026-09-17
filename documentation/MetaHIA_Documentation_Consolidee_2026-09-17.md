@@ -108,16 +108,17 @@ E20-D  OPEN SCIENTIFICALLY
 M3  PASS_INDEPENDENT_SCOPE
 M4  PASS_INDEPENDENT_SCOPE
 M5  PASS_INDEPENDENT_SCOPE
-M6  IMPLEMENTATION (local, 2026-09-17)
-M7  DEFERRED
+M6  VALIDATED (2026-09-17, clôturé par le porteur du projet — JOURNAL_DE_BORD.md)
+M7  NEXT
 V6  DEFERRED
 ```
 
-**Addendum 2026-09-17** : M6 v0.1 implémentée, alimentée par un corpus réel M4/M5,
-protocole de validation tierce préparé et auto-exécuté (**PASS_INDEPENDENT_SCOPE**, 13/13,
-clone Git frais). Étape INDEPENDENT HOLDOUT franchie structurellement, puis mécanisme de
-preuve non dégénéré conçu (corpus de vérification adversarial), implémenté puis étendu aux
+**Addendum 2026-09-17** : M6 v0.1 implémentée, alimentée par un corpus réel M4/M5, mécanisme
+de preuve non dégénéré conçu (corpus de vérification adversarial), implémenté puis étendu aux
 patterns de longueur > 1 : résultat de calibration réellement informatif (Brier holdout =
-0,48125, ECE = 0,025, 16 `SUPPORTED` / 10 `CONTRADICTED` réels aux deux profondeurs) — voir
-`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–8. Paquet en préparation pour un
-tiers réellement externe. Prochaine étape : exécution effective de cette validation externe.
+0,48125, ECE = 0,025, 16 `SUPPORTED` / 10 `CONTRADICTED` réels aux deux profondeurs). Paquet
+remis à un tiers externe : deux exécutions externes indépendantes obtenues (13/13, 7/7, 10/10,
+24/24, 338/338 répété deux fois dans deux environnements différents), une divergence de hash
+trouvée et corrigée, revérifiée. **M6 = VALIDATED**, clôturé explicitement par le porteur du
+projet — voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–8 et
+`JOURNAL_DE_BORD.md`. **Prochaine étape : M7 — Empirical LLM Loop.**
