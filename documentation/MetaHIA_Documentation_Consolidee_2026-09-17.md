@@ -109,7 +109,7 @@ M3  PASS_INDEPENDENT_SCOPE
 M4  PASS_INDEPENDENT_SCOPE
 M5  PASS_INDEPENDENT_SCOPE
 M6  VALIDATED (2026-09-17, clôturé par le porteur du projet — JOURNAL_DE_BORD.md)
-M7  NEXT
+M7  IMPLEMENTATION (local, 2026-09-17, portée "témoin LLM")
 V6  DEFERRED
 ```
 
@@ -121,4 +121,12 @@ remis à un tiers externe : deux exécutions externes indépendantes obtenues (1
 24/24, 338/338 répété deux fois dans deux environnements différents), une divergence de hash
 trouvée et corrigée, revérifiée. **M6 = VALIDATED**, clôturé explicitement par le porteur du
 projet — voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–8 et
-`JOURNAL_DE_BORD.md`. **Prochaine étape : M7 — Empirical LLM Loop.**
+`JOURNAL_DE_BORD.md`.
+
+**M7 démarré le même jour** : mécanisme "témoin LLM" (Ollama local, indépendant du dépôt de
+production) — le LLM propose une valeur, jamais la vérité elle-même ; comparée à une
+prédiction structurelle réelle, elle devient preuve `SUPPORT`/`CHALLENGE` (`GROUNDED_ANALOGY`)
+pour la même machinerie M4. Résultat réel observé : 16/16 `CONTRADICTED` avec `llama3.2` sur
+ce corpus — limite empirique réelle du petit modèle local sur cette tâche à livre fermé, pas
+un défaut du mécanisme (un bug de fuite de la réponse dans le prompt a été trouvé et corrigé
+avant ce résultat). Voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`.

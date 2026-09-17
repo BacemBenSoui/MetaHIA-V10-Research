@@ -47,7 +47,7 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M4 Cold-start v0.1 | PASS_INDEPENDENT_SCOPE | mesure N_min et couverture sur corpus réels |
 | M5 Dynamic Controller v0.1 | PASS_INDEPENDENT_SCOPE | benchmark sur inférence relationnelle réelle |
 | M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
-| M7 LLM loop | NEXT | environnement multi-provider + parseur texte→structure |
+| M7 LLM loop | IMPLEMENTATION (local, 2026-09-17, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | validation tierce, parseur texte→structure |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -143,7 +143,7 @@ M6 THIRD-PARTY VALIDATION    [FAIT — clôturé par le porteur du projet 2026-0
    ↓
 INDEPENDENT HOLDOUT          [FAIT]
    ↓
-M7 EMPIRICAL LLM LOOP        [PROCHAINE ÉTAPE]
+M7 EMPIRICAL LLM LOOP        [IMPLEMENTATION, 2026-09-17 -- portée "témoin LLM" seulement]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -151,8 +151,10 @@ Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
 ## 12. Éléments différés explicitement
 - parseur texte → structure ;
 - normalisation complète / MNF opérationnelle de bout en bout ;
-- communication LLM live multi-provider ;
-- apprentissage structurel ;
+- ~~communication LLM live multi-provider~~ — **partiellement FAIT (2026-09-17)** : un seul
+  fournisseur (Ollama local) implémenté, portée "témoin LLM" seulement, voir
+  `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`. Multi-provider reste différé ;
+- ~~apprentissage structurel~~ — **FAIT (2026-09-17)**, voir M6, `VALIDATED` ;
 - véritable vérificateur sémantique pour la gate empirique historique ;
 - production V6 ;
 - évolution cognitive avec rollback.
