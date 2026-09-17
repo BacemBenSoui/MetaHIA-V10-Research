@@ -96,13 +96,15 @@ alimentée par un corpus réel M4/M5, protocole de validation tierce préparé e
 avec PASS_INDEPENDENT_SCOPE** (13/13 cas critiques C01–C09, clone Git frais ; ne clôt pas la
 independent gate au sens strict). Étape INDEPENDENT HOLDOUT franchie structurellement, puis
 **mécanisme de preuve non dégénéré conçu et implémenté** (`m6_corpus_from_m4_m5_v0_2.py`,
-corpus de vérification adversarial `family_tree_verification_claims_v0_1.json`) : 16
-enregistrements réels avec diversité d'issue authentique (10 `SUPPORTED`, 6 `CONTRADICTED`),
-**Brier de holdout = 0,4533, ECE = 0,067** — premier résultat de calibration réellement
-informatif de M6, non dégénéré. Voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`
-Sec. 6–7. 330 tests au total. Reste hors périmètre :
-validation par un tiers réellement externe, couverture du mécanisme non dégénéré au-delà des
-patterns de longueur 1, choix définitif des seuils de promotion.
+corpus de vérification adversarial `family_tree_verification_claims_v0_1.json`), **étendu le
+même jour aux patterns de longueur > 1** (claims indexées par squelette complet, pas
+seulement une relation directe) : 26 enregistrements réels avec diversité d'issue authentique
+aux deux profondeurs (16 `SUPPORTED`, 10 `CONTRADICTED`), **Brier de holdout = 0,48125, ECE =
+0,025** — résultat de calibration réellement informatif de M6, non dégénéré. Voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6–8. 331 tests au total. Paquet en
+préparation pour évaluation par un tiers réellement externe (section 10 de la même doc). Reste
+hors périmètre : l'exécution effective de cette validation externe, choix définitif des seuils
+de promotion.
 
 Apprendre :
 ```text

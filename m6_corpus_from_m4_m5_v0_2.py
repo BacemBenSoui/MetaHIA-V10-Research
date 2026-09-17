@@ -18,8 +18,9 @@ v0.2 design: separate STRUCTURAL PREDICTION from INDEPENDENT VERIFICATION.
         |
         v
     corpus/family_tree_verification_claims_v0_1.json
-        -> an INDEPENDENT witness claim about the SAME (subject, operator,
-           direction), authored separately from both discovery and
+        -> an INDEPENDENT witness claim about the SAME (subject, skeleton)
+           -- skeleton being the pattern's full operator/direction sequence,
+           of any length -- authored separately from both discovery and
            evidence_facts, and DELIBERATELY sometimes wrong
         |
         v
@@ -34,9 +35,13 @@ conflicting fact" discipline `demo_contradicted_case()` already used, now
 integrated as the actual real-corpus evidence source instead of a
 side-channel demo, and covering many rules instead of one.
 
-Currently scoped to length-1 patterns only (a witness naturally states a
-single relation, not a multi-hop derived composite) -- longer patterns are
-still excluded here, transparently, not silently claimed as covered.
+Extended 2026-09-17 to cover patterns of any length, not just length 1: a
+witness can state "I confirm/deny that X's <skeleton> is Y" for a multi-hop
+derived relation exactly as for a direct one, without needing to know or
+assert the individual intermediate hops -- the claim is about the pattern's
+predicted endpoint, matching what `replay_path_pattern_holdout` itself
+predicts. A pattern with no matching claim at any length is still excluded,
+transparently, never fabricated.
 """
 from __future__ import annotations
 
@@ -80,12 +85,12 @@ def _facts_to_nodes(facts: List[list]) -> List[Node]:
     ]
 
 
-def _load_claims(claims_path: Path) -> Dict[Tuple[str, str, str], dict]:
+def _load_claims(claims_path: Path) -> Dict[Tuple[str, tuple], dict]:
     data = json.loads(claims_path.read_text(encoding="utf-8"))
-    index: Dict[Tuple[str, str, str], dict] = {}
+    index: Dict[Tuple[str, tuple], dict] = {}
     for claim in data["claims"]:
-        key = (claim["subject"], claim["operator"], claim["direction"])
-        index[key] = claim
+        skeleton = tuple((step[0], step[1]) for step in claim["skeleton"])
+        index[(claim["subject"], skeleton)] = claim
     return index
 
 
@@ -94,7 +99,6 @@ class RealCorpusV2Report:
     records: Tuple[StructuralOutcomeRecord, ...]
     candidate_patterns_considered: int
     excluded_no_verification_claim: Tuple[str, ...]
-    excluded_length_over_one: Tuple[str, ...]
 
 
 def _skeleton_key(path) -> tuple:
@@ -127,7 +131,6 @@ def build_real_corpus_v2(
 
     records: List[StructuralOutcomeRecord] = []
     excluded_no_claim: List[str] = []
-    excluded_length: List[str] = []
     considered = 0
 
     for skeleton, group in sorted(by_skeleton.items(), key=lambda kv: repr(kv[0])):
@@ -138,12 +141,7 @@ def build_real_corpus_v2(
             continue
         considered += 1
 
-        if pattern.length != 1:
-            excluded_length.append(f"{pattern.pattern_id}: length {pattern.length} > 1, no verification claims at this length yet")
-            continue
-
-        operator_ref_id = skeleton[0][0].ref_id
-        direction = skeleton[0][1]
+        skeleton_key = tuple((op.ref_id, direction) for op, direction in skeleton)
 
         starts = sorted({node_ref(f[2]) for f in data["evidence_facts"]}, key=lambda r: r.ref_id)
         found_any = False
@@ -151,7 +149,7 @@ def build_real_corpus_v2(
             result = replay_path_pattern_holdout(pattern, evidence_facts, start)
             if result.status != PATH_REPLAYED:
                 continue
-            claim = claims.get((start.ref_id, operator_ref_id, direction))
+            claim = claims.get((start.ref_id, skeleton_key))
             if claim is None:
                 continue
             found_any = True
@@ -194,7 +192,6 @@ def build_real_corpus_v2(
         records=tuple(records),
         candidate_patterns_considered=considered,
         excluded_no_verification_claim=tuple(excluded_no_claim),
-        excluded_length_over_one=tuple(excluded_length),
     )
 
 

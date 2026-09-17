@@ -175,33 +175,54 @@ Le champ `verdict` du fichier de claims est une annotation pour le lecteur humai
 lu par le code**, qui ne fait que comparer `claimed_object` à `predicted_end` ; l'accord ou le
 désaccord est donc découvert mécaniquement, pas injecté.
 
-**Résultat réel, vérifié par exécution** : sur 69 patterns candidats, 55 sont exclus (longueur
-> 1, aucune claim disponible à cette profondeur pour l'instant), 3 exclus par absence de claim
-correspondante, et **16 obtiennent une preuve indépendante réelle — 10 `SUPPORTED`, 6
-`CONTRADICTED`, la première diversité d'issues non triviale de tout le pipeline M6.**
+**Résultat réel, vérifié par exécution** : sur 69 patterns candidats, 49 sont exclus (aucune
+claim de vérification correspondante), et **26 obtiennent une preuve indépendante réelle — 16
+`SUPPORTED`, 10 `CONTRADICTED`.**
 
-Sur ce jeu (seed=0, split 10/3/3) : **Brier de holdout = 0,4533, ECE = 0,067** — ni 0 (parfait
+Sur ce jeu (seed=0, split 16/5/5) : **Brier de holdout = 0,48125, ECE = 0,025** — ni 0 (parfait
 trivial) ni 2 (maximalement faux) : un résultat réellement informatif. `evaluate_promotion`
 répond correctement au seuil : bloque à `brier_threshold=0.4`, autorise à `0.6` — démontré,
 pas seulement affirmé, par `tests/test_m6_non_degenerate_evidence_v0_2.py`.
 
-**Limite assumée** : ce mécanisme ne couvre que les patterns de longueur 1 (un témoin énonce
-naturellement une relation simple, pas un composite dérivé à 2 sauts) — les patterns plus
-longs restent exclus, signalés, jamais fabriqués.
+**Extension aux patterns de longueur > 1 (addendum 2026-09-17)** : la limite initiale (claims
+limitées aux relations directes à un saut) a été levée. Les claims sont maintenant indexées
+par **squelette complet** (`skeleton`, une séquence opérateur/direction de longueur
+quelconque), pas seulement `(sujet, opérateur, direction)` — un témoin énonce naturellement
+« je confirme/dément que le [squelette dérivé] de X est Y » sans avoir besoin de connaître les
+sauts intermédiaires, exactement ce que prédit `replay_path_pattern_holdout`. Les deux
+profondeurs (1 et 2) montrent chacune une diversité d'issues réelle et non triviale, testé par
+`test_v2_covers_both_length_1_and_length_2_patterns`. Aucun pattern de longueur supérieure à 2
+n'a encore de claim (le corpus de découverte ne produit pas de chemin plus long) — signalé, pas
+fabriqué.
 
 ## 8. Résultat local
 
-330 tests passés (324 précédents + 6 nouveaux pour le mécanisme de preuve non dégénéré), 0
+331 tests passés (330 précédents ; `test_m6_non_degenerate_evidence_v0_2.py` étendu de 6 à 7
+tests pour couvrir les deux profondeurs), 0
 échec, 0 régression.
 
 ## 9. Hors périmètre de cette version
 
 - Validation par un tiers réellement externe (l'auto-exécution du protocole ne clôt pas la
-  independent gate — voir section 6) ;
-- couverture du mécanisme de preuve non dégénéré au-delà des patterns de longueur 1 (voir
-  section 7) ;
-- protocole de validation tierce couvrant explicitement le mécanisme v0.2 (celui déjà exécuté,
-  section 6, est gelé sur le corpus v0.1 et n'a pas besoin d'être refait, mais un futur
-  protocole pourrait vouloir couvrir aussi v0.2) ;
+  independent gate — voir section 6 ; paquet préparé pour un tiers externe, section 10) ;
+- patterns de longueur > 2 dans le mécanisme non dégénéré — non testés faute de chemin plus
+  long dans le corpus de découverte actuel, pas une limite du mécanisme lui-même ;
 - choix définitif des seuils de promotion (`brier_threshold`, `per_bucket_brier_threshold`) — laissés comme paramètres explicites de l'appelant, pas de valeur par défaut imposée silencieusement ;
 - réévaluation du gate M2/Phase 2 — M6 est un chantier de recherche K3 isolé, sans lien avec le gate empirique de la Phase 2 du dépôt de production.
+
+## 10. Paquet de validation tierce externe (addendum 2026-09-17)
+
+Deux protocoles couvrent désormais M6, chacun gelé sur son propre périmètre de fichiers :
+
+- `documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md` — mécanisme de base +
+  corpus réel v0.1 (9 cas C01–C09), déjà auto-exécuté (section 6) ;
+- `documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_NonDegenerate_V0_2.md` — mécanisme
+  de preuve non dégénéré (7 cas C01–C07, numérotation propre à ce protocole).
+
+Comme ce dépôt GitHub est privé, un paquet zip autonome a été préparé pour être remis à un
+tiers réellement externe par le canal de votre choix (le dépôt Git lui-même n'a pas été rendu
+public ni de collaborateur ajouté — décision qui reste la vôtre). Contenu : les deux
+protocoles, tous les fichiers gelés qu'ils couvrent, les suites de tests critiques
+correspondantes, et un `README.md` de paquet expliquant comment les exécuter — sans fichier de
+résultats attendus, sur le même modèle que les paquets M3/M5 déjà livrés plus tôt dans ce
+projet.
