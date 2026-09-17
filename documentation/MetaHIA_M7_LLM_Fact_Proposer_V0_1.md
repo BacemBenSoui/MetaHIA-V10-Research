@@ -70,9 +70,43 @@ distribution d'issue précise. Ce test est **sauté proprement** (`pytest.mark.s
 tout environnement sans Ollama accessible — la suite principale reste portable, comme
 confirmé par les deux tiers externes de M6 qui n'avaient probablement pas Ollama installé.
 
-## 5. Invariants permanents testés
+## 5. Repli LAN sur le serveur sandbox (addendum 2026-09-17)
 
-`tests/test_m7_llm_fact_proposer_invariants_v0_1.py` (11 tests, backend simulé injecté,
+Configuré à la demande explicite : si l'instance Ollama locale est injoignable, l'appel
+retombe sur le serveur sandbox du LAN (`192.168.1.11:11434`, confirmé actif — modèles
+`gpt-oss:20b`, `deepseek-coder-v2:16b`, `qwen2.5-coder:3b`, `qwen2.5-coder:7b`). Modèle de
+repli retenu : `qwen2.5-coder:7b`, cohérent avec le précédent déjà établi dans ce projet
+(pipeline WP18 en production, entièrement sur `qwen2.5-coder`). Ceci reste une configuration
+de point de terminaison réseau, pas une dépendance de code au dépôt de production — aucun
+import de `llm/ollama_backend.py`.
+
+**Le repli ne se déclenche que sur injoignabilité réelle** (échec de connexion), jamais
+simplement parce que le modèle local répond de façon inexploitable — ce cas reste « aucune
+proposition » du modèle local, pas une invitation à interroger un second modèle différent.
+
+**Deux bugs réels trouvés et corrigés pendant la configuration, avant de garder un
+résultat** :
+1. Le premier essai réel avec le local coupé a échoué avec un timeout après 30 s sur le
+   serveur LAN — pas un problème réseau (`/api/tags` répondait en 78 ms) mais un chargement à
+   froid d'un modèle de 7B sur du matériel partagé. Corrigé par un délai de repli plus généreux
+   (`fallback_timeout=90s` contre `primary_timeout=30s`), documenté avec la mesure réelle qui a
+   motivé ce choix, pas une valeur arbitraire.
+2. Une fois le repli déclenché avec succès, `LLMProposal.model` indiquait encore le modèle
+   **local demandé** (`llama3.2:latest`) au lieu du modèle **qui avait réellement répondu**
+   (`qwen2.5-coder:7b`) — une mauvaise attribution de provenance. Corrigé en faisant retourner
+   à `ollama_generate_json_with_fallback()` le couple `(réponse, modèle_utilisé)` plutôt qu'un
+   simple JSON, éliminant toute duplication de la logique de repli entre cette fonction et
+   `propose_relation_llm()`. Testé bout en bout, y compris avec le local réellement coupé et le
+   repli réel confirmant `model='qwen2.5-coder:7b'`.
+
+Un troisième ajustement, mineur : la garde de saut du test de démonstration live vérifiait
+l'accessibilité via un appel `/api/generate` complet (nécessite un modèle chargé) avec
+seulement 5 s de délai — donnait un faux « injoignable » juste après un redémarrage du serveur
+local. Corrigé en vérifiant `/api/tags` (léger, ne charge aucun modèle) à la place.
+
+## 6. Invariants permanents testés
+
+`tests/test_m7_llm_fact_proposer_invariants_v0_1.py` (17 tests, backend simulé injecté,
 aucun réseau) :
 - la valeur réelle prédite n'apparaît jamais dans le prompt envoyé au LLM ;
 - toute réponse non-JSON, sans clé `object`, non-string, ou vide est traitée comme
@@ -81,14 +115,17 @@ aucun réseau) :
   (contexte déjà connu), seul l'objet est réellement sollicité du LLM ;
 - la preuve est toujours `GROUNDED_ANALOGY`, jamais `GROUNDED_DIRECT` ni `UNGROUNDED_HUMAN` ;
 - accord → `SUPPORT`, désaccord → `CHALLENGE` ;
-- un hôte Ollama injoignable lève `OllamaUnavailable`, distinct d'une réponse inexploitable.
+- un hôte Ollama injoignable lève `OllamaUnavailable`, distinct d'une réponse inexploitable ;
+- le repli LAN ne se déclenche que sur injoignabilité réelle, jamais sur réponse inexploitable ;
+- le modèle attribué à une proposition est toujours celui qui a réellement répondu (local ou
+  repli), jamais présumé.
 
-## 6. Résultat local
+## 7. Résultat local
 
-350 tests passés (338 précédents + 11 invariants M7 + 1 démonstration live Ollama), 0
-échec, 0 régression.
+356 tests passés (338 précédents + 17 invariants M7 + 1 démonstration live Ollama), 0 échec,
+0 régression.
 
-## 7. Hors périmètre de cette version
+## 8. Hors périmètre de cette version
 
 - Parseur texte libre → structure (roadmap : élément différé séparé, pas traité ici) ;
 - amélioration de la justesse du LLM sur cette tâche (modèle plus grand, few-shot mieux

@@ -26,6 +26,18 @@ reopening the zero-coupling boundary with MetaHIA-Consolidated-Repo (which
 has its own, separate `llm/ollama_backend.py`) and to avoid managing an API
 key/cost in this research repo. No credentials are read, stored, or
 required.
+
+Fallback (added 2026-09-17): if the local instance is unreachable, calls
+fall back to the LAN sandbox Ollama server (`192.168.1.11:11434`, confirmed
+reachable and running, distinct models available). This is a network
+endpoint choice, not a code dependency on the production repo -- it never
+imports or reuses `llm/ollama_backend.py`, it just points this module's own
+HTTP client at another already-running Ollama instance on the LAN. Fallback
+triggers ONLY on genuine unreachability (`OllamaUnavailable`), never merely
+because the local model gave an unusable response -- that stays "no
+proposal", not a reason to also ask a second, differently-capable model
+(which would make agreement/disagreement depend on which backend happened to
+answer, not on one consistent witness per call).
 """
 from __future__ import annotations
 
@@ -43,30 +55,39 @@ from m4_cold_start_evidence_v0_1 import (
     build_evidence,
 )
 
-OLLAMA_HOST = "http://localhost:11434"
-DEFAULT_MODEL = "llama3.2:latest"
+LOCAL_HOST = "http://localhost:11434"
+LOCAL_MODEL = "llama3.2:latest"
+
+LAN_FALLBACK_HOST = "http://192.168.1.11:11434"
+LAN_FALLBACK_MODEL = "qwen2.5-coder:7b"  # confirmed present on that host 2026-09-17; consistent with this project's own established local-model precedent (WP18 pipeline)
+
+# Kept as aliases: pre-fallback code referred to these names for the local instance.
+OLLAMA_HOST = LOCAL_HOST
+DEFAULT_MODEL = LOCAL_MODEL
 
 
 class OllamaUnavailable(Exception):
-    """Raised when the local Ollama server cannot be reached at all --
-    distinct from a reachable server giving an unusable response (which is
-    "no proposal", not an error)."""
+    """Raised when an Ollama server cannot be reached at all -- distinct
+    from a reachable server giving an unusable response (which is "no
+    proposal", not an error)."""
 
 
 def ollama_generate_json(
     prompt: str,
     *,
-    model: str = DEFAULT_MODEL,
-    host: str = OLLAMA_HOST,
+    model: str = LOCAL_MODEL,
+    host: str = LOCAL_HOST,
     timeout: float = 30.0,
 ) -> Optional[dict]:
-    """Real call to a local Ollama instance, JSON-constrained output.
+    """Real call to a single Ollama instance, JSON-constrained output.
 
     Returns the parsed JSON object, or None if the server responded but the
     output was not valid JSON (a genuine "no usable proposal", not an
     error). Raises OllamaUnavailable if the server cannot be reached at all
     -- callers decide whether that should skip this evidence source or
-    propagate.
+    propagate. See `ollama_generate_json_with_fallback` for the
+    local-then-LAN-sandbox behavior `propose_relation_llm` actually uses by
+    default.
     """
     payload = json.dumps({"model": model, "prompt": prompt, "stream": False, "format": "json"}).encode("utf-8")
     request = urllib.request.Request(
@@ -83,6 +104,44 @@ def ollama_generate_json(
         return json.loads(raw)
     except (json.JSONDecodeError, TypeError):
         return None
+
+
+def ollama_generate_json_with_fallback(
+    prompt: str,
+    *,
+    primary_host: str = LOCAL_HOST,
+    primary_model: str = LOCAL_MODEL,
+    fallback_host: str = LAN_FALLBACK_HOST,
+    fallback_model: str = LAN_FALLBACK_MODEL,
+    primary_timeout: float = 30.0,
+    fallback_timeout: float = 90.0,
+) -> Tuple[Optional[dict], str]:
+    """Tries the local Ollama instance first; falls back to the LAN sandbox
+    server ONLY if the local instance is genuinely unreachable (connection
+    failure), never merely because it returned an unusable response -- that
+    stays "no proposal" from the local model, not a cue to ask a different
+    one. If the fallback is also unreachable, its OllamaUnavailable
+    propagates (both backends genuinely down is a real error, not silence).
+
+    Returns `(response, model_used)` -- the model name is reported alongside
+    the response (rather than left for the caller to infer) precisely so
+    that no caller can silently misattribute a fallback answer to the
+    primary model, the bug this shape replaced 2026-09-17.
+
+    `fallback_timeout` defaults higher than `primary_timeout`: confirmed by
+    a real call 2026-09-17 that a cold (not-yet-loaded) larger model on the
+    shared LAN server can take longer than 30s to respond on its first
+    request, even though the network round-trip itself is fast (~80ms) --
+    this is a model-loading cost on shared hardware, not a reachability
+    problem, so it gets a longer allowance rather than being misclassified
+    as unavailable.
+    """
+    try:
+        response = ollama_generate_json(prompt, model=primary_model, host=primary_host, timeout=primary_timeout)
+        return response, primary_model
+    except OllamaUnavailable:
+        response = ollama_generate_json(prompt, model=fallback_model, host=fallback_host, timeout=fallback_timeout)
+        return response, fallback_model
 
 
 @dataclass(frozen=True)
@@ -133,10 +192,22 @@ def propose_relation_llm(
     Fails closed: any response that is not valid JSON, missing a required
     key, or not a non-empty string is treated as no proposal at all, never
     fabricated into one.
+
+    By default (`generate_fn=None`), calls the local Ollama instance and
+    falls back to the LAN sandbox server (192.168.1.11) if the local one is
+    unreachable -- see `ollama_generate_json_with_fallback`. The returned
+    `LLMProposal.model` correctly names whichever backend actually answered
+    (fixed 2026-09-17: an earlier version always recorded the requested
+    primary model name here even when the fallback was the one that actually
+    responded, misattributing the evidence's real source).
     """
     prompt = _build_prompt(known_facts, subject, relation)
-    generate = generate_fn or (lambda p: ollama_generate_json(p, model=model))
-    raw = generate(prompt)
+    if generate_fn is not None:
+        raw = generate_fn(prompt)
+        model_used = model
+    else:
+        raw, model_used = ollama_generate_json_with_fallback(prompt, primary_model=model)
+
     if raw is None:
         return None
     if not isinstance(raw, dict):
@@ -148,7 +219,7 @@ def propose_relation_llm(
         relation=relation,
         subject=subject,
         object=proposed_object.strip(),
-        model=model,
+        model=model_used,
         raw_response=json.dumps(raw),
     )
 
@@ -184,10 +255,15 @@ def llm_evidence_for_prediction(
 
 
 __all__ = [
+    "LOCAL_HOST",
+    "LOCAL_MODEL",
+    "LAN_FALLBACK_HOST",
+    "LAN_FALLBACK_MODEL",
     "OLLAMA_HOST",
     "DEFAULT_MODEL",
     "OllamaUnavailable",
     "ollama_generate_json",
+    "ollama_generate_json_with_fallback",
     "LLMProposal",
     "GenerateFn",
     "propose_relation_llm",

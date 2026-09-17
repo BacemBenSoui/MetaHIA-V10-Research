@@ -16,23 +16,32 @@ exclusion when no evidence is obtained.
 """
 from __future__ import annotations
 
+import urllib.error
+import urllib.request
+
 import pytest
 
 from m4_cold_start_evidence_v0_1 import CONTRADICTED, GROUNDED_ANALOGY, SUPPORTED
 from m7_corpus_from_llm_v0_1 import build_llm_witnessed_corpus
-from m7_llm_fact_proposer_v0_1 import OLLAMA_HOST, OllamaUnavailable, ollama_generate_json
+from m7_llm_fact_proposer_v0_1 import LOCAL_HOST
 
 
 def _ollama_reachable() -> bool:
+    """Checks server reachability via the lightweight /api/tags endpoint --
+    NOT a full /api/generate call, which requires loading a model and can
+    take well over 30s on a cold start (confirmed 2026-09-17: a first check
+    using ollama_generate_json with only a 5s timeout produced a false
+    "unreachable" right after restarting the local server, even though the
+    server itself was already accepting connections)."""
     try:
-        ollama_generate_json("Reply with {\"object\": \"ok\"}", timeout=5)
+        urllib.request.urlopen(f"{LOCAL_HOST}/api/tags", timeout=5)
         return True
-    except OllamaUnavailable:
+    except (urllib.error.URLError, OSError, TimeoutError):
         return False
 
 
 pytestmark = pytest.mark.skipif(
-    not _ollama_reachable(), reason=f"Ollama not reachable at {OLLAMA_HOST} -- skipping live demo"
+    not _ollama_reachable(), reason=f"Ollama not reachable at {LOCAL_HOST} -- skipping live demo"
 )
 
 

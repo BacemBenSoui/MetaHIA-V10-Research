@@ -12,11 +12,13 @@ from __future__ import annotations
 from m4_cold_start_evidence_v0_1 import CHALLENGE, GROUNDED_ANALOGY, GROUNDED_DIRECT, SUPPORT, UNGROUNDED_HUMAN
 import pytest
 
+import m7_llm_fact_proposer_v0_1 as m7
 from m7_llm_fact_proposer_v0_1 import (
     LLMProposal,
     OllamaUnavailable,
     llm_evidence_for_prediction,
     ollama_generate_json,
+    ollama_generate_json_with_fallback,
     propose_relation_llm,
 )
 
@@ -142,3 +144,105 @@ def test_evidence_source_id_identifies_the_model_not_a_human():
 def test_unreachable_host_raises_ollama_unavailable():
     with pytest.raises(OllamaUnavailable):
         ollama_generate_json("test", host="http://localhost:1", timeout=2)
+
+
+# ---------------------------------------------------------------------------
+# 6. LAN sandbox fallback (192.168.1.11): triggers ONLY on genuine primary
+#    unreachability, never merely on an unusable-but-reachable response.
+#    Deterministic via monkeypatching the underlying single-host call --
+#    no real network dependency in this file.
+# ---------------------------------------------------------------------------
+
+def test_fallback_is_used_when_primary_is_unreachable(monkeypatch):
+    calls = []
+
+    def fake_generate(prompt, *, model, host, timeout):
+        calls.append(host)
+        if host == "primary-host":
+            raise OllamaUnavailable("simulated primary down")
+        return {"object": "from-fallback"}
+
+    monkeypatch.setattr(m7, "ollama_generate_json", fake_generate)
+    response, model_used = ollama_generate_json_with_fallback(
+        "prompt", primary_host="primary-host", fallback_host="fallback-host",
+        primary_model="primary-model", fallback_model="fallback-model",
+    )
+    assert response == {"object": "from-fallback"}
+    assert model_used == "fallback-model"  # correctly attributed to whichever backend actually answered
+    assert calls == ["primary-host", "fallback-host"]
+
+
+def test_fallback_is_not_used_when_primary_succeeds():
+    def fake_generate(prompt, *, model, host, timeout):
+        return {"object": "from-primary" if host == "primary-host" else "from-fallback"}
+
+    m7_original = m7.ollama_generate_json
+    m7.ollama_generate_json = fake_generate
+    try:
+        response, model_used = ollama_generate_json_with_fallback(
+            "prompt", primary_host="primary-host", fallback_host="fallback-host",
+            primary_model="primary-model", fallback_model="fallback-model",
+        )
+    finally:
+        m7.ollama_generate_json = m7_original
+    assert response == {"object": "from-primary"}
+    assert model_used == "primary-model"
+
+
+def test_fallback_is_not_used_when_primary_is_reachable_but_unusable(monkeypatch):
+    """A reachable primary that returns an unusable response (None) is "no
+    proposal" from that model -- must NOT trigger asking a different model
+    on the fallback host, which would make the result depend on which
+    backend happened to answer rather than on one consistent witness."""
+    calls = []
+
+    def fake_generate(prompt, *, model, host, timeout):
+        calls.append(host)
+        return None
+
+    monkeypatch.setattr(m7, "ollama_generate_json", fake_generate)
+    response, model_used = ollama_generate_json_with_fallback(
+        "prompt", primary_host="primary-host", fallback_host="fallback-host",
+        primary_model="primary-model", fallback_model="fallback-model",
+    )
+    assert response is None
+    assert model_used == "primary-model"  # still correctly attributed even though the response was unusable
+    assert calls == ["primary-host"]  # fallback never called
+
+
+def test_both_primary_and_fallback_unreachable_propagates():
+    def fake_generate(prompt, *, model, host, timeout):
+        raise OllamaUnavailable(f"simulated {host} down")
+
+    m7_original = m7.ollama_generate_json
+    m7.ollama_generate_json = fake_generate
+    try:
+        with pytest.raises(OllamaUnavailable):
+            ollama_generate_json_with_fallback(
+                "prompt", primary_host="primary-host", fallback_host="fallback-host"
+            )
+    finally:
+        m7.ollama_generate_json = m7_original
+
+
+def test_fallback_defaults_point_at_the_lan_sandbox_server():
+    assert m7.LAN_FALLBACK_HOST == "http://192.168.1.11:11434"
+    assert m7.LOCAL_HOST == "http://localhost:11434"
+
+
+def test_propose_relation_llm_attributes_fallback_answer_to_the_correct_model(monkeypatch):
+    """Integration-level regression guard for the exact bug found 2026-09-17
+    running the real fallback end to end: with the primary down, the
+    resulting LLMProposal.model must name the model that actually answered
+    (the LAN fallback), never the primary model that was merely requested
+    but never responded."""
+    def fake_generate(prompt, *, model, host, timeout):
+        if host == m7.LOCAL_HOST:
+            raise OllamaUnavailable("simulated local down")
+        return {"object": "Hugo"}
+
+    monkeypatch.setattr(m7, "ollama_generate_json", fake_generate)
+    result = propose_relation_llm(known_facts=KNOWN_FACTS, subject="Alice", relation="MERE_DE")
+    assert result.object == "Hugo"
+    assert result.model == m7.LAN_FALLBACK_MODEL
+    assert result.model != m7.LOCAL_MODEL
