@@ -91,11 +91,13 @@ Validation tierce : 26/26 sur 3 exécutions; 10/10 exigences critiques; paquet i
 Benchmark du scénario critique : coût dynamique −62,5 %, 70 % du gain conservé, 100 % de couverture utile. Ces valeurs restent spécifiques au scénario.
 
 ## 10. M6 — Structural Learning
-**Addendum 2026-09-17** : v0.1 implémentée localement (`m6_structural_learning_v0_1.py`,
-298 tests dont 21 dédiés à ses invariants permanents — voir
-`documentation/MetaHIA_M6_Structural_Learning_V0_1.md`). Reste hors périmètre : validation
-tierce indépendante, corpus réel M4/M5 → M6 (v0.1 testée sur enregistrements synthétiques),
-choix définitif des seuils de promotion.
+**Addendum 2026-09-17** : v0.1 implémentée localement (`m6_structural_learning_v0_1.py`),
+puis alimentée par un corpus réel M4/M5 (`m6_corpus_from_m4_m5_v0_1.py`,
+`corpus/family_tree_facts_v0_1.json`). Protocole de validation tierce préparé
+(`documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md`, 9 cas critiques C01–C09,
+`tests/test_m6_critical_validation_v0_1.py`). 319 tests au total. Reste hors périmètre :
+exécution effective de la validation tierce indépendante, un corpus réel assez grand pour un
+holdout non vide, choix définitif des seuils de promotion.
 
 Apprendre :
 ```text

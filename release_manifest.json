@@ -6,10 +6,11 @@
   "kernel2_sha256_original": "987839172357c4b0e43e5d3d03dcda32825f4da817dbb02390a5bc4c3f9ea3d9",
   "kernel2_sha256": "c76adfd2eed8e3ba6022200e7eba6c381f262602f626850cd80af65a0efc9aa9",
   "m5_sha256": "e12961da38edb1661632e91d4e2cc8c69f9423a8ad140994c3fb8d1666504698",
-  "file_count": 116,
-  "test_count": 306,
+  "file_count": 119,
+  "test_count": 319,
   "m6_added": "2026-09-17",
-  "m6_status": "IMPLEMENTATION (local) -- fed with a real M4/M5 corpus, third-party validation not yet performed",
+  "m6_status": "IMPLEMENTATION (local), fed with a real M4/M5 corpus, third-party validation protocol prepared (not yet executed)",
+  "m6_protocol": "documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md -- 9 critical cases (C01-C09), tests/test_m6_critical_validation_v0_1.py",
   "m6_real_corpus": "corpus/family_tree_facts_v0_1.json via m6_corpus_from_m4_m5_v0_1.py -- 2/28 candidate patterns reached real evidence (see MetaHIA_M6_Structural_Learning_V0_1.md Sec.5); holdout is empty at this corpus size, so promotion correctly stays blocked (EMPTY_HOLDOUT), not a bug.",
   "note": "Clean active-source package; historical backups/caches excluded. kernel2.py hash changed by the V10.0-update-1 pass -- see MIGRATION_V10_UPDATE_2026-09-17.md for the four confirmed bug fixes and the ported legacy K3-spike coverage that changed it. M6 (m6_structural_learning_v0_1.py) added on top of that update -- see documentation/MetaHIA_M6_Structural_Learning_V0_1.md."
 }

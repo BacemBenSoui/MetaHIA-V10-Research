@@ -113,6 +113,7 @@ M7  DEFERRED
 V6  DEFERRED
 ```
 
-**Addendum 2026-09-17** : M6 v0.1 implémentée localement, voir
-`documentation/MetaHIA_M6_Structural_Learning_V0_1.md`. Prochaine étape : validation tierce
-indépendante de M6, sur le même modèle que M3/M4/M5.
+**Addendum 2026-09-17** : M6 v0.1 implémentée localement puis alimentée par un corpus réel
+M4/M5, voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`. Protocole de validation
+tierce préparé : `documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md`.
+Prochaine étape : exécution effective de la validation tierce indépendante de M6.
