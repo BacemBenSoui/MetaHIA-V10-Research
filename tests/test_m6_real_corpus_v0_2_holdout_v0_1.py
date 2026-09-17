@@ -24,7 +24,9 @@ question, not silently left implicit.
 """
 from __future__ import annotations
 
-from m6_corpus_from_m4_m5_v0_1 import CORPUS_PATH_V0_2, build_real_corpus
+from pathlib import Path
+
+from m6_corpus_from_m4_m5_v0_1 import build_real_corpus
 from m6_structural_learning_v0_1 import (
     StructuralLearningPolicy,
     brier_score_multiclass,
@@ -32,6 +34,12 @@ from m6_structural_learning_v0_1 import (
     expected_calibration_error_top_label,
     split_by_rule,
 )
+
+# Defined locally, not imported from m6_corpus_from_m4_m5_v0_1.py: that module
+# is frozen and its hash is checked by MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md
+# -- a prior mistake added this constant there instead, silently invalidating
+# the frozen hash (caught by an external reviewer's execution, reverted).
+CORPUS_PATH_V0_2 = Path(__file__).resolve().parent.parent / "corpus" / "family_tree_facts_v0_2.json"
 
 
 def test_v0_2_corpus_produces_more_real_evidenced_rules_than_v0_1():

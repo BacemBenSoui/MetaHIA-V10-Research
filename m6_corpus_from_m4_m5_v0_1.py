@@ -64,7 +64,6 @@ from m4_cold_start_evidence_v0_1 import (
 from m6_structural_learning_v0_1 import StructuralOutcomeRecord
 
 DEFAULT_CORPUS_PATH = Path(__file__).resolve().parent / "corpus" / "family_tree_facts_v0_1.json"
-CORPUS_PATH_V0_2 = Path(__file__).resolve().parent / "corpus" / "family_tree_facts_v0_2.json"
 
 
 def _facts_to_nodes(facts: List[list]) -> List[Node]:
@@ -238,10 +237,4 @@ def demo_contradicted_case() -> StructuralOutcomeRecord:
     )
 
 
-__all__ = [
-    "RealCorpusBuildReport",
-    "build_real_corpus",
-    "demo_contradicted_case",
-    "DEFAULT_CORPUS_PATH",
-    "CORPUS_PATH_V0_2",
-]
+__all__ = ["RealCorpusBuildReport", "build_real_corpus", "demo_contradicted_case", "DEFAULT_CORPUS_PATH"]

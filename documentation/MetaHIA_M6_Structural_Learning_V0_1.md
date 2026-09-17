@@ -119,6 +119,27 @@ checkout) — contenu identique, seule la matérialisation différait. Corrigé 
 elle ne clôt pas la « independent gate » au sens strict (un tiers réellement externe reste
 requis pour cela), exactement comme documenté dans le protocole lui-même.
 
+**Divergence de hash trouvée par un vrai tiers externe, corrigée (addendum 2026-09-17,
+postérieur à l'auto-exécution ci-dessus)** : un premier retour d'exécution par un tiers
+réellement externe sur le paquet zip envoyé (commit `613c4cd`) a signalé que le hash gelé de
+`m6_corpus_from_m4_m5_v0_1.py` (`f075f730...`) ne correspondait pas au fichier réellement
+présent (`d78ebf1b...`). Cause identifiée par diff Git direct : le commit `634126a`
+(« M6 INDEPENDENT HOLDOUT step ») avait par erreur ajouté une constante de confort
+(`CORPUS_PATH_V0_2`) à ce fichier déjà gelé par le protocole, au lieu de la placer ailleurs —
+une violation réelle de la discipline « un fichier gelé référencé par un protocole ne se
+touche plus », commise après l'auto-exécution PASS_INDEPENDENT_SCOPE ci-dessus (donc sans
+invalider ce PASS-là, obtenu avant la dérive), mais bien présente dans le paquet remis au
+tiers. Aucun test n'était affecté (changement purement additif : une constante + `__all__`
+mis à jour, aucune logique modifiée) — mais l'intégrité du gel, elle, était réellement rompue,
+et le tiers a eu raison de refuser de qualifier son exécution de validation indépendante tant
+que ce n'était pas réconcilié. Corrigé par retrait exact de l'ajout (`git show` du commit
+d'origine du protocole, diff vérifié à deux lignes près, hash restauré et confirmé
+`f075f730...`) ; le test qui utilisait cette constante l'importe désormais localement au lieu
+de la lire dans le fichier gelé. Les 13 hashes des deux protocoles M6 (v0.1 et v0.2) ont été
+revérifiés un par un après correctif — tous conformes. **Un paquet zip corrigé a été renvoyé ;
+le verdict d'indépendance final reste la décision du tiers, sur re-exécution de ce paquet
+corrigé, pas une auto-déclaration.**
+
 ### Étape suivante de la trajectoire : INDEPENDENT HOLDOUT
 
 Le corpus v0.1 (22 faits, gelé, ne pas modifier — il est référencé par le protocole ci-dessus)
