@@ -46,7 +46,7 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M3 Recursive Closure v0.1 | PASS_INDEPENDENT_SCOPE | intégration M2+M3 plus large |
 | M4 Cold-start v0.1 | PASS_INDEPENDENT_SCOPE | mesure N_min et couverture sur corpus réels |
 | M5 Dynamic Controller v0.1 | PASS_INDEPENDENT_SCOPE | benchmark sur inférence relationnelle réelle |
-| M6 Structural Learning | NEXT / IMPLEMENTATION | train/validation/holdout + anti-contamination |
+| M6 Structural Learning | IMPLEMENTATION (local, 2026-09-17) | validation tierce indépendante |
 | M7 LLM loop | DEFERRED | M6 + environnement multi-provider |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
@@ -91,7 +91,13 @@ Validation tierce : 26/26 sur 3 exécutions; 10/10 exigences critiques; paquet i
 Benchmark du scénario critique : coût dynamique −62,5 %, 70 % du gain conservé, 100 % de couverture utile. Ces valeurs restent spécifiques au scénario.
 
 ## 10. M6 — Structural Learning
-Prochaine étape. Apprendre :
+**Addendum 2026-09-17** : v0.1 implémentée localement (`m6_structural_learning_v0_1.py`,
+298 tests dont 21 dédiés à ses invariants permanents — voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md`). Reste hors périmètre : validation
+tierce indépendante, corpus réel M4/M5 → M6 (v0.1 testée sur enregistrements synthétiques),
+choix définitif des seuils de promotion.
+
+Apprendre :
 ```text
 Rule × Context × Depth × Provenance
             ↓
@@ -143,4 +149,7 @@ Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
 K1 Structural Coverage; K2 Structural Generalization; K3 Provenance Completeness; K4 Epistemic Integrity; K5 Independent Validation Rate; K6 Recursive Closure Stability; K7 Useful Gain/Cost; K8 Holdout Generalization; K9 Calibration; K10 Promotion Safety.
 
 ## 14. Prochaine étape
-**M6 — Structural Learning v0.1 : implémentation + protocole de validation indépendante dès la conception.**
+~~M6 — Structural Learning v0.1 : implémentation + protocole de validation indépendante dès la conception.~~
+**FAIT (implémentation, 2026-09-17)** — voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`.
+
+**Prochaine étape : protocole de validation tierce M6, sur le même modèle que M3/M4/M5.**

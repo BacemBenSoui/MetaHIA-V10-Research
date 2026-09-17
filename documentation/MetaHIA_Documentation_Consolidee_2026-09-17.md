@@ -108,9 +108,11 @@ E20-D  OPEN SCIENTIFICALLY
 M3  PASS_INDEPENDENT_SCOPE
 M4  PASS_INDEPENDENT_SCOPE
 M5  PASS_INDEPENDENT_SCOPE
-M6  NEXT / IMPLEMENTATION
+M6  IMPLEMENTATION (local, 2026-09-17)
 M7  DEFERRED
 V6  DEFERRED
 ```
 
-**Prochaine étape : M6 — Structural Learning v0.1.**
+**Addendum 2026-09-17** : M6 v0.1 implémentée localement, voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md`. Prochaine étape : validation tierce
+indépendante de M6, sur le même modèle que M3/M4/M5.
