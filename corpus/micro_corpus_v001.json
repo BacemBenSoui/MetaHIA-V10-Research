@@ -1,0 +1,34 @@
+{
+  "corpus_id": "k3-spike-e13a2-micro",
+  "corpus_version": "v001",
+  "description": "Micro-corpus for the E13-A.2 spike. Every observation is shaped [operator, arg1, arg2, output]. Three independent operator families (O, AND, NOR) each contribute a swapped-argument pair, mirroring the source discussion's K3-02 example and its E2 cross-domain generalization test. A non-commutative counter-example, a contradiction probe, and a genuinely unseen holdout pair are included so the spike can measure real generalization and correct rejection, not just replay a worked example.",
+  "families": {
+    "O": [
+      {"id": "S1", "children": ["O", "A", "B", "C"]},
+      {"id": "S2", "children": ["O", "B", "A", "C"]}
+    ],
+    "AND": [
+      {"id": "S3", "children": ["AND", "P", "Q", "R"]},
+      {"id": "S4", "children": ["AND", "Q", "P", "R"]}
+    ],
+    "NOR": [
+      {"id": "S5", "children": ["NOR", "X", "Y", "Z"]},
+      {"id": "S6", "children": ["NOR", "Y", "X", "Z"]}
+    ]
+  },
+  "non_commutative_counter_example": {
+    "note": "SUB is not commutative: swapping the arguments changes the output (D1 != D2). compare() must return None here -- no permutation can hold the output frozen while reconciling arg1/arg2, so the swap pattern must not be force-fitted.",
+    "observation_a": {"id": "S7", "children": ["SUB", "M", "N", "D1"]},
+    "observation_b": {"id": "S8", "children": ["SUB", "N", "M", "D2"]}
+  },
+  "contradiction_probe": {
+    "note": "Same O-family shape as S2 (arguments B, A) but a DIFFERENT output (D instead of C). Applying the O-family local pattern (discovered from S1/S2) to this observation's arguments predicts C; the actually observed output is D. Must be recorded as CONTRADICTED without discarding S1/S2's support.",
+    "id": "S1b",
+    "children": ["O", "B", "A", "D"]
+  },
+  "holdout": {
+    "note": "Never used to discover or abstract any pattern -- reserved solely to test whether the pattern generalized across O/AND/NOR also holds for a fourth, entirely unseen operator.",
+    "observation": {"id": "H1", "children": ["ADD3", "R1", "R2", "R3"]},
+    "ground_truth": {"id": "H1_mirror", "children": ["ADD3", "R2", "R1", "R3"]}
+  }
+}

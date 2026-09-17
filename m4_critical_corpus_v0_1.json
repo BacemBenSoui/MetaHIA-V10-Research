@@ -1,0 +1,15 @@
+{
+  "protocol": "M4-third-party-v0.1",
+  "cases": [
+    {"id": "C01", "purpose": "unknown_without_evaluator"},
+    {"id": "C02", "purpose": "level_a_insufficient_escalates"},
+    {"id": "C03", "purpose": "human_cannot_fake_grounding"},
+    {"id": "C04", "purpose": "system_and_m1_derivation_blocked"},
+    {"id": "C05", "purpose": "independent_group_deduplication"},
+    {"id": "C06", "purpose": "support_and_challenge_preserved"},
+    {"id": "C07", "purpose": "analogy_vs_direct"},
+    {"id": "C08", "purpose": "deterministic_replay"},
+    {"id": "C09", "purpose": "blocked_source"},
+    {"id": "C10", "purpose": "human_request_preserves_unknown"}
+  ]
+}

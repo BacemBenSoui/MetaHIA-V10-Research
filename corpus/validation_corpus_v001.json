@@ -1,0 +1,111 @@
+{
+  "corpus_id": "k3-validation-corpus",
+  "corpus_version": "v001",
+  "description": "Larger, combined-dimension validation corpus for E14-E16 (2026-09-16), requested before attempting E17. Combines variable arity (E14), nested structures at depth 2 AND depth 3 (E15), and competing/reinforcing regularities under a reused operator symbol (E16) in one run, plus realistic noise: malformed-arity impostors mixed into otherwise-normal families, non-commutative counter-examples, and a duplicate-value ambiguous pair. Every family/holdout uses fresh symbols distinct from the original E13-A.2 micro-corpus, so this is genuinely new data, not a reload.",
+  "families": {
+    "op4_1": [
+      {"id": "op4_1a", "children": ["OP1", "A1", "B1", "C1"]},
+      {"id": "op4_1b", "children": ["OP1", "B1", "A1", "C1"]},
+      {"id": "op4_1_impostor", "children": ["OP1", "A1", "B1", "C1", "EXTRA"]}
+    ],
+    "op4_2": [
+      {"id": "op4_2a", "children": ["OP2", "A2", "B2", "C2"]},
+      {"id": "op4_2b", "children": ["OP2", "B2", "A2", "C2"]}
+    ],
+    "op4_3": [
+      {"id": "op4_3a", "children": ["OP3", "A3", "B3", "C3"]},
+      {"id": "op4_3b", "children": ["OP3", "B3", "A3", "C3"]}
+    ],
+    "op4_4": [
+      {"id": "op4_4a", "children": ["OP4", "A4", "B4", "C4"]},
+      {"id": "op4_4b", "children": ["OP4", "B4", "A4", "C4"]}
+    ],
+    "op4_5": [
+      {"id": "op4_5a", "children": ["OP5", "A5", "B5", "C5"]},
+      {"id": "op4_5b", "children": ["OP5", "B5", "A5", "C5"]}
+    ],
+    "tern_1": [
+      {"id": "tern_1a", "children": ["TERN1", "A", "B", "K1", "C"]},
+      {"id": "tern_1b", "children": ["TERN1", "B", "A", "K1", "C"]}
+    ],
+    "tern_2": [
+      {"id": "tern_2a", "children": ["TERN2", "P", "Q", "K2", "R"]},
+      {"id": "tern_2b", "children": ["TERN2", "Q", "P", "K2", "R"]}
+    ],
+    "shift_1": [
+      {"id": "shift_1a", "children": ["SHIFT1", "M1", "X1", "Y1", "D1"]},
+      {"id": "shift_1b", "children": ["SHIFT1", "M1", "Y1", "X1", "D1"]}
+    ],
+    "shift_2": [
+      {"id": "shift_2a", "children": ["SHIFT2", "M2", "X2", "Y2", "D2"]},
+      {"id": "shift_2b", "children": ["SHIFT2", "M2", "Y2", "X2", "D2"]}
+    ],
+    "subx": [
+      {"id": "subx_a", "children": ["SUBX", "M", "N", "D1"]},
+      {"id": "subx_b", "children": ["SUBX", "N", "M", "D2"]}
+    ],
+    "divx": [
+      {"id": "divx_a", "children": ["DIVX", "P", "Q", "E1"]},
+      {"id": "divx_b", "children": ["DIVX", "Q", "P", "E2"]}
+    ],
+    "nwrap_1": [
+      {"id": "nwrap_1a", "children": ["NW1", {"id": "nwrap_1a_inner", "children": ["IN1", "A", "B", "C"]}]},
+      {"id": "nwrap_1b", "children": ["NW1", {"id": "nwrap_1b_inner", "children": ["IN1", "B", "A", "C"]}]},
+      {"id": "nwrap_1_impostor", "children": ["NW1", "just_a_plain_string_not_a_node"]}
+    ],
+    "nwrap_2": [
+      {"id": "nwrap_2a", "children": ["NW2", {"id": "nwrap_2a_inner", "children": ["IN2", "P", "Q", "R"]}]},
+      {"id": "nwrap_2b", "children": ["NW2", {"id": "nwrap_2b_inner", "children": ["IN2", "Q", "P", "R"]}]}
+    ],
+    "nwrap_3": [
+      {"id": "nwrap_3a", "children": ["NW3", {"id": "nwrap_3a_inner", "children": ["IN3", "X", "Y", "Z"]}]},
+      {"id": "nwrap_3b", "children": ["NW3", {"id": "nwrap_3b_inner", "children": ["IN3", "Y", "X", "Z"]}]}
+    ],
+    "deep_1": [
+      {"id": "deep_1a", "children": ["OUTER1", {"id": "deep_1a_mid", "children": ["MID1", {"id": "deep_1a_inner", "children": ["IN", "A", "B", "C"]}]}]},
+      {"id": "deep_1b", "children": ["OUTER1", {"id": "deep_1b_mid", "children": ["MID1", {"id": "deep_1b_inner", "children": ["IN", "B", "A", "C"]}]}]}
+    ],
+    "deep_2": [
+      {"id": "deep_2a", "children": ["OUTER2", {"id": "deep_2a_mid", "children": ["MID2", {"id": "deep_2a_inner", "children": ["IN2", "P", "Q", "R"]}]}]},
+      {"id": "deep_2b", "children": ["OUTER2", {"id": "deep_2b_mid", "children": ["MID2", {"id": "deep_2b_inner", "children": ["IN2", "Q", "P", "R"]}]}]}
+    ],
+    "mix_a": [
+      {"id": "mix_a1", "children": ["MIX", "A", "B", "K", "C"]},
+      {"id": "mix_a2", "children": ["MIX", "B", "A", "K", "C"]}
+    ],
+    "mix_b": [
+      {"id": "mix_b1", "children": ["MIX", "M", "N", "K2", "D"]},
+      {"id": "mix_b2", "children": ["MIX", "N", "M", "K2", "D"]}
+    ],
+    "mix_c": [
+      {"id": "mix_c1", "children": ["MIX", "P", "Q", "R", "S"]},
+      {"id": "mix_c2", "children": ["MIX", "P", "R", "Q", "S"]}
+    ],
+    "mix_ambiguous": [
+      {"id": "mix_amb1", "children": ["MIX", "X", "X", "Y", "Y"]},
+      {"id": "mix_amb2", "children": ["MIX", "Y", "Y", "X", "X"]}
+    ]
+  },
+  "holdout": {
+    "hold_op4": {
+      "observation": {"id": "hold_op4_obs", "children": ["OPX", "P1", "P2", "P3"]},
+      "ground_truth": {"id": "hold_op4_gt", "children": ["OPX", "P2", "P1", "P3"]}
+    },
+    "hold_tern": {
+      "observation": {"id": "hold_tern_obs", "children": ["TERNX", "R1", "R2", "K9", "R3"]},
+      "ground_truth": {"id": "hold_tern_gt", "children": ["TERNX", "R2", "R1", "K9", "R3"]}
+    },
+    "hold_shift": {
+      "observation": {"id": "hold_shift_obs", "children": ["SHIFTX", "M9", "X9", "Y9", "D9"]},
+      "ground_truth": {"id": "hold_shift_gt", "children": ["SHIFTX", "M9", "Y9", "X9", "D9"]}
+    },
+    "hold_nested": {
+      "observation": {"id": "hold_nested_obs", "children": ["NWX", {"id": "hold_nested_obs_inner", "children": ["INX", "Q1", "Q2", "Q3"]}]},
+      "ground_truth": {"id": "hold_nested_gt", "children": ["NWX", {"id": "hold_nested_gt_inner", "children": ["INX", "Q2", "Q1", "Q3"]}]}
+    },
+    "hold_deep": {
+      "observation": {"id": "hold_deep_obs", "children": ["OUTERX", {"id": "hold_deep_obs_mid", "children": ["MIDX", {"id": "hold_deep_obs_inner", "children": ["INX2", "W1", "W2", "W3"]}]}]},
+      "ground_truth": {"id": "hold_deep_gt", "children": ["OUTERX", {"id": "hold_deep_gt_mid", "children": ["MIDX", {"id": "hold_deep_gt_inner", "children": ["INX2", "W2", "W1", "W3"]}]}]}
+    }
+  }
+}

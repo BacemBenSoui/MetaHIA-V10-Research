@@ -1,0 +1,18 @@
+{
+  "version": "0.1",
+  "purpose": "Blind-critical corpus for M5 dynamic metacognitive control.",
+  "cases": [
+    {"id":"C01","family":"determinism","expected":"same_context_same_history_same_decision"},
+    {"id":"C02","family":"positive_learning","expected":"learned_gain_can_unlock_continue"},
+    {"id":"C03","family":"negative_learning","expected":"negative_drift_conservative_adaptation"},
+    {"id":"C04","family":"strategy_change","expected":"low_useful_rate_triggers_change_strategy"},
+    {"id":"C05","family":"evidence","expected":"high_uncertainty_requests_evidence"},
+    {"id":"C06","family":"semantic_agnostic","expected":"opaque_provenance_does_not_change_decision_rule"},
+    {"id":"C07","family":"replay","expected":"replay_is_bitwise-equivalent_at_decision_level"},
+    {"id":"C08","family":"budget","expected":"dynamic_cost_is_observable"},
+    {"id":"C09","family":"gain","expected":"realized_gain_is_observable"},
+    {"id":"C10","family":"policy_version","expected":"only_observations_change_policy_version"},
+    {"id":"C11","family":"context_isolation","expected":"provenance_changes_context_key_not_semantics"},
+    {"id":"C12","family":"cold_start","expected":"empty_history_uses_baseline"}
+  ]
+}
