@@ -1,0 +1,36 @@
+{
+  "corpus_id": "ORGANIZATION-V0.1",
+  "purpose": "Independent second-domain corpus for M1-M6 transfer validation. The domain is organizational/project structure, independent from the family-tree corpus.",
+  "discovery_facts": [
+    ["O-D01", "MEMBRE_DE", "Alice", "Equipe_A"],
+    ["O-D02", "RESPONSABLE_DE", "Equipe_A", "Projet_X"],
+    ["O-D03", "PORTE_PAR", "Projet_X", "Direction_D"],
+    ["O-D04", "MEMBRE_DE", "Bob", "Equipe_A"],
+    ["O-D05", "RESPONSABLE_DE", "Equipe_A", "Projet_Y"],
+    ["O-D06", "PORTE_PAR", "Projet_Y", "Direction_E"],
+    ["O-D07", "MEMBRE_DE", "Claire", "Equipe_B"],
+    ["O-D08", "RESPONSABLE_DE", "Equipe_B", "Projet_Z"],
+    ["O-D09", "PORTE_PAR", "Projet_Z", "Direction_F"],
+    ["O-D10", "MEMBRE_DE", "David", "Equipe_B"],
+    ["O-D11", "RESPONSABLE_DE", "Equipe_B", "Projet_W"],
+    ["O-D12", "PORTE_PAR", "Projet_W", "Direction_G"],
+    ["O-D13", "PROJET_DE", "Module_A", "Projet_X"],
+    ["O-D14", "DEVELOPPE_PAR", "Module_A", "Equipe_A"],
+    ["O-D15", "PROJET_DE", "Module_B", "Projet_Y"],
+    ["O-D16", "DEVELOPPE_PAR", "Module_B", "Equipe_A"],
+    ["O-D17", "PROJET_DE", "Module_C", "Projet_Z"],
+    ["O-D18", "DEVELOPPE_PAR", "Module_C", "Equipe_B"]
+  ],
+  "evidence_facts": [
+    ["O-E01", "MEMBRE_DE", "Emma", "Equipe_C"],
+    ["O-E02", "RESPONSABLE_DE", "Equipe_C", "Projet_Q"],
+    ["O-E03", "PORTE_PAR", "Projet_Q", "Direction_H"],
+    ["O-E04", "MEMBRE_DE", "Farid", "Equipe_C"],
+    ["O-E05", "RESPONSABLE_DE", "Equipe_C", "Projet_R"],
+    ["O-E06", "PORTE_PAR", "Projet_R", "Direction_I"],
+    ["O-E07", "PROJET_DE", "Module_D", "Projet_Q"],
+    ["O-E08", "DEVELOPPE_PAR", "Module_D", "Equipe_C"],
+    ["O-E09", "PROJET_DE", "Module_E", "Projet_R"],
+    ["O-E10", "DEVELOPPE_PAR", "Module_E", "Equipe_C"]
+  ]
+}

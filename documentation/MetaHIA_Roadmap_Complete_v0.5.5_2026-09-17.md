@@ -215,5 +215,17 @@ y compris le premier baseline `VALIDATED`, n'utilisent que `BASIS_GLOBAL_PRIOR`,
 ~~Priorité 2 : hygiène documentaire M7 (synthèse d'état unique + élagage de ce document).~~
 **FAIT (2026-09-18)** — voir `documentation/MetaHIA_M7_State_Summary_V1.md` et cette section.
 
-**Prochaine étape : non encore décidée explicitement** — Priorité 3 (diversification du
-corpus, interface minimale M1-M6), ou autre chantier.
+~~Priorité 3 : diversification du corpus (second domaine indépendant) + interface minimale
+M1-M6 (M7 explicitement exclu).~~ **FAIT (2026-09-18)** — paquet reçu, inspecté fichier par
+fichier, exécuté réellement, un bug réel trouvé et corrigé (collision de préfixe `record_id`
+entre corpus organisationnel et corpus familial v0.2), couverture de tests renforcée (2→13 et
+3→7 tests), **adopté**. Second domaine (organisation/projets, `corpus/organization_facts_v0_1.json`) :
+27 candidats, 24 enregistrements réels, 12 règles distinctes, Brier holdout 0,6953125 —
+diversité intra-domaine démontrée, **transfert inter-domaines non démontré** (limite
+explicitement déclarée, pas cachée). Interface `m1_m6_interface_v0_1.py` : contrats de
+transport M1→M2→M4→M5→M6 typés et validés, M7 explicitement exclu — pas encore une interface
+utilisable par un humain (CLI/API), seulement un contrat de composition interne. 461/461 tests,
+0 régression. Voir `documentation/MetaHIA_Corpus_Diversification_and_M1_M6_Interface_V0_1.md`
+Sec. 9.
+
+**Prochaine étape : non encore décidée explicitement.**

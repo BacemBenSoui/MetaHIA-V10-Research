@@ -1,0 +1,318 @@
+{
+  "corpus_id": "ORGANIZATION-VERIFICATION-CLAIMS-V0.1",
+  "purpose": "Independent verification witnesses for the organizational corpus. Claims are authored separately from discovery and evidence facts and deliberately include both agreeing and conflicting endpoints.",
+  "claims": [
+    {
+      "subject": "Module_D",
+      "skeleton": [
+        [
+          "DEVELOPPE_PAR",
+          "FORWARD"
+        ],
+        [
+          "DEVELOPPE_PAR",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Module_E",
+      "source_id": "ORG-WITNESS-01"
+    },
+    {
+      "subject": "Module_E",
+      "skeleton": [
+        [
+          "DEVELOPPE_PAR",
+          "FORWARD"
+        ],
+        [
+          "DEVELOPPE_PAR",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Module_D",
+      "source_id": "ORG-WITNESS-02"
+    },
+    {
+      "subject": "Module_D",
+      "skeleton": [
+        [
+          "DEVELOPPE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-03"
+    },
+    {
+      "subject": "Module_E",
+      "skeleton": [
+        [
+          "DEVELOPPE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "WRONG_ENDPOINT",
+      "source_id": "ORG-WITNESS-04"
+    },
+    {
+      "subject": "Emma",
+      "skeleton": [
+        [
+          "MEMBRE_DE",
+          "FORWARD"
+        ],
+        [
+          "MEMBRE_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Farid",
+      "source_id": "ORG-WITNESS-05"
+    },
+    {
+      "subject": "Farid",
+      "skeleton": [
+        [
+          "MEMBRE_DE",
+          "FORWARD"
+        ],
+        [
+          "MEMBRE_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Emma",
+      "source_id": "ORG-WITNESS-06"
+    },
+    {
+      "subject": "Emma",
+      "skeleton": [
+        [
+          "MEMBRE_DE",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-07"
+    },
+    {
+      "subject": "Farid",
+      "skeleton": [
+        [
+          "MEMBRE_DE",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "WRONG_ENDPOINT",
+      "source_id": "ORG-WITNESS-08"
+    },
+    {
+      "subject": "Projet_Q",
+      "skeleton": [
+        [
+          "PORTE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Direction_H",
+      "source_id": "ORG-WITNESS-09"
+    },
+    {
+      "subject": "Projet_R",
+      "skeleton": [
+        [
+          "PORTE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Direction_I",
+      "source_id": "ORG-WITNESS-10"
+    },
+    {
+      "subject": "Module_D",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "FORWARD"
+        ],
+        [
+          "PORTE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Direction_H",
+      "source_id": "ORG-WITNESS-11"
+    },
+    {
+      "subject": "Module_E",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "FORWARD"
+        ],
+        [
+          "PORTE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "WRONG_ENDPOINT",
+      "source_id": "ORG-WITNESS-12"
+    },
+    {
+      "subject": "Module_D",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "FORWARD"
+        ],
+        [
+          "RESPONSABLE_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-13"
+    },
+    {
+      "subject": "Module_E",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "FORWARD"
+        ],
+        [
+          "RESPONSABLE_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-14"
+    },
+    {
+      "subject": "Module_D",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Projet_Q",
+      "source_id": "ORG-WITNESS-15"
+    },
+    {
+      "subject": "Module_E",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "WRONG_ENDPOINT",
+      "source_id": "ORG-WITNESS-16"
+    },
+    {
+      "subject": "Projet_Q",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "REVERSE"
+        ],
+        [
+          "DEVELOPPE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-17"
+    },
+    {
+      "subject": "Projet_R",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "REVERSE"
+        ],
+        [
+          "DEVELOPPE_PAR",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-18"
+    },
+    {
+      "subject": "Projet_Q",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Module_D",
+      "source_id": "ORG-WITNESS-19"
+    },
+    {
+      "subject": "Projet_R",
+      "skeleton": [
+        [
+          "PROJET_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "WRONG_ENDPOINT",
+      "source_id": "ORG-WITNESS-20"
+    },
+    {
+      "subject": "Projet_Q",
+      "skeleton": [
+        [
+          "RESPONSABLE_DE",
+          "REVERSE"
+        ],
+        [
+          "RESPONSABLE_DE",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Projet_R",
+      "source_id": "ORG-WITNESS-21"
+    },
+    {
+      "subject": "Projet_R",
+      "skeleton": [
+        [
+          "RESPONSABLE_DE",
+          "REVERSE"
+        ],
+        [
+          "RESPONSABLE_DE",
+          "FORWARD"
+        ]
+      ],
+      "claimed_object": "Projet_Q",
+      "source_id": "ORG-WITNESS-22"
+    },
+    {
+      "subject": "Projet_Q",
+      "skeleton": [
+        [
+          "RESPONSABLE_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "Equipe_C",
+      "source_id": "ORG-WITNESS-23"
+    },
+    {
+      "subject": "Projet_R",
+      "skeleton": [
+        [
+          "RESPONSABLE_DE",
+          "REVERSE"
+        ]
+      ],
+      "claimed_object": "WRONG_ENDPOINT",
+      "source_id": "ORG-WITNESS-24"
+    }
+  ]
+}
