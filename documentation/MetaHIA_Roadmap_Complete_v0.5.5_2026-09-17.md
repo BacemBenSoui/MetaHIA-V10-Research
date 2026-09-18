@@ -47,7 +47,8 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M4 Cold-start v0.1 | PASS_INDEPENDENT_SCOPE | mesure N_min et couverture sur corpus réels |
 | M5 Dynamic Controller v0.1 | PASS_INDEPENDENT_SCOPE | benchmark sur inférence relationnelle réelle |
 | M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
-| M7 LLM loop | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | parseur texte→structure, extension longueur > 1 |
+| M7 LLM loop | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | extension longueur > 1 |
+| M7 parseur texte→preuve | IMPLEMENTATION (2026-09-18, portée "texte → preuve sur prédiction existante" — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) | amélioration fidélité de parsing, validation tierce |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -123,13 +124,28 @@ soulevée indépendamment par les deux relecteurs (archive sans `.git`, hash de 
 vérifiable cryptographiquement — non bloquant, hashes de fichiers gelés concluants). **M7 =
 VALIDATED**, clôturé explicitement par le porteur du projet le 2026-09-18 — détail complet
 dans `JOURNAL_DE_BORD.md` et `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10.
-Reste hors périmètre : parseur texte libre → structure (chantier séparé, non commencé),
-extension aux patterns de longueur > 1 (priorité incertaine tant que le résultat mixte reste
-neutre), amélioration de la justesse du LLM lui-même. **Prochaine étape : non encore décidée
-explicitement** — la trajectoire du roadmap (Sec. 2) pointe ensuite vers V6/production et
-Cognitive Evolution, tous deux `DEFERRED` et hors du périmètre à zéro-couplage de ce dépôt de
-recherche ; un prochain jalon propre à `MetaHIA-V10-Research` reste à définir explicitement
-avant tout nouveau travail.
+Reste hors périmètre à ce stade : extension aux patterns de longueur > 1 (priorité incertaine
+tant que le résultat mixte reste neutre), amélioration de la justesse du LLM lui-même.
+
+**Parseur texte → preuve** choisi explicitement le 2026-09-18 comme prochain jalon, parmi
+trois options présentées (extension longueur > 1, addendum de récupération de motifs M6, ou
+ce parseur) — retenu pour sa valeur de nouveauté architecturale réelle (le seul élément de
+périmètre M7 nommé par le roadmap qui restait). Rôle architectural lui-même choisi
+explicitement avant code, parmi deux options (texte → preuve sur prédiction existante /
+texte → nouveaux faits du graphe) : la première retenue, pour rester dans les paliers de
+provenance déjà établis sans ouvrir de nouvelle question de confiance sur des faits non
+vérifiés entrant directement dans le graphe. `m7_text_claim_parser_v0_1.py` +
+`m7_corpus_from_text_claims_v0_1.py`, réutilisant 100 % de la machinerie M4/M6/M7 déjà
+validée. Résultat réel (`llama3.2:latest`, 2026-09-18) : fidélité de parsing 8/16 (50 %),
+7 enregistrements de preuve produits avec une diversité d'issue réelle (5 `SUPPORTED`,
+2 `CONTRADICTED`) — contrairement au résultat dégénéré du mécanisme témoin à question fermée.
+**M7 parseur texte→preuve = IMPLEMENTATION**, pas encore de validation tierce. Détail complet
+(y compris deux observations honnêtement signalées : instabilité d'un appel à l'autre du
+petit modèle local à température par défaut, et un artefact d'encodage console écarté après
+vérification directe des octets) dans `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`.
+Reste hors périmètre : amélioration de la fidélité de parsing, option architecturale
+« texte → nouveaux faits du graphe », validation tierce, intégration au corpus mixte de
+promotion.
 
 Apprendre :
 ```text
@@ -170,12 +186,17 @@ M7 EMPIRICAL LLM LOOP        [FAIT -- portée "témoin LLM", 2026-09-17]
 M7 MIXED-CORPUS PROMOTION    [FAIT -- résultat neutre pour la calibration, 2026-09-18]
    ↓
 M7 THIRD-PARTY VALIDATION    [FAIT -- clôturé par le porteur du projet 2026-09-18, JOURNAL_DE_BORD.md]
+   ↓
+M7 TEXT CLAIM PARSER         [IMPLEMENTATION, 2026-09-18 -- fidélité de parsing 50 %, pas encore de validation tierce]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
 
 ## 12. Éléments différés explicitement
-- parseur texte → structure ;
+- ~~parseur texte → structure~~ — **partiellement FAIT (2026-09-18)**, portée restreinte à
+  « texte → preuve sur prédiction existante » (pas « texte → nouveaux faits du graphe »),
+  voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`, fidélité de parsing 50 %,
+  amélioration et validation tierce restent différées ;
 - normalisation complète / MNF opérationnelle de bout en bout ;
 - ~~communication LLM live multi-provider~~ — **partiellement FAIT (2026-09-17)** : un seul
   fournisseur (Ollama local) implémenté, portée "témoin LLM" seulement, voir
@@ -190,6 +211,16 @@ K1 Structural Coverage; K2 Structural Generalization; K3 Provenance Completeness
 
 ## 14. Prochaine étape
 ~~M6 — Structural Learning v0.1 : implémentation + protocole de validation indépendante dès la conception.~~
-**FAIT (implémentation, 2026-09-17)** — voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`.
+**FAIT** — voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`, `VALIDATED` (2026-09-17).
 
-**Prochaine étape : protocole de validation tierce M6, sur le même modèle que M3/M4/M5.**
+~~Protocole de validation tierce M6, sur le même modèle que M3/M4/M5.~~ **FAIT** — deux
+exécutions externes indépendantes, `JOURNAL_DE_BORD.md`.
+
+~~M7 — Empirical LLM Loop : fact-proposer, repli LAN, intégration corpus mixte, validation
+tierce.~~ **FAIT** — `VALIDATED` (2026-09-18), voir
+`documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10.
+
+**Prochaine étape : parseur texte → preuve, portée « texte → preuve sur prédiction
+existante ».** Implémenté le 2026-09-18 (voir Sec. 10 et
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) ; reste hors périmètre : amélioration de
+la fidélité de parsing et validation tierce du mécanisme.

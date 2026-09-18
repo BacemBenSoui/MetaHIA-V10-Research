@@ -1,0 +1,162 @@
+# MetaHIA — M7 — Free-text Claim Parser v0.1
+
+## 1. Statut
+
+- M7 fact-proposer scope (question fermée) : voir
+  `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` (`VALIDATED`, 2026-09-18).
+- M7 parseur texte libre → preuve (ce document) : **IMPLEMENTATION** (2026-09-18) — pas de
+  validation tierce à ce stade.
+- Kernel `kernel2.py` : inchangé.
+
+## 2. Rôle architectural choisi (décidé explicitement avant implémentation, 2026-09-18)
+
+Deux options ont été présentées avant tout code :
+
+1. **Texte → preuve sur une prédiction existante (retenue)** : le LLM extrait une seule
+   affirmation (sujet, relation, objet) d'une phrase libre, comparée à la prédiction
+   structurelle déjà calculée par rejeu — exactement le mécanisme témoin de
+   `m7_llm_fact_proposer_v0_1.py`, avec une nouvelle porte d'entrée (extraire l'affirmation
+   d'une phrase au lieu de poser une question fermée). Le LLM ne devient jamais une source
+   de vérité directe : il reste au même palier de preuve `GROUNDED_ANALOGY`.
+2. **Texte → nouveaux faits du graphe** (écartée pour cette version) : le LLM aurait
+   directement créé de nouveaux nœuds d'observation dans le graphe structurel. Écartée
+   parce qu'elle exige un nouveau palier de provenance ou une zone de faits non fiables
+   pour ne pas violer « une dérivation ne peut pas être sa propre preuve » — question de
+   conception non triviale, non nécessaire pour démontrer la capacité de base.
+
+L'option retenue réutilise **100 % de la machinerie M4/M6/M7 déjà existante et déjà validée**
+(`acquire_cold_start()`, `llm_evidence_for_prediction()`, le repli LAN sandbox) — la seule
+pièce réellement nouvelle est l'extraction de la phrase en triplet structuré.
+
+## 3. Mécanisme
+
+```text
+kernel2 : rejeu contre evidence_facts (disjoint de discovery_facts, inchangé)
+        -> une prédiction structurelle réelle (start, opérateur) -> predicted_object
+                ↓
+phrase libre indépendamment rédigée (corpus/family_tree_text_claims_v0_1.json)
+                ↓
+LLM local (Ollama) : extraction fail-closed -> {"subject": ..., "relation": ..., "object": ...}
+        -- relation DOIT appartenir au vocabulaire fermé déjà connu, sinon rejet total
+                ↓
+contrôle de fidélité : (sujet extrait, relation extraite) == (sujet, relation déclarés
+        indépendamment par l'auteur du corpus) ?
+        -- non -> EXCLU comme erreur de parsing (jamais apparié au mauvais candidat)
+        -- oui -> comparaison mécanique : objet extrait == predicted_object ?
+                ↓
+égal -> preuve SUPPORT · différent -> preuve CHALLENGE · réponse inexploitable -> aucune preuve
+```
+
+Trois raisons d'exclusion honnêtement distinctes, jamais fusionnées ni cachées :
+
+- `excluded_no_matching_text_claim` — aucune phrase du corpus ne porte sur ce candidat ;
+- `excluded_no_parse` — extraction rejetée par le contrat fail-closed (JSON invalide, champ
+  manquant, ou relation hors vocabulaire fermé) ;
+- `excluded_parsing_mismatch` — extraction bien formée, mais sujet/relation ne correspondent
+  pas à ce que la phrase est indépendamment connue pour affirmer (erreur de fidélité de
+  parsing, distincte d'un désaccord sur l'objet, qui devient une preuve CHALLENGE, jamais une
+  exclusion).
+
+## 4. Corpus
+
+`corpus/family_tree_text_claims_v0_1.json` — 16 phrases en français, chacune une affirmation
+indépendamment rédigée sur un couple (sujet, relation) réellement rejouable dans
+`corpus/family_tree_facts_v0_2.json` (même corpus que M6 v0.2 et M7 v0.1, longueur 1
+uniquement, même limitation de périmètre assumée). 10 phrases sont vraies (l'objet affirmé
+correspond à la prédiction réelle), 6 sont délibérément fausses (objet remplacé par un
+placeholder `Personne_Inconnue_N` jamais utilisé ailleurs) — même discipline adversariale que
+`family_tree_verification_claims_v0_1.json`.
+
+Champ `asserted_object` : **jamais lu par le mécanisme de construction de preuve** — utilisé
+uniquement par un contrôle de fidélité séparé (`scripts/print_text_claim_parsing_accuracy_v0_1.py`),
+exactement comme `verdict` dans le corpus sœur reste documentation pure, jamais lu par le code
+qui décide SUPPORT/CHALLENGE. Vérifié explicitement par
+`test_perfect_parser_reproduces_the_corpus_authors_intended_diversity`.
+
+11 des 14 patterns de longueur 1 découverts sont couverts par une phrase ; `ENFANT_DE` (les
+deux directions) et `PERE_DE` (sens direct) n'ont aucune phrase associée — limite de
+couverture du corpus assumée, pas un défaut du mécanisme d'appariement (voir C07/mécanisme
+équivalent dans le mécanisme sœur M6 v0.2).
+
+## 5. Résultat réel (`llama3.2:latest`, exécution du 2026-09-18)
+
+**Contrôle de fidélité de parsing** (16 phrases, comparaison à `asserted_object`, contrôle
+indépendant du mécanisme de preuve) : **8/16 (50 %)** extractions correctes sujet+relation.
+Sur les 8 échecs : 7 rejets fail-closed (JSON inexploitable ou relation hors vocabulaire) et
+1 erreur de fidélité (sujet/objet inversés, relation confondue avec son inverse — pour
+« Duc est la mère de Personne_Inconnue_4 », le modèle a répondu
+`(Personne_Inconnue_4, FILLE_DE, Duc)`).
+
+**Mécanisme de preuve complet** (14 candidats considérés) :
+
+| | Nombre |
+|---|---|
+| Enregistrements produits | 7 |
+| `excluded_no_matching_text_claim` | 3 |
+| `excluded_no_parse` | 7 |
+| `excluded_parsing_mismatch` | 2 |
+| Issue `SUPPORTED` | 5 |
+| Issue `CONTRADICTED` | 2 |
+
+**Lecture honnête** : contrairement au résultat dégénéré du mécanisme témoin à question
+fermée (16/16 `CONTRADICTED`, voir `MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 4), ce
+mécanisme produit une **diversité d'issue réelle** (5 `SUPPORTED`, 2 `CONTRADICTED`) parmi les
+candidats effectivement parsés et appariés — le mécanisme fonctionne quand l'extraction
+réussit. Mais la fidélité de parsing elle-même reste faible (50 %) avec ce petit modèle local
+sur une tâche à livre fermé de compréhension de phrase simple en français — limite empirique
+réelle, non corrigée ici (pas d'optimisation de prompt/modèle pour obtenir un résultat plus
+flatteur, même discipline que pour le mécanisme témoin).
+
+**Observation supplémentaire, non anticipée** : le contrôle de fidélité et la construction du
+corpus de preuve appellent chacun le LLM séparément (pas de mise en cache) pour la même
+phrase — sur au moins un cas, les deux appels réels ont produit des résultats différents pour
+un texte identique, confirmant que ce petit modèle local n'est pas parfaitement stable d'un
+appel à l'autre à température par défaut. Signalé ici honnêtement, pas lissé.
+
+**Note technique, vérifiée et écartée comme non pertinente** : le script de diagnostic
+(`scripts/print_text_claim_parsing_accuracy_v0_1.py`) a affiché les accents français sous
+forme de caractères de remplacement (`�`) lors de sa première exécution — confirmé par
+inspection directe des octets qu'il s'agit uniquement d'un artefact d'encodage de la console
+Windows (`cp1252`) à l'affichage, pas d'une corruption réelle des données : le fichier corpus
+est en UTF-8 correct, et `ollama_generate_json()` sérialise le prompt avec
+`json.dumps(..., ensure_ascii=True).encode("utf-8")`, qui échappe tout caractère non-ASCII
+avant l'envoi réseau — le texte réellement transmis au LLM était donc correct.
+
+## 6. Invariants permanents testés
+
+`tests/test_m7_text_claim_parser_v0_1.py` (11 tests, backend simulé injecté, aucun réseau) :
+- réponse malformée / champ manquant / champ vide → aucune affirmation, jamais fabriquée ;
+- relation hors du vocabulaire fermé → rejetée, jamais assimilée à la relation connue la plus
+  proche ;
+- affirmation bien formée et dans le vocabulaire → acceptée ;
+- le prompt contient bien la phrase et la liste complète des relations autorisées ;
+- un simulateur qui ne répond jamais → aucune preuve, tous les candidats comptés en
+  `excluded_no_parse` ;
+- un simulateur qui répond toujours avec un sujet absent du corpus → tous comptés en
+  `excluded_parsing_mismatch`, jamais apparié au mauvais candidat ;
+- **un simulateur de parseur parfait** (rejoue exactement `asserted_object` pour la phrase
+  détectée dans le prompt) reproduit exactement la diversité voulue par la conception du
+  corpus (10 `SUPPORTED`, 6 `CONTRADICTED`) — contrôle de câblage, pas une affirmation sur la
+  compétence réelle du LLM ;
+- le nombre de candidats considérés est identique à celui du mécanisme témoin sœur
+  (même corpus, même périmètre longueur 1).
+
+`tests/test_m7_text_claim_parser_live_demo_v0_1.py` (1 test, sautable comme les autres
+démonstrations live) — exécute le mécanisme réel, n'affirme que les propriétés structurelles
+garanties, jamais une distribution d'issue précise.
+
+## 7. Résultat local
+
+385 tests passés (373 précédents + 11 invariants du parseur de phrases + 1 démonstration
+live du parseur de phrases), 0 échec, 0 régression.
+
+## 8. Hors périmètre de cette version
+
+- Extension aux patterns de longueur > 1 ;
+- amélioration de la fidélité de parsing (modèle plus grand, few-shot, chaîne de
+  raisonnement) — limite empirique réelle signalée en Sec. 5, pas corrigée ici ;
+- option architecturale « texte → nouveaux faits du graphe » (Sec. 2, écartée pour cette
+  version) ;
+- validation tierce de ce mécanisme ;
+- intégration au corpus mixte de promotion (`m7_corpus_mixed_v0_1.py`) — pourrait être une
+  suite naturelle une fois ce mécanisme lui-même validé.
