@@ -131,3 +131,44 @@ projet, pas une auto-déclaration de l'assistant.
 **Statut M7 après cette entrée** : `IMPLEMENTATION` (inchangé) — `PASS_INDEPENDENT_SCOPE`
 (reproductibilité confirmée par une première exécution externe réelle), gate de clôture externe
 toujours `OPEN`.
+
+### Retour externe #2 (archive GitHub `MetaHIA-V10-Research-main.zip`, environnement indépendant)
+
+- Environnement : `Linux-5.10.134-18.0.12.lifsea8.x86_64`, `Python 3.11.2`, `pytest 7.2.1` —
+  distinct de l'environnement de développement (Windows, Python 3.13.14, pytest 9.1.1) et
+  rédigé avec un luxe de détail (rootdir, sortie brute complète avec codes couleur ANSI, durée
+  d'exécution 1,28 s puis 6,96 s) qui le distingue clairement du retour #1.
+
+| Vérification | Résultat |
+|---|---|
+| M7 critique (C01–C09), détail par cas | 9/9 PASS, chacun nommément identifié à sa fonction de test |
+| Suite complète | 371 PASS / 2 SKIP / 0 FAIL |
+| Hashes gelés (9 fichiers) | 9/9 conformes |
+| Fichiers source modifiés pendant les tests | 0 |
+
+- Mêmes 2 `SKIP` attendus (démonstrations live Ollama, serveur injoignable dans cet
+  environnement) — comportement documenté et non requis pour le verdict.
+- **Même réserve méthodologique, formulée indépendamment** : archive GitHub sans `.git`,
+  `git rev-parse HEAD` inexécutable, hash de commit non vérifiable cryptographiquement depuis
+  l'archive — signalée explicitement comme « procedural discrepancy with the protocol », les 9
+  hashes de fichiers gelés restant le contrôle d'intégrité substantiel et concluant.
+- Écart mineur additionnel signalé, sans impact : l'interpréteur `python3.12` par défaut de cet
+  environnement n'avait pas `pytest` installé ; l'exécution a donc utilisé `/usr/bin/python3.11`
+  explicitement — disclosed, pas une déviation substantielle du protocole (Python 3.11+
+  recommandé).
+- Verdict explicite du relecteur, non arrondi par l'assistant : *« M7 = PASS_INDEPENDENT_SCOPE
+  (mechanism-level), subject to the governance rule that the final independent gate is closed
+  by the project owner. »*
+
+### Bilan après ces deux retours
+Deux exécutions externes indépendantes (environnements distincts, formats de rapport distincts,
+durées distinctes) confirment toutes deux, sans exception : 9/9 cas critiques, hashes gelés
+9/9 conformes, zéro régression, zéro modification, même réserve méthodologique honnête sur
+l'absence de `.git` dans une archive zip (jamais dissimulée ni par l'un ni par l'autre
+relecteur). C'est la même configuration factuelle qui avait conduit à la clôture de M6 le
+2026-09-17 (deux retours indépendants, tous deux PASS, zéro régression) — sans que l'assistant
+ne préjuge ici de la décision de gouvernance, qui reste celle du porteur du projet.
+
+**Statut M7 après ces deux entrées** : `IMPLEMENTATION` (inchangé) — `PASS_INDEPENDENT_SCOPE`
+confirmé deux fois indépendamment. Clôture du gate externe : décision en attente du porteur du
+projet.
