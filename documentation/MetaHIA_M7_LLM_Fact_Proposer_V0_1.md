@@ -3,7 +3,10 @@
 ## 1. Statut
 
 - M1–M6 : voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` (M6 = `VALIDATED`).
-- M7 : **IMPLEMENTATION** (local, 2026-09-17) — pas de validation tierce à ce stade.
+- M7 : **VALIDATED** (2026-09-18, clôturé explicitement par le porteur du projet sur la base
+  de deux exécutions externes indépendantes — voir Sec. 10 et `JOURNAL_DE_BORD.md`). Portée
+  "témoin LLM" (fact-proposer) uniquement ; le parseur texte libre → structure reste un
+  chantier séparé, non commencé.
 - Kernel `kernel2.py` : inchangé.
 
 ## 2. Portée choisie (décidée explicitement avant implémentation, 2026-09-17)
@@ -189,8 +192,8 @@ aucun réseau) :
 
 ## 8. Résultat local
 
-364 tests passés (356 précédents + 7 invariants du corpus mixte + 1 démonstration live du
-corpus mixte), 0 échec, 0 régression.
+373 tests passés (364 précédents + 9 cas critiques de validation tierce
+`test_m7_critical_validation_v0_1.py`), 0 échec, 0 régression.
 
 ## 9. Hors périmètre de cette version
 
@@ -202,4 +205,48 @@ corpus mixte), 0 échec, 0 régression.
 - extension aux patterns de longueur > 1 (même limite que M6 v0.2 avant son extension) ;
   reste ouverte, et de priorité incertaine tant que §6 ne montre pas de bénéfice à
   l'évidence LLM même en longueur 1 ;
-- validation tierce de ce mécanisme et du corpus mixte.
+- amélioration de la justesse du LLM ou du corpus au-delà de ce qui est décrit en §6/§9 —
+  la validation tierce ci-dessous porte sur le mécanisme, pas sur la compétence du modèle.
+
+## 10. Validation tierce et clôture (2026-09-18)
+
+`documentation/MetaHIA_ThirdParty_Validation_Protocol_M7_V0_1.md` (9 cas critiques C01-C09,
+`tests/test_m7_critical_validation_v0_1.py`, délibérément sans dépendance réseau) a été
+envoyé et exécuté par **deux relecteurs génuinement externes, dans deux environnements
+indépendants** :
+
+| | Retour #1 | Retour #2 |
+|---|---|---|
+| Environnement | zip GitHub, Python (version non précisée) | Linux 5.10.134, Python 3.11.2, pytest 7.2.1 |
+| Cas critiques C01–C09 | 9/9 PASS | 9/9 PASS |
+| Suite complète | 371 PASS / 2 SKIP / 0 FAIL | 371 PASS / 2 SKIP / 0 FAIL |
+| Hashes gelés (9 fichiers) | 9/9 conformes | 9/9 conformes |
+| Modification du dépôt | 0 | 0 |
+
+Les 2 `SKIP` (démonstrations live Ollama) sont attendus et documentés — Ollama n'était
+accessible dans aucun des deux environnements. Les deux relecteurs ont, chacun
+indépendamment, correctement signalé la même réserve méthodologique honnête : une archive
+sans `.git` ne permet pas de vérifier cryptographiquement le hash de commit, seulement le
+contenu des fichiers gelés (qui, lui, correspondait exactement dans les deux cas). Aucun des
+deux relecteurs n'a arrondi son verdict à une clôture de gate — chacun l'a explicitement
+laissée à la décision du porteur du projet, conformément à la règle de gouvernance du
+protocole. Détail complet, y compris les citations verbatim des deux verdicts, dans
+`JOURNAL_DE_BORD.md` (entrée du 2026-09-18).
+
+**Clôture** : sur la base de ces deux retours indépendants — même configuration factuelle qui
+avait justifié la clôture de M6 le 2026-09-17 — le porteur du projet (Bacem Ben Soui) a
+explicitement clôturé le gate de validation externe de M7 le 2026-09-18. C'est une décision
+de gouvernance du porteur du projet, pas une auto-déclaration : ni l'assistant ni les
+relecteurs n'ont conclu la clôture eux-mêmes.
+
+**Ce que cette clôture établit** : le mécanisme M7 (fact-proposer + intégration corpus
+mixte) est honnête, non circulaire, à échec fermé (fail-closed), et reproductible dans ses
+parties déterministes, confirmé par deux exécutions indépendantes.
+
+**Ce que cette clôture n'établit pas** (inchangé depuis §6/§9) : que le LLM est un témoin
+compétent ou utile sur cette tâche ; que l'ajout de son évidence améliore la calibration en
+général, sur un corpus plus grand, ou avec un autre modèle ; une extension aux patterns de
+longueur > 1 ; un parseur texte libre → structure ; une quelconque readiness de production.
+
+**Statut M7 : `VALIDATED`** (portée fact-proposer + intégration corpus mixte), au même titre
+de gouvernance que M6.

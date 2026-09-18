@@ -172,3 +172,24 @@ ne préjuge ici de la décision de gouvernance, qui reste celle du porteur du pr
 **Statut M7 après ces deux entrées** : `IMPLEMENTATION` (inchangé) — `PASS_INDEPENDENT_SCOPE`
 confirmé deux fois indépendamment. Clôture du gate externe : décision en attente du porteur du
 projet.
+
+### Clôture de l'étape
+
+**Validée explicitement par Bacem Ben Soui (porteur du projet), le 2026-09-18** : *« oui, je
+clôture le gate M7 sur ces deux retours »* — sur la base des deux exécutions externes
+ci-dessus (9/9 cas critiques deux fois, 371/371 hors démonstrations live deux fois, 9/9
+hashes conformes deux fois, 0 modification, même réserve méthodologique honnête sur
+l'absence de `.git` dans une archive zip soulevée indépendamment par les deux relecteurs sans
+jamais être dissimulée).
+
+Cette clôture est une décision de gouvernance du porteur de projet, pas une auto-déclaration :
+la formulation du protocole (« a local PASS does not close the independent gate ») reste vraie
+pour toute exécution auto-jouée par l'assistant ; ici, c'est le porteur du projet qui exerce
+son autorité de décision sur son propre projet, au vu de deux preuves d'exécution externes
+réelles et concordantes — exactement la même configuration qui avait justifié la clôture de M6
+le 2026-09-17.
+
+**Statut M7 après cette entrée** : `VALIDATED` (portée fact-proposer + intégration corpus
+mixte). Voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10 et
+`documentation/MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md` pour la mise à jour de statut
+correspondante.

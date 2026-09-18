@@ -47,7 +47,7 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M4 Cold-start v0.1 | PASS_INDEPENDENT_SCOPE | mesure N_min et couverture sur corpus réels |
 | M5 Dynamic Controller v0.1 | PASS_INDEPENDENT_SCOPE | benchmark sur inférence relationnelle réelle |
 | M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
-| M7 LLM loop | IMPLEMENTATION (local, 2026-09-17, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | validation tierce, parseur texte→structure |
+| M7 LLM loop | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | parseur texte→structure, extension longueur > 1 |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -107,7 +107,29 @@ externe (section 10 de la même doc) : deux exécutions externes indépendantes 
 divergence de hash trouvée et corrigée, revérifiée. **M6 = VALIDATED**, clôturé explicitement
 par le porteur du projet le 2026-09-17 — détail complet dans `JOURNAL_DE_BORD.md`. Reste hors
 périmètre : choix définitif des seuils de promotion (non bloquant pour la clôture de cette
-étape). **Prochaine étape : M7 — Empirical LLM Loop.**
+étape).
+
+**M7 — Empirical LLM Loop** implémenté le 2026-09-17 (portée "témoin LLM"/fact-proposer,
+Ollama local avec repli LAN sandbox), puis étendu le 2026-09-18 par une intégration au
+pipeline de promotion M6 avec un corpus mixte (`m7_corpus_mixed_v0_1.py`) : résultat réel
+honnêtement neutre pour la calibration (Brier holdout 0,48125 → 0,47, ECE inchangé à 0,025 —
+mouvement non significatif sur un holdout de 5 à 8 enregistrements, non attribuable à une
+compétence analogique réelle du LLM, dont l'évidence reste systématiquement `CONTRADICTED`
+16/16). Protocole de validation tierce préparé le même jour (9 cas critiques C01–C09,
+délibérément sans dépendance réseau), puis remis à un tiers externe : deux exécutions
+externes indépendantes obtenues (9/9, 9/9 hashes conformes, 371/371 hors démonstrations live,
+0 modification, dans deux environnements distincts), même réserve méthodologique honnête
+soulevée indépendamment par les deux relecteurs (archive sans `.git`, hash de commit non
+vérifiable cryptographiquement — non bloquant, hashes de fichiers gelés concluants). **M7 =
+VALIDATED**, clôturé explicitement par le porteur du projet le 2026-09-18 — détail complet
+dans `JOURNAL_DE_BORD.md` et `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10.
+Reste hors périmètre : parseur texte libre → structure (chantier séparé, non commencé),
+extension aux patterns de longueur > 1 (priorité incertaine tant que le résultat mixte reste
+neutre), amélioration de la justesse du LLM lui-même. **Prochaine étape : non encore décidée
+explicitement** — la trajectoire du roadmap (Sec. 2) pointe ensuite vers V6/production et
+Cognitive Evolution, tous deux `DEFERRED` et hors du périmètre à zéro-couplage de ce dépôt de
+recherche ; un prochain jalon propre à `MetaHIA-V10-Research` reste à définir explicitement
+avant tout nouveau travail.
 
 Apprendre :
 ```text
@@ -143,7 +165,11 @@ M6 THIRD-PARTY VALIDATION    [FAIT — clôturé par le porteur du projet 2026-0
    ↓
 INDEPENDENT HOLDOUT          [FAIT]
    ↓
-M7 EMPIRICAL LLM LOOP        [IMPLEMENTATION, 2026-09-17 -- portée "témoin LLM" seulement]
+M7 EMPIRICAL LLM LOOP        [FAIT -- portée "témoin LLM", 2026-09-17]
+   ↓
+M7 MIXED-CORPUS PROMOTION    [FAIT -- résultat neutre pour la calibration, 2026-09-18]
+   ↓
+M7 THIRD-PARTY VALIDATION    [FAIT -- clôturé par le porteur du projet 2026-09-18, JOURNAL_DE_BORD.md]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
