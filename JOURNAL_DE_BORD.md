@@ -80,3 +80,54 @@ externes réelles et reproduites deux fois.
 Voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 6 et
 `documentation/MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md` Sec. 3/10 pour la mise à jour de
 statut correspondante.
+
+---
+
+## 2026-09-18 — Validation tierce de M7 (fact-proposer + intégration corpus mixte)
+
+### Paquet envoyé
+- Commit exporté : `0c9776aff754ac14755277e77f661697685634be`
+- Contenu : `MetaHIA_ThirdParty_Validation_Protocol_M7_V0_1.md` (9 cas C01–C09), fichiers gelés,
+  `tests/test_m7_critical_validation_v0_1.py`.
+- Remis en paquet zip autonome (dépôt GitHub privé, pas de partage d'accès ni de changement de
+  visibilité), **sans le répertoire `.git`**.
+
+### Retour externe #1 (ZIP complet, environnement Python propre, aucune modification déclarée)
+
+| Vérification | Résultat |
+|---|---|
+| M7 critique (C01–C09) | 9/9 PASS |
+| Suite complète | 373 collectés — 371 PASS / 2 SKIP / 0 FAIL |
+| Hashes gelés (9 fichiers) | 9/9 conformes |
+| Fichiers source modifiés pendant les tests | 0 |
+
+- Les 2 `SKIP` sont les deux démonstrations live Ollama
+  (`test_m7_live_ollama_demo_v0_1.py`, `test_m7_mixed_corpus_live_demo_v0_1.py`) — Ollama
+  n'était pas accessible dans l'environnement du relecteur, comportement attendu et documenté
+  dans le protocole (non requis pour le verdict PASS).
+- **Réserve méthodologique explicite et honnête soulevée par le relecteur lui-même** : le ZIP
+  fourni ne contenant pas `.git`, `git rev-parse HEAD` n'a pas pu être exécuté à l'intérieur du
+  paquet pour prouver cryptographiquement que son contenu correspond exactement au commit
+  `0c9776a...`. Les 9 hashes gelés correspondent exactement au contenu attendu, ce qui est une
+  preuve forte de conformité du contenu, mais pas une preuve cryptographique directe du hash de
+  commit lui-même — distinction que le relecteur a lui-même correctement posée, sans la
+  minimiser ni la maximiser.
+- Verdict explicite du relecteur, non arrondi par l'assistant : *« Validation de reproductibilité
+  indépendante du package : PASS — 9/9 critères critiques M7, 373 tests collectés, 371 PASS,
+  2 SKIP, 0 FAIL, hashes critiques 9/9 conformes. Fermeture officielle du gate "genuinely
+  external reviewer" : NON encore clôturé [...] cette exécution constitue une exécution
+  indépendante dans un nouvel environnement, mais elle ne doit pas être artificiellement
+  présentée comme la validation par un tiers humain externe si [la] définition de gouvernance
+  exige effectivement un reviewer externe au projet. »*
+
+### État après ce retour
+Une seule exécution externe reçue à ce stade (contre deux pour M6 avant clôture). Le protocole
+M7 lui-même reste au statut qu'il portait déjà : *« this protocol has not yet been executed by
+a genuinely external reviewer [...] and self-execution does not count »* — cette entrée
+consigne un premier retour, elle ne referme pas le gate. La décision de clôturer (avec un seul
+retour, ou après un second comme pour M6) reste une décision de gouvernance du porteur du
+projet, pas une auto-déclaration de l'assistant.
+
+**Statut M7 après cette entrée** : `IMPLEMENTATION` (inchangé) — `PASS_INDEPENDENT_SCOPE`
+(reproductibilité confirmée par une première exécution externe réelle), gate de clôture externe
+toujours `OPEN`.
