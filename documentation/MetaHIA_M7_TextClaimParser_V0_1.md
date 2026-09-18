@@ -336,7 +336,74 @@ Tests :
   n'affirme que les propriétés structurelles garanties, jamais une distribution d'issue ou une
   décision de promotion précise.
 
-## 12. Résultat local
+## 12. Consensus inter-mécanismes (témoin + parseur) et coût en ressources (2026-09-18)
 
-414 tests passés (401 précédents + 7 invariants du consensus parseur + 5 invariants du corpus
-consensus + 1 démonstration live du consensus), 0 échec, 0 régression.
+Dernière piste de consensus restante après l'échec du consensus même-mécanisme (Sec. 11) :
+au lieu de deux modèles sur la **même** question, exiger l'accord entre **deux mécanismes
+structurellement différents** — le témoin à question fermée (`m7_llm_fact_proposer_v0_1.py`,
+inchangé) et le parseur de phrase (`m7_text_claim_parser_v0_1.py`, inchangé) — sur le même
+candidat, chacun utilisant son propre backend réel par défaut (local en primaire, repli LAN
+uniquement sur injoignabilité réelle — pas le schéma « toujours les deux hôtes » du consensus
+même-mécanisme).
+
+`m7_cross_mechanism_consensus_v0_1.py` + `m7_corpus_from_cross_mechanism_consensus_v0_1.py`
+(nouveaux fichiers, aucune modification des mécanismes gelés) — six issues honnêtement
+distinctes : accord, échec du témoin, échec du parseur, échec des deux, erreur de fidélité du
+parseur (comme en Sec. 5/10), désaccord entre les deux mécanismes.
+
+**Mesure de la surcharge ressource réelle** (script dédié
+`scripts/measure_m7_mechanism_resource_overhead_v0_1.py`, instrumentation du client HTTP réel,
+aucune estimation) :
+
+| Mécanisme | Appels réseau réels | Temps mur | Enregistrements produits |
+|---|---|---|---|
+| Témoin seul | 16 | 69,6 s | 16 |
+| Parseur seul | 16 | 105,4 s | 9 (variable d'un run à l'autre, cf. instabilité déjà signalée) |
+| Consensus inter-mécanismes | **32** | **184,5 s** | **0** |
+
+**Résultat réel du consensus inter-mécanismes (2026-09-18)** : sur les 14 candidats (11 avec
+une phrase associée), **0 enregistrement produit**. Détail : 9 échecs du parseur seul
+(`PARSER_FAILED`), 6 désaccords entre témoin et parseur, 1 erreur de fidélité du parseur, 0
+échec du témoin. **Sur les 7 cas où le parseur a réussi à répondre, aucun n'a jamais coïncidé
+avec la réponse du témoin.**
+
+**Lecture honnête, décisive** : le consensus inter-mécanismes est **strictement dominé**. Il
+coûte au moins autant que d'exécuter les deux mécanismes séparément (32 appels, 184,5 s —
+plus cher que la somme des deux temps mesurés séparément, 69,6 + 105,4 = 175 s, l'écart
+s'expliquant par la variance normale d'appels réseau réels) et ne produit **strictement aucune
+évidence utilisable**, contre le résultat déjà obtenu par la simple union des deux mécanismes
+(Sec. 10, `+both` : mêmes 32 appels, mais 30 enregistrements d'entraînement, `PROMOTE`).
+Le témoin et le parseur, quand ils répondent tous deux, ne convergent tout simplement jamais
+vers la même réponse brute sur ce corpus — leurs modes de raisonnement (question fermée avec
+contexte structuré vs extraction depuis une phrase indépendante) semblent produire des
+divergences plutôt qu'un accord, contrairement à l'espoir initial. Aucune conclusion causale
+définitive n'est avancée au-delà de ce constat empirique.
+
+**Conclusion retenue** : la piste consensus inter-mécanismes est fermée en l'état — elle
+n'apporte aucune valeur pour un coût égal ou supérieur à l'union simple déjà validée.
+
+Tests : `tests/test_m7_cross_mechanism_consensus_v0_1.py` (6 tests) et
+`tests/test_m7_corpus_from_cross_mechanism_consensus_v0_1.py` (6 tests), backends simulés
+injectés, aucun réseau ; `tests/test_m7_cross_mechanism_consensus_live_demo_v0_1.py` (1 test,
+sautable) — passe même avec zéro enregistrement produit, par conception (propriétés
+structurelles uniquement).
+
+### Décision à trancher par le porteur du projet
+
+Sur la base de ces mesures de coût réel et de leur effet sur la calibration (Sec. 10), les
+options restantes, classées par coût croissant :
+
+| Option | Coût (appels/run) | Effet sur la calibration | Brier holdout |
+|---|---|---|---|
+| **Témoin seul** | 16 | Neutre, légèrement meilleur que le baseline | 0,47 (meilleur résultat de toutes les conditions testées) |
+| **Parseur seul** | 16 | Dégrade, bloque la promotion | 0,508 |
+| **Les deux (union simple)** | 32 (double coût) | Passe la promotion, mais moins bien que le témoin seul | 0,489 |
+| ~~Consensus inter-mécanismes~~ | ~~32~~ | ~~Aucune évidence produite~~ | **Écarté** (dominé) |
+
+Le consensus inter-mécanismes est déjà écarté par les données (dominé). Reste à trancher entre
+témoin seul, parseur seul, ou les deux — voir la question posée à l'issue de ce document.
+
+## 13. Résultat local
+
+427 tests passés (414 précédents + 6 invariants du consensus inter-mécanismes + 6 invariants
+du corpus consensus inter-mécanismes + 1 démonstration live), 0 échec, 0 régression.

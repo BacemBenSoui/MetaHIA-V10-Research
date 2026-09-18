@@ -200,6 +200,8 @@ M7 TEXT CLAIM PARSER VALIDATION [FAIT -- clôturé par le porteur du projet 2026
 M7 MIXED-CORPUS v0.2 (3 sources)  [FAIT -- +text claims seul ne promeut pas, +both promeut, 2026-09-18]
    ↓
 M7 TEXT CLAIM CONSENSUS       [FAIT -- hypothèse infirmée, consensus aggrave la calibration, 2026-09-18]
+   ↓
+M7 CROSS-MECHANISM CONSENSUS  [FAIT -- dominé (32 appels, 0 preuve), piste fermée, 2026-09-18]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -249,4 +251,13 @@ le filtrage par consensus aggrave la calibration (Brier 0,58527 contre 0,50794 n
 0,48125 baseline), au lieu de la corriger. Voir
 `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 11.
 
-**Prochaine étape : non encore décidée explicitement.**
+~~Consensus inter-mécanismes (témoin + parseur doivent s'accorder).~~ **FAIT (2026-09-18)** —
+piste **fermée** : coût mesuré identique ou supérieur à l'union simple (32 appels réels,
+184,5 s), mais **zéro évidence produite** (le témoin et le parseur ne convergent jamais vers
+la même réponse brute sur ce corpus). Mesure de surcharge ressource réelle disponible pour les
+quatre configurations testées (témoin seul, parseur seul, union, consensus inter-mécanismes)
+dans `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 12.
+
+**Prochaine étape : décision du porteur du projet en attente** — garder le témoin seul, le
+parseur seul, ou l'union des deux, sur la base des coûts et effets de calibration mesurés
+(Sec. 12 du même document).
