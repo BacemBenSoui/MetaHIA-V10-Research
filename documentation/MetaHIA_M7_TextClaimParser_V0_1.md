@@ -452,26 +452,56 @@ local, cette fois sur un raisonnement composé.
 | ECE holdout | 0,08929 | **0,01501** |
 | Décision | PROMOTE | PROMOTE |
 
-**Lecture honnête, même prudence que pour l'effet déjà observé du témoin longueur 1 en
-Sec. 10** : c'est le meilleur Brier obtenu sur l'ensemble de ce projet jusqu'ici — mais cette
-amélioration ne doit **pas** être lue comme une preuve de compétence du LLM. L'explication
-mécanique la plus probable est la même que celle déjà avancée en Sec. 10 : ces 20
-enregistrements sont des règles **nouvelles** (jamais vues par le corpus adversarial ni par le
-témoin longueur 1), toutes étiquetées `CONTRADICTED` de façon parfaitement cohérente par le
-même biais systématique du modèle — si ce biais s'applique de façon identique aux exemples
-d'entraînement et de holdout d'une même règle, le modèle de calibration prédit correctement
-`CONTRADICTED` pour ces règles-là non pas parce qu'il a appris quelque chose de vrai sur le
-monde, mais parce qu'un biais constant se reproduit à l'identique des deux côtés de la
-partition. Aucune conclusion causale définitive n'est retenue ; ce résultat positif est
-rapporté aussi honnêtement que les résultats négatifs précédents, sans lui accorder plus de
-crédit qu'il n'en mérite tant qu'une vérification indépendante n'a pas isolé cette hypothèse.
+**Lecture honnête, mécanisme désormais vérifié (2026-09-18), pas seulement supposé** : c'est
+le meilleur Brier obtenu sur l'ensemble de ce projet jusqu'ici — mais cette amélioration ne
+doit **pas** être lue comme une preuve de compétence du LLM. Une première hypothèse mécanique
+avait été avancée ici même (« le même biais se reproduit à l'identique entre entraînement et
+holdout d'une même règle ») — **elle s'est révélée fausse** à la vérification directe : par
+construction, `split_by_rule()` ne laisse jamais une règle apparaître à la fois en
+entraînement et en holdout (confirmé programmatiquement,
+`tests/test_m6_holdout_basis_diagnosis_v0_1.py`), donc ce mécanisme précis était structurellement
+impossible. La vraie explication, elle aussi vérifiée directement plutôt que supposée : **100 %
+des prédictions de holdout, dans les deux configurations comparées, utilisent
+`BASIS_GLOBAL_PRIOR`** — jamais `EXACT_BUCKET` ni `RULE_ONLY`. Ajouter 20 preuves
+`CONTRADICTED` déplace donc uniquement la **distribution de classe globale** de
+l'entraînement (avant : 16 `SUPPORTED` / 18 `CONTRADICTED` ; après : 15 `SUPPORTED` / 33
+`CONTRADICTED`, dans la reproduction déterministe) — le Brier s'améliore parce que ce nouveau
+prior global se trouve mieux correspondre à la composition réelle du holdout de cette
+exécution, pas parce que le modèle a appris quoi que ce soit de spécifique à une règle. Détail
+complet et implications pour **tous** les chiffres de calibration de ce projet (pas seulement
+celui-ci) dans `documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 11.
 
-**Conclusion retenue** : l'extension longueur > 1 du témoin est techniquement réussie
+**Robustesse testée sur 10 graines de partition différentes** (reproduction déterministe,
+`scripts/diagnose_multihop_witness_brier_mechanism_v0_1.py` puis vérification à 10 graines) :
+l'ajout de l'évidence multi-sauts améliore le Brier sur 8 graines sur 10, mais **le dégrade sur
+2** (+0,023 et +0,047) — confirmant que ce n'est **pas** une amélioration garantie, seulement
+une tendance statistique liée à la composition du holdout tiré. Test permanent :
+`tests/test_m6_holdout_basis_diagnosis_v0_1.py::test_adding_global_prior_biased_evidence_is_not_a_causally_robust_improvement`.
+
+**Conclusion retenue, révisée** : l'extension longueur > 1 du témoin est techniquement réussie
 (mécanisme fonctionnel, fail-closed, non-fuyant) et confirme, une seconde fois, la limite
-empirique déjà connue du modèle local sur ce type de tâche — sans qu'aucune conclusion ne soit
-tirée sur un gain de calibration réellement causal. Reste à décider : intégration définitive à
-la configuration retenue, extension symétrique du parseur, ou statu quo — décision non prise
-ici.
+empirique déjà connue du modèle local sur ce type de tâche. Le gain de Brier observé sur la
+graine par défaut est réel mais **mécaniquement expliqué et confirmé comme un déplacement de
+prior global, jamais comme une compétence relationnelle du LLM, et pas garanti d'une partition
+à l'autre** — ce n'est plus une hypothèse en attente de vérification, c'est un fait vérifié
+(`CONFIRMED_MECHANICAL_ARTIFACT`, voir `MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 11,
+corroboré indépendamment le même jour par un second relecteur travaillant séparément sur une
+archive de ce dépôt, verdict `SUSPECTED_MECHANICAL_ARTIFACT` par contrôle contrefactuel,
+renforcé ici en `CONFIRMED` par inspection directe du code de décision).
+
+### Décisions P1.2 / P1.3 (2026-09-18)
+
+- **Témoin longueur > 1 : non promu dans la configuration retenue.** Le gain de calibration
+  observé n'étant ni causal ni garanti d'une partition à l'autre (8/10 graines favorables,
+  2/10 défavorables), il ne justifie pas d'ajouter 20 appels réels supplémentaires par
+  exécution à la configuration déjà retenue. Le mécanisme reste dans le dépôt comme **témoin
+  expérimental isolé** — extension technique fonctionnelle, fail-closed, confirmant une
+  seconde fois la limite empirique du modèle local — mais non branché à la promotion réelle.
+- **Extension du parseur à la longueur > 1 : différée.** Même raisonnement par anticipation :
+  rien n'indique que le parseur se comporterait différemment du témoin sur cette dimension, et
+  son coût par appel est déjà plus élevé (Sec. 12, ~6,6 s/appel contre ~4,35 s pour le témoin).
+  Non entreprise tant que la question du gain causal réel n'est pas résolue par un autre biais
+  que le déplacement de prior global.
 
 Tests : `tests/test_m7_llm_fact_proposer_multihop_v0_1.py` (6 tests) et
 `tests/test_m7_corpus_from_llm_multihop_v0_1.py` (4 tests), backends simulés injectés, aucun
@@ -483,5 +513,6 @@ mécanisme réel, n'affirme que les propriétés structurelles garanties.
 
 ## 15. Résultat local
 
-438 tests passés (427 précédents + 6 invariants du témoin multi-sauts + 4 invariants du corpus
-multi-sauts + 1 démonstration live), 0 échec, 0 régression.
+441 tests passés (427 précédents + 6 invariants du témoin multi-sauts + 4 invariants du corpus
+multi-sauts + 1 démonstration live + 3 tests de diagnostic du mécanisme de holdout, voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 11), 0 échec, 0 régression.

@@ -258,3 +258,75 @@ protocoles, tous les fichiers gelés qu'ils couvrent, les suites de tests critiq
 correspondantes, et un `README.md` de paquet expliquant comment les exécuter — sans fichier de
 résultats attendus, sur le même modèle que les paquets M3/M5 déjà livrés plus tôt dans ce
 projet.
+
+## 11. Découverte structurelle : le holdout n'a jamais exercé `EXACT_BUCKET`/`RULE_ONLY` (2026-09-18)
+
+En investiguant honnêtement pourquoi l'ajout d'évidence M7 (témoin multi-sauts) améliorait le
+Brier de holdout (voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14), une
+vérification directe — pas une supposition — a révélé un fait structurel qui concerne **tous**
+les résultats de calibration M6/M7 de ce projet, y compris le tout premier baseline déjà
+`VALIDATED` (Brier de holdout = 0,48125, clôturé le 2026-09-17) :
+
+**`StructuralLearningPolicy.predict()` n'a jamais utilisé la base `EXACT_BUCKET` ni
+`RULE_ONLY` sur un seul enregistrement de holdout, depuis le tout premier calcul de ce Brier
+jusqu'à aujourd'hui.** Vérifié directement (`tests/test_m6_holdout_basis_diagnosis_v0_1.py`) :
+100 % des prédictions de holdout, pour chaque configuration testée ce projet, utilisent
+`BASIS_GLOBAL_PRIOR`.
+
+**Cause, structurelle et intentionnelle, pas un bug** : `split_by_rule()` garantit que chaque
+règle atterrit entièrement dans une seule partition (jamais partagée entre train et holdout —
+c'est précisément l'objectif de conception documenté au point 5 de la Sec. 3 : « holdout
+mesure la généralisation à une règle non vue, pas la mémorisation d'une règle déjà
+partiellement vue en entraînement »). Conséquence directe et jusqu'ici non remarquée : la
+signature de règle d'un enregistrement de holdout n'apparaît **jamais** dans
+`_bucket_counts`/`_rule_counts` de la politique entraînée — `predict()` ne peut donc **que**
+retomber sur `BASIS_GLOBAL_PRIOR` (la distribution de classes globale, calculée sur tout
+l'entraînement, indépendamment de la règle) ou `BASIS_UNIFORM_NO_DATA`.
+
+**Conséquence pratique, à ne jamais perdre de vue en lisant un chiffre de Brier/ECE de ce
+projet** : chaque nombre de calibration rapporté ici mesure si la distribution de classe
+**globale** de l'entraînement généralise à la distribution de classe globale du holdout —
+jamais si la politique a appris quoi que ce soit de **spécifique à une règle**, contrairement
+à ce que le nom du module (`Rule × Context × Depth × Provenance → distribution`) et son
+objectif documenté (Sec. 2) pourraient laisser croire. Ajouter des enregistrements
+d'entraînement, quelle qu'en soit la source, ne peut faire bouger ce chiffre qu'en déplaçant
+cette distribution globale — jamais en enseignant à la politique quoi que ce soit sur une
+règle précise qu'elle sera amenée à prédire en holdout.
+
+**Ce que cela ne remet pas en cause** : la validation tierce de M6 (Sec. 6/10) portait
+explicitement sur le mécanisme (honnêteté, non-circularité, reproductibilité, séparation
+train/holdout correcte) — jamais sur une démonstration de généralisation par-règle, que
+chaque protocole a toujours explicitement exclue de son périmètre de preuve (« scientific
+non-closure »). La clôture `VALIDATED` de M6 et M7 reste donc valide au sens où elle a été
+formulée. **Ce que cela corrige** : la lecture informelle, jamais démentie jusqu'ici dans ce
+document, du Brier de 0,48125 comme un résultat « réellement informatif de M6 » (Sec. 5) —
+il est réel et non dégénéré (ni 0,0 ni 2,0), mais il ne démontre et n'a jamais démontré de
+compétence de généralisation par-règle.
+
+**Ce que cela signifie pour le témoin multi-sauts (M7)** : l'amélioration du Brier observée en
+ajoutant 20 preuves `CONTRADICTED` (Sec. 14 du document M7) s'explique entièrement par ce
+mécanisme de déplacement du prior global — confirmé, pas seulement supposé — et non par une
+quelconque compétence relationnelle du LLM. Voir la mise à jour correspondante dans
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14.
+
+**Non traité comme une régression à corriger dans ce document** : ce n'est pas un défaut de
+code (`split_by_rule` fait exactement ce que sa propre documentation promet), c'est une limite
+d'échelle du corpus actuel (trop peu de règles distinctes pour qu'un holdout par-règle puisse
+un jour coexister avec une règle partiellement vue en entraînement). Un corpus futur
+significativement plus riche pourrait un jour permettre un design d'évaluation différent qui
+exercerait réellement `EXACT_BUCKET`/`RULE_ONLY` — non entrepris ici.
+
+**Corroboration indépendante (2026-09-18)** : un relecteur travaillant séparément sur une
+archive zip de ce dépôt a mené, sans connaître ce résultat, une expérience contrefactuelle
+convergente — ajouter un lot d'observations longueur ≥2 artificiellement toutes
+`CONTRADICTED` à une configuration adversarial+témoin fait passer le Brier de holdout de
+0,47000 à 0,37535, sans aucune amélioration réelle du LLM. Son verdict prudent
+(`SUSPECTED_MECHANICAL_ARTIFACT`, faute d'avoir inspecté directement le code de décision) est
+ici confirmé plus fortement : l'inspection directe du champ `basis` retourné par
+`predict()` (pas une simple comparaison de scores) prouve que le mécanisme n'est pas une
+possibilité parmi d'autres mais **la seule chose qui se soit jamais produite**, sur chaque
+holdout de ce projet. Reclassé en conséquence : **`CONFIRMED_MECHANICAL_ARTIFACT`** — la seule
+réserve restante, légitime, est que les 20 sorties LLM brutes du run ayant produit le Brier
+0,42649 du témoin multi-sauts n'ont pas été archivées comme un corpus figé, donc ce run précis
+n'est pas rejouable à l'identique bit-à-bit ; cela ne remet pas en cause l'existence du
+mécanisme, seulement la traçabilité exacte de cette exécution particulière.

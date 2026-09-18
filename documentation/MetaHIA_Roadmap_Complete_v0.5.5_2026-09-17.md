@@ -206,6 +206,8 @@ M7 CROSS-MECHANISM CONSENSUS  [FAIT -- dominé (32 appels, 0 preuve), piste ferm
 M7 CONFIGURATION RETENUE      [FAIT -- "les deux" (union) choisi par le porteur du projet, 2026-09-18]
    ↓
 M7 TÉMOIN LONGUEUR > 1        [FAIT -- 20/20 CONTRADICTED (limite déjà connue confirmée), Brier améliore mais prudence méthodologique, 2026-09-18]
+   ↓
+DÉCOUVERTE : HOLDOUT = GLOBAL_PRIOR SEUL  [FAIT -- vérifié pour tout M6/M7, mécanisme du gain multi-sauts confirmé (pas causal), 2026-09-18]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -276,6 +278,34 @@ dure). Effet sur la calibration positif mais **non crédité comme compétence r
 prudence que pour l'effet déjà observé en Sec. 10) — voir
 `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14.
 
-**Prochaine étape : non encore décidée explicitement** — décisions ouvertes : intégrer
-l'extension longueur > 1 du témoin à la configuration retenue, étendre symétriquement le
-parseur, vérifier indépendamment l'hypothèse du biais mécanique, ou autre chantier.
+~~Vérifier indépendamment l'hypothèse du biais mécanique (Priorité 1, point 1).~~ **FAIT
+(2026-09-18)** — découverte plus large que prévu : **100 % des prédictions de holdout, pour
+tout chiffre de calibration M6/M7 de ce projet depuis le tout premier baseline `VALIDATED`
+(Brier 0,48125), utilisent `BASIS_GLOBAL_PRIOR`** — jamais `EXACT_BUCKET` ni `RULE_ONLY`.
+Cause structurelle et intentionnelle (`split_by_rule` ne laisse jamais une règle apparaître à
+la fois en entraînement et en holdout), pas un bug. Conséquence : aucun chiffre de calibration
+de ce projet n'a jamais démontré d'apprentissage spécifique à une règle — seulement une
+généralisation de la distribution de classe globale. L'hypothèse initialement avancée pour le
+témoin multi-sauts (« même biais reproduit entre train et holdout d'une même règle ») était
+**structurellement impossible et donc fausse** ; corrigée avec le mécanisme réel, vérifié.
+Robustesse testée sur 10 graines : l'ajout de l'évidence multi-sauts améliore le Brier 8 fois
+sur 10, le dégrade 2 fois sur 10 — pas une amélioration garantie. Voir
+`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 11 et
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14 (mis à jour).
+
+Reclassé le même jour, corroboré par un second relecteur indépendant (contrôle contrefactuel
+convergent, Brier 0,47000 → 0,37535 sur une configuration adversarial+témoin en ajoutant un
+lot artificiel tout-`CONTRADICTED`) : **`CONFIRMED_MECHANICAL_ARTIFACT`** (pas seulement
+suspecté — l'inspection directe du code de décision, pas seulement une comparaison de scores,
+prouve que le mécanisme est la seule chose qui se soit jamais produite sur ce holdout).
+
+~~Priorité 1, points 2-3 : décision sur le témoin longueur > 1 et sur l'extension du
+parseur.~~ **FAIT (2026-09-18)** — **témoin longueur > 1 non promu** dans la configuration
+retenue (gain non causal, non garanti, 8/10 graines seulement) mais conservé comme témoin
+expérimental isolé ; **extension du parseur à la longueur > 1 différée** par anticipation du
+même raisonnement, coût par appel déjà plus élevé. Voir
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14.
+
+**Prochaine étape : non encore décidée explicitement** — Priorité 1 (boucles scientifiques
+ouvertes) est close ; passer à la Priorité 2 (hygiène documentaire M7) ou à la Priorité 3
+(diversification du corpus, interface minimale M1-M6), ou autre chantier.
