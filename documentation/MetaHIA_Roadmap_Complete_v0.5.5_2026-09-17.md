@@ -111,47 +111,14 @@ par le porteur du projet le 2026-09-17 — détail complet dans `JOURNAL_DE_BORD
 périmètre : choix définitif des seuils de promotion (non bloquant pour la clôture de cette
 étape).
 
-**M7 — Empirical LLM Loop** implémenté le 2026-09-17 (portée "témoin LLM"/fact-proposer,
-Ollama local avec repli LAN sandbox), puis étendu le 2026-09-18 par une intégration au
-pipeline de promotion M6 avec un corpus mixte (`m7_corpus_mixed_v0_1.py`) : résultat réel
-honnêtement neutre pour la calibration (Brier holdout 0,48125 → 0,47, ECE inchangé à 0,025 —
-mouvement non significatif sur un holdout de 5 à 8 enregistrements, non attribuable à une
-compétence analogique réelle du LLM, dont l'évidence reste systématiquement `CONTRADICTED`
-16/16). Protocole de validation tierce préparé le même jour (9 cas critiques C01–C09,
-délibérément sans dépendance réseau), puis remis à un tiers externe : deux exécutions
-externes indépendantes obtenues (9/9, 9/9 hashes conformes, 371/371 hors démonstrations live,
-0 modification, dans deux environnements distincts), même réserve méthodologique honnête
-soulevée indépendamment par les deux relecteurs (archive sans `.git`, hash de commit non
-vérifiable cryptographiquement — non bloquant, hashes de fichiers gelés concluants). **M7 =
-VALIDATED**, clôturé explicitement par le porteur du projet le 2026-09-18 — détail complet
-dans `JOURNAL_DE_BORD.md` et `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10.
-Reste hors périmètre à ce stade : extension aux patterns de longueur > 1 (priorité incertaine
-tant que le résultat mixte reste neutre), amélioration de la justesse du LLM lui-même.
-
-**Parseur texte → preuve** choisi explicitement le 2026-09-18 comme prochain jalon, parmi
-trois options présentées (extension longueur > 1, addendum de récupération de motifs M6, ou
-ce parseur) — retenu pour sa valeur de nouveauté architecturale réelle (le seul élément de
-périmètre M7 nommé par le roadmap qui restait). Rôle architectural lui-même choisi
-explicitement avant code, parmi deux options (texte → preuve sur prédiction existante /
-texte → nouveaux faits du graphe) : la première retenue, pour rester dans les paliers de
-provenance déjà établis sans ouvrir de nouvelle question de confiance sur des faits non
-vérifiés entrant directement dans le graphe. `m7_text_claim_parser_v0_1.py` +
-`m7_corpus_from_text_claims_v0_1.py`, réutilisant 100 % de la machinerie M4/M6/M7 déjà
-validée. Résultat réel (`llama3.2:latest`, 2026-09-18) : fidélité de parsing 8/16 (50 %),
-7 enregistrements de preuve produits avec une diversité d'issue réelle (5 `SUPPORTED`,
-2 `CONTRADICTED`) — contrairement au résultat dégénéré du mécanisme témoin à question fermée.
-Protocole de validation tierce préparé le même jour (9 cas critiques C01–C09, délibérément
-sans dépendance réseau), puis remis à un tiers externe : deux exécutions externes
-indépendantes obtenues (9/9, 8/8 hashes conformes, 391/391 hors démonstrations live, 0
-modification, dans deux environnements distincts), encodage UTF-8 du corpus français
-vérifié explicitement et confirmé sans corruption par les deux relecteurs indépendamment.
-**M7 parseur texte→preuve = VALIDATED**, clôturé explicitement par le porteur du projet le
-2026-09-18 — détail complet (y compris deux observations honnêtement signalées : instabilité
-d'un appel à l'autre du petit modèle local à température par défaut, et un artefact
-d'encodage console écarté après vérification directe des octets) dans
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 9 et `JOURNAL_DE_BORD.md`.
-Reste hors périmètre : amélioration de la fidélité de parsing, option architecturale
-« texte → nouveaux faits du graphe », intégration au corpus mixte de promotion.
+**M7 — Empirical LLM Loop** : neuf mécanismes/décisions testés entre le 2026-09-17 et le
+2026-09-18 (témoin question fermée, corpus mixte v0.1/v0.2, deux consensus, extension
+longueur > 1, découverte transversale du `BASIS_GLOBAL_PRIOR`) — **synthèse complète en une
+page** : `documentation/MetaHIA_M7_State_Summary_V1.md`. Configuration active aujourd'hui :
+corpus mixte v0.2 condition `+both` (adversarial + témoin + parseur, longueur 1). Détail
+complet, citations verbatim des relecteurs externes, et raisonnement de conception dans
+`documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`, `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`
+et `JOURNAL_DE_BORD.md`.
 
 Apprendre :
 ```text
@@ -230,82 +197,23 @@ Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
 K1 Structural Coverage; K2 Structural Generalization; K3 Provenance Completeness; K4 Epistemic Integrity; K5 Independent Validation Rate; K6 Recursive Closure Stability; K7 Useful Gain/Cost; K8 Holdout Generalization; K9 Calibration; K10 Promotion Safety.
 
 ## 14. Prochaine étape
-~~M6 — Structural Learning v0.1 : implémentation + protocole de validation indépendante dès la conception.~~
-**FAIT** — voir `documentation/MetaHIA_M6_Structural_Learning_V0_1.md`, `VALIDATED` (2026-09-17).
 
-~~Protocole de validation tierce M6, sur le même modèle que M3/M4/M5.~~ **FAIT** — deux
-exécutions externes indépendantes, `JOURNAL_DE_BORD.md`.
+**Historique condensé** (chronologie exhaustive avec citations verbatim :
+`JOURNAL_DE_BORD.md` ; état M7 complet : `documentation/MetaHIA_M7_State_Summary_V1.md`) —
+tous **FAIT**, dans l'ordre : M6 implémentation + validation tierce (`VALIDATED`, 2026-09-17) ;
+M7 témoin question fermée + repli LAN + corpus mixte v0.1 + validation tierce (`VALIDATED`,
+2026-09-18) ; M7 parseur texte + validation tierce (`VALIDATED`, 2026-09-18) ; corpus mixte
+v0.2 à 4 conditions (parseur seul dégrade, union sauve la promotion) ; consensus même-
+mécanisme (hypothèse infirmée) ; consensus inter-mécanismes (dominé, fermé) ; décision de
+configuration retenue par le porteur du projet (« les deux ») ; extension longueur > 1 du
+témoin (mécanisme fonctionnel, gain suspecté) ; vérification de l'hypothèse (Priorité 1) →
+découverte transversale **`CONFIRMED_MECHANICAL_ARTIFACT`** (100 % des holdouts de ce projet,
+y compris le premier baseline `VALIDATED`, n'utilisent que `BASIS_GLOBAL_PRIOR`, jamais
+`EXACT_BUCKET`/`RULE_ONLY` — corroboré par un second relecteur indépendant) ; décisions P1.2/P1.3
+(témoin longueur > 1 non promu, parseur longueur > 1 différé).
 
-~~M7 — Empirical LLM Loop : fact-proposer, repli LAN, intégration corpus mixte, validation
-tierce.~~ **FAIT** — `VALIDATED` (2026-09-18), voir
-`documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10.
+~~Priorité 2 : hygiène documentaire M7 (synthèse d'état unique + élagage de ce document).~~
+**FAIT (2026-09-18)** — voir `documentation/MetaHIA_M7_State_Summary_V1.md` et cette section.
 
-~~Parseur texte → preuve, portée « texte → preuve sur prédiction existante ».~~ **FAIT** —
-`VALIDATED` (2026-09-18), deux exécutions externes indépendantes, voir
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 9 et `JOURNAL_DE_BORD.md`. Reste hors
-périmètre : amélioration de la fidélité de parsing, intégration au corpus mixte de promotion.
-
-~~Intégration au corpus mixte de promotion du parseur texte (comparaison à quatre
-conditions : baseline / +témoin / +texte / +les deux).~~ **FAIT (2026-09-18)** — résultat
-réel honnête et contraire à l'hypothèse de départ : `+texte` seul dégrade la calibration au
-point de bloquer la promotion (`HOLDOUT_BRIER_ABOVE_THRESHOLD`), `+both` restaure une
-promotion. Voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 10.
-
-~~Consensus multi-modèles sur le parseur texte (llama3.2 local + qwen2.5-coder LAN, votants
-indépendants, accord exact requis).~~ **FAIT (2026-09-18)** — hypothèse de départ **infirmée** :
-le filtrage par consensus aggrave la calibration (Brier 0,58527 contre 0,50794 non filtré et
-0,48125 baseline), au lieu de la corriger. Voir
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 11.
-
-~~Consensus inter-mécanismes (témoin + parseur doivent s'accorder).~~ **FAIT (2026-09-18)** —
-piste **fermée** : coût mesuré identique ou supérieur à l'union simple (32 appels réels,
-184,5 s), mais **zéro évidence produite** (le témoin et le parseur ne convergent jamais vers
-la même réponse brute sur ce corpus). Mesure de surcharge ressource réelle disponible pour les
-quatre configurations testées (témoin seul, parseur seul, union, consensus inter-mécanismes)
-dans `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 12.
-
-~~Décision de configuration retenue pour le pipeline d'évidence M7.~~ **FAIT (2026-09-18)** —
-**« Les deux » (union simple)** retenu explicitement par le porteur du projet, malgré un Brier
-légèrement moins bon que le témoin seul (0,489 contre 0,47), pour préserver la diversité
-d'issue réelle du parseur en vue d'une amélioration future. Voir
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 12 et `JOURNAL_DE_BORD.md`.
-
-~~Extension longueur > 1 du témoin ou du parseur.~~ **FAIT (2026-09-18, témoin uniquement,
-sur trois options présentées)** — mécanisme fonctionnel, 20/20 `CONTRADICTED` (même limite
-empirique déjà documentée pour la longueur 1, confirmée une seconde fois sur une tâche plus
-dure). Effet sur la calibration positif mais **non crédité comme compétence réelle du LLM**
-(explication mécanique probable : biais systématique constant entre train et holdout, même
-prudence que pour l'effet déjà observé en Sec. 10) — voir
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14.
-
-~~Vérifier indépendamment l'hypothèse du biais mécanique (Priorité 1, point 1).~~ **FAIT
-(2026-09-18)** — découverte plus large que prévu : **100 % des prédictions de holdout, pour
-tout chiffre de calibration M6/M7 de ce projet depuis le tout premier baseline `VALIDATED`
-(Brier 0,48125), utilisent `BASIS_GLOBAL_PRIOR`** — jamais `EXACT_BUCKET` ni `RULE_ONLY`.
-Cause structurelle et intentionnelle (`split_by_rule` ne laisse jamais une règle apparaître à
-la fois en entraînement et en holdout), pas un bug. Conséquence : aucun chiffre de calibration
-de ce projet n'a jamais démontré d'apprentissage spécifique à une règle — seulement une
-généralisation de la distribution de classe globale. L'hypothèse initialement avancée pour le
-témoin multi-sauts (« même biais reproduit entre train et holdout d'une même règle ») était
-**structurellement impossible et donc fausse** ; corrigée avec le mécanisme réel, vérifié.
-Robustesse testée sur 10 graines : l'ajout de l'évidence multi-sauts améliore le Brier 8 fois
-sur 10, le dégrade 2 fois sur 10 — pas une amélioration garantie. Voir
-`documentation/MetaHIA_M6_Structural_Learning_V0_1.md` Sec. 11 et
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14 (mis à jour).
-
-Reclassé le même jour, corroboré par un second relecteur indépendant (contrôle contrefactuel
-convergent, Brier 0,47000 → 0,37535 sur une configuration adversarial+témoin en ajoutant un
-lot artificiel tout-`CONTRADICTED`) : **`CONFIRMED_MECHANICAL_ARTIFACT`** (pas seulement
-suspecté — l'inspection directe du code de décision, pas seulement une comparaison de scores,
-prouve que le mécanisme est la seule chose qui se soit jamais produite sur ce holdout).
-
-~~Priorité 1, points 2-3 : décision sur le témoin longueur > 1 et sur l'extension du
-parseur.~~ **FAIT (2026-09-18)** — **témoin longueur > 1 non promu** dans la configuration
-retenue (gain non causal, non garanti, 8/10 graines seulement) mais conservé comme témoin
-expérimental isolé ; **extension du parseur à la longueur > 1 différée** par anticipation du
-même raisonnement, coût par appel déjà plus élevé. Voir
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14.
-
-**Prochaine étape : non encore décidée explicitement** — Priorité 1 (boucles scientifiques
-ouvertes) est close ; passer à la Priorité 2 (hygiène documentaire M7) ou à la Priorité 3
-(diversification du corpus, interface minimale M1-M6), ou autre chantier.
+**Prochaine étape : non encore décidée explicitement** — Priorité 3 (diversification du
+corpus, interface minimale M1-M6), ou autre chantier.
