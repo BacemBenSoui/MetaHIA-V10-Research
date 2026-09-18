@@ -403,6 +403,20 @@ options restantes, classées par coût croissant :
 Le consensus inter-mécanismes est déjà écarté par les données (dominé). Reste à trancher entre
 témoin seul, parseur seul, ou les deux — voir la question posée à l'issue de ce document.
 
+### Décision retenue (2026-09-18)
+
+**Choix explicite du porteur du projet : « Les deux (union simple) »** — malgré un Brier
+légèrement moins bon que le témoin seul (0,489 contre 0,47), retenu pour préserver la
+diversité d'issue réelle du parseur dans le corpus d'entraînement, seule source ayant jamais
+produit un mélange `SUPPORTED`/`CONTRADICTED` non dégénéré côté parseur — utile si le
+mécanisme s'améliore plus tard (modèle différent, corpus étendu). Détail complet dans
+`JOURNAL_DE_BORD.md` (entrée du 2026-09-18).
+
+**Configuration retenue pour le pipeline d'évidence M7** : `m7_corpus_mixed_v0_2.py`, condition
+`+ both` (union corpus adversarial + témoin + parseur texte, 32 appels LLM réels par exécution
+complète). Le consensus même-mécanisme (Sec. 11) et le consensus inter-mécanismes (Sec. 12)
+restent fermés, non retenus.
+
 ## 13. Résultat local
 
 427 tests passés (414 précédents + 6 invariants du consensus inter-mécanismes + 6 invariants

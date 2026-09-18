@@ -49,7 +49,7 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
 | M7 LLM loop | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | extension longueur > 1 |
 | M7 parseur texte→preuve | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "texte → preuve sur prédiction existante" — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) | amélioration fidélité de parsing |
-| M7 corpus mixte v0.2 (3 sources) | FAIT (2026-09-18, comparaison à 4 conditions — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 10) : `+texte` seul ne promeut pas (Brier 0,508 > seuil), `+both` promeut (Brier 0,489) | pas de validation tierce dédiée (réutilise des mécanismes déjà validés séparément) |
+| M7 corpus mixte v0.2 (3 sources) | **RETENU** (2026-09-18, décision explicite du porteur du projet — `+both` : union adversarial+témoin+parseur, 32 appels, Brier 0,489, PROMOTE — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 10/12) | pas de validation tierce dédiée (réutilise des mécanismes déjà validés séparément) |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -202,6 +202,8 @@ M7 MIXED-CORPUS v0.2 (3 sources)  [FAIT -- +text claims seul ne promeut pas, +bo
 M7 TEXT CLAIM CONSENSUS       [FAIT -- hypothèse infirmée, consensus aggrave la calibration, 2026-09-18]
    ↓
 M7 CROSS-MECHANISM CONSENSUS  [FAIT -- dominé (32 appels, 0 preuve), piste fermée, 2026-09-18]
+   ↓
+M7 CONFIGURATION RETENUE      [FAIT -- "les deux" (union) choisi par le porteur du projet, 2026-09-18]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -258,6 +260,10 @@ la même réponse brute sur ce corpus). Mesure de surcharge ressource réelle di
 quatre configurations testées (témoin seul, parseur seul, union, consensus inter-mécanismes)
 dans `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 12.
 
-**Prochaine étape : décision du porteur du projet en attente** — garder le témoin seul, le
-parseur seul, ou l'union des deux, sur la base des coûts et effets de calibration mesurés
-(Sec. 12 du même document).
+~~Décision de configuration retenue pour le pipeline d'évidence M7.~~ **FAIT (2026-09-18)** —
+**« Les deux » (union simple)** retenu explicitement par le porteur du projet, malgré un Brier
+légèrement moins bon que le témoin seul (0,489 contre 0,47), pour préserver la diversité
+d'issue réelle du parseur en vue d'une amélioration future. Voir
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 12 et `JOURNAL_DE_BORD.md`.
+
+**Prochaine étape : non encore décidée explicitement.**

@@ -307,3 +307,35 @@ production.
 `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 9 (nouvelle) et
 `documentation/MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md` pour la mise à jour de statut
 correspondante.
+
+---
+
+## 2026-09-18 — Décision de configuration : union des deux sources retenue
+
+Après quatre expériences réelles chiffrées (témoin seul, parseur seul, union simple, consensus
+même-mécanisme, consensus inter-mécanismes — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`
+Sec. 10–12), un tableau de coût/valeur mesuré a été soumis au porteur du projet :
+
+| Option | Appels réels | Temps mur | Brier holdout | Décision de promotion |
+|---|---|---|---|---|
+| Témoin seul | 16 | 69,6 s | 0,47 (meilleur résultat) | PROMOTE |
+| Parseur seul | 16 | 105,4 s | 0,508 | NE PROMEUT PAS |
+| Les deux (union) | 32 | ~175 s | 0,489 | PROMOTE |
+| Consensus inter-mécanismes | 32 | 184,5 s | — (0 preuve) | Écarté (dominé) |
+
+**Choix explicite de Bacem Ben Soui (porteur du projet), le 2026-09-18** : *« Les deux (union
+simple) »* — retenue malgré un Brier légèrement moins bon que le témoin seul (0,489 contre
+0,47), au bénéfice de préserver la diversité d'issue réelle du parseur dans le corpus
+d'entraînement (seule source ayant jamais produit un mélange `SUPPORTED`/`CONTRADICTED` non
+dégénéré côté parseur), utile si le mécanisme s'améliore plus tard (modèle différent, corpus
+étendu).
+
+**Configuration retenue pour le pipeline d'évidence M7** : `m7_corpus_mixed_v0_2.py`,
+condition `+ both` (union du corpus adversarial + témoin à question fermée + parseur texte),
+32 appels LLM réels par exécution complète. Le consensus même-mécanisme et le consensus
+inter-mécanismes restent fermés (résultats négatifs/dominés, non reproduits ici).
+
+C'est une décision de configuration du porteur du projet, informée par des données de coût et
+de calibration réelles — pas une clôture de gate de validation tierce (aucune des quatre
+options n'a nécessité de nouveau protocole, chacune ne faisant que recombiner des mécanismes
+déjà individuellement validés).
