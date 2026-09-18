@@ -193,3 +193,48 @@ le 2026-09-17.
 mixte). Voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10 et
 `documentation/MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md` pour la mise à jour de statut
 correspondante.
+
+---
+
+## 2026-09-18 — Validation tierce de M7 — parseur texte libre (text-claim parser)
+
+### Paquet envoyé
+- Commit exporté : `157f04664e6ca93f4d21e427dc070d6f69f803af`
+- Contenu : `MetaHIA_ThirdParty_Validation_Protocol_M7_TextClaimParser_V0_1.md` (9 cas C01–C09),
+  fichiers gelés (dont `corpus/family_tree_text_claims_v0_1.json`, contenu français
+  accentué), `tests/test_m7_text_claim_parser_critical_validation_v0_1.py`.
+
+### Retour externe #1 (aucune modification déclarée)
+
+| Vérification | Résultat |
+|---|---|
+| Critique (C01–C09) | 9/9 PASS |
+| Suite complète | 391 PASS / 3 SKIP / 0 FAIL |
+| Hashes gelés (8 fichiers) | 8/8 conformes |
+| Encodage UTF-8 du corpus français | PASS, aucun mojibake constaté |
+| Démonstration live Ollama | SKIP (Ollama indisponible dans cet environnement) |
+| Fichiers source modifiés pendant les tests | 0 |
+
+- Les 3 `SKIP` (contre 2 pour les protocoles précédents) sont attendus : les deux
+  démonstrations live déjà existantes plus la nouvelle démonstration live du parseur de
+  phrases, toutes sautées faute d'Ollama accessible — comportement documenté, non requis
+  pour le verdict.
+- Le relecteur a spécifiquement vérifié l'encodage UTF-8 du corpus français, point que le
+  protocole identifiait explicitement comme sensible après l'artefact de console rencontré
+  pendant le développement — confirmé sans corruption, cohérent avec la vérification
+  d'octets bruts déjà faite avant l'envoi.
+- Verdict explicite du relecteur, non arrondi par l'assistant : *« M7 Free-text Claim Parser
+  v0.1 — mécanisme : PASS_INDEPENDENT_SCOPE pour cette exécution indépendante [...] cela ne
+  valide pas l'exactitude du LLM français [...] la fermeture officielle du gate "genuinely
+  external reviewer" reste distincte : l'archive ne contient pas .git [...] cette exécution
+  ne doit pas être présentée comme une validation par un tiers humain externe si cette
+  condition de gouvernance est maintenue. »*
+
+### État après ce retour
+Une seule exécution externe reçue à ce stade pour ce mécanisme (contre deux pour M6 et pour
+le mécanisme témoin M7 avant clôture). Cette entrée consigne un premier retour, elle ne
+referme pas le gate. La décision de clôturer reste celle du porteur du projet.
+
+**Statut M7 parseur texte→preuve après cette entrée** : `IMPLEMENTATION` (inchangé) —
+`PASS_INDEPENDENT_SCOPE` (reproductibilité confirmée par une première exécution externe
+réelle), gate de clôture externe toujours `OPEN`.
