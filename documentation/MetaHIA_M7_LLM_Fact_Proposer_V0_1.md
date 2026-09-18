@@ -104,7 +104,74 @@ l'accessibilité via un appel `/api/generate` complet (nécessite un modèle cha
 seulement 5 s de délai — donnait un faux « injoignable » juste après un redémarrage du serveur
 local. Corrigé en vérifiant `/api/tags` (léger, ne charge aucun modèle) à la place.
 
-## 6. Invariants permanents testés
+## 6. Intégration au pipeline de promotion M6 avec un corpus mixte (addendum 2026-09-18)
+
+Question posée explicitement avant tout code (choisie de préférence à l'extension aux
+patterns de longueur > 1 et à la préparation d'une validation tierce, précisément parce
+que c'est la question la plus décisive pour la suite de l'investissement sur M7, au coût
+le plus faible) : **l'évidence LLM (§1-5 ci-dessus), une fois injectée dans le même
+pipeline de promotion M6 que le corpus adversarial déjà validé, aide-t-elle, dégrade-t-elle,
+ou laisse-t-elle inchangée la calibration du holdout ?**
+
+Mécanisme (`m7_corpus_mixed_v0_1.py`) : union des enregistrements du corpus adversarial
+v0.2 (`m6_corpus_from_m4_m5_v0_2.build_real_corpus_v2()`, toutes profondeurs,
+`GROUNDED_DIRECT`) et des enregistrements LLM (`build_llm_witnessed_corpus()`, profondeur 1
+uniquement, `GROUNDED_ANALOGY`) — aucun nouveau mécanisme épistémique, uniquement une
+union de deux flux d'enregistrements déjà validés séparément, rejouée telle quelle à
+travers `split_by_rule`/`StructuralLearningPolicy`/`evaluate_promotion` (M6, inchangés).
+
+**Propriété d'équité vérifiée avant toute comparaison** : le mécanisme LLM ne pose jamais
+de question sur un pattern absent du corpus adversarial (il interroge les mêmes squelettes
+de longueur 1 déjà découverts sur le même fichier de corpus) — donc l'ensemble des
+signatures de règles est identique entre le corpus adversarial seul et le corpus combiné.
+Avec la même graine, `split_by_rule` assigne donc exactement les mêmes règles au holdout
+dans les deux cas : la comparaison porte sur « mêmes règles retenues en holdout, avec vs.
+sans évidence LLM en entraînement », pas sur des holdouts de composition différente.
+Vérifié programmatiquement (avec un `generate_fn` simulé, sans réseau) :
+`test_llm_evidence_never_introduces_a_rule_absent_from_the_adversarial_corpus`.
+
+**Résultat réel (exécution du 2026-09-18, `llama3.2:latest` local, seed=0,
+`brier_threshold=0.5`)** :
+
+| | Baseline (adversarial seul) | Mixte (adversarial + LLM) |
+|---|---|---|
+| Enregistrements train | 16 | 25 |
+| Enregistrements holdout | 5 | 8 |
+| Brier holdout | 0.48125 | 0.47 |
+| ECE holdout | 0.025 | 0.025 |
+| Décision de promotion | PROMOTE | PROMOTE |
+
+Les 16 enregistrements LLM ajoutés sont, comme documenté en §4, **16/16 CONTRADICTED** —
+le petit modèle local continue de systématiquement diverger de la prédiction structurelle
+réelle sur cette tâche.
+
+**Lecture honnête de ce résultat, pas une lecture optimiste** : le mouvement du Brier
+(0.48125 → 0.47) est faible, sur un holdout de seulement 5 à 8 enregistrements — un
+échantillon bien trop petit pour distinguer un effet réel d'un artefact d'échantillonnage.
+Plus important : cet effet ne peut pas être attribué à un raisonnement analogique correct
+du LLM, puisque son évidence est elle-même systématiquement biaisée (toujours
+`CONTRADICTED`, indépendamment de la vérité). Toute ressemblance entre le biais introduit
+à l'entraînement et la composition du holdout pour une même règle est un artefact
+mécanique d'une source d'évidence biaisée apparaissant de façon cohérente dans les deux
+sous-ensembles, pas une preuve de compétence. **Conclusion retenue : à l'échelle actuelle
+du corpus et avec ce modèle, l'ajout de l'évidence LLM au pipeline de promotion est
+neutre pour la calibration (ni gain, ni dégradation mesurable, décision de promotion
+inchangée)** — ce résultat ne justifie pas, en l'état, un investissement supplémentaire
+(extension aux patterns de longueur > 1, validation tierce) tant que la justesse
+individuelle du LLM sur cette tâche (§4) n'est pas améliorée ou que le corpus n'est pas
+agrandi pour distinguer un effet réel du bruit d'échantillonnage.
+
+Tests :
+- `tests/test_m7_mixed_corpus_promotion_v0_1.py` (7 tests, backend simulé injecté, aucun
+  réseau) — mécanique de l'union, propriété d'équité du holdout, non-régression du nombre
+  déjà validé de M6 v0.2 (0.48125), dégénérescence correcte vers « aucune différence »
+  quand le LLM ne propose rien.
+- `tests/test_m7_mixed_corpus_live_demo_v0_1.py` (1 test, sautable comme les autres
+  démonstrations live) — exécute la comparaison réelle, n'affirme que les propriétés
+  structurelles garanties, jamais une valeur exacte de Brier pour le run mixte (non
+  reproductible à l'identique).
+
+## 7. Invariants permanents testés
 
 `tests/test_m7_llm_fact_proposer_invariants_v0_1.py` (17 tests, backend simulé injecté,
 aucun réseau) :
@@ -120,18 +187,19 @@ aucun réseau) :
 - le modèle attribué à une proposition est toujours celui qui a réellement répondu (local ou
   repli), jamais présumé.
 
-## 7. Résultat local
+## 8. Résultat local
 
-356 tests passés (338 précédents + 17 invariants M7 + 1 démonstration live Ollama), 0 échec,
-0 régression.
+364 tests passés (356 précédents + 7 invariants du corpus mixte + 1 démonstration live du
+corpus mixte), 0 échec, 0 régression.
 
-## 8. Hors périmètre de cette version
+## 9. Hors périmètre de cette version
 
 - Parseur texte libre → structure (roadmap : élément différé séparé, pas traité ici) ;
 - amélioration de la justesse du LLM sur cette tâche (modèle plus grand, few-shot mieux
   choisi, chaîne de raisonnement) — signalé comme limite empirique réelle, pas corrigé ici
-  pour ne pas fabriquer un résultat plus flatteur ;
+  pour ne pas fabriquer un résultat plus flatteur ; c'est aussi la limite qui explique la
+  neutralité du résultat en §6 ;
 - extension aux patterns de longueur > 1 (même limite que M6 v0.2 avant son extension) ;
-- validation tierce de ce mécanisme ;
-- intégration dans `split_by_rule`/`evaluate_promotion` avec un corpus mixte
-  (claims adversariales + preuve LLM) — chaque source reste testée séparément pour l'instant.
+  reste ouverte, et de priorité incertaine tant que §6 ne montre pas de bénéfice à
+  l'évidence LLM même en longueur 1 ;
+- validation tierce de ce mécanisme et du corpus mixte.
