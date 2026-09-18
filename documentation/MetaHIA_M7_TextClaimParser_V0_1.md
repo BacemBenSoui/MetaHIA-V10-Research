@@ -199,3 +199,74 @@ français compétent (fidélité réelle 50 %) ; une extension aux patterns de l
 intégration au corpus mixte de promotion ; une quelconque readiness de production.
 
 **Statut : `VALIDATED`**, au même titre de gouvernance que M6 et le mécanisme témoin M7.
+
+## 10. Intégration au corpus mixte de promotion — comparaison à quatre conditions (2026-09-18)
+
+Choisi explicitement comme prochain jalon, parmi trois options (amélioration de la fidélité
+de parsing, extension longueur > 1, cette intégration) — retenu parce que ce mécanisme est le
+premier des deux témoins LLM à produire une **diversité d'issue réelle** (Sec. 5), ce qui en
+fait la source la plus prometteuse à tester dans le pipeline de décision réel, contrairement
+au témoin à question fermée déjà connu comme neutre.
+
+`m7_corpus_mixed_v0_2.py` (nouveau fichier — `m7_corpus_mixed_v0_1.py` reste gelé, son hash
+étant fixé par le protocole du mécanisme témoin) étend l'union à trois sources et compare
+quatre conditions sous les mêmes paramètres de partition :
+
+| Condition | Composition |
+|---|---|
+| `baseline` | corpus adversarial seul (déjà validé) |
+| `+ witness` | adversarial + témoin LLM à question fermée |
+| `+ text claims` | adversarial + parseur texte libre (nouveau) |
+| `+ both` | les trois sources combinées |
+
+Propriété d'équité inchangée et revérifiée pour la troisième source : aucun des deux
+mécanismes LLM ne peut introduire une signature de règle absente du corpus adversarial —
+`split_by_rule` assigne donc le même ensemble de règles au holdout dans les quatre
+conditions.
+
+**Résultat réel (`llama3.2:latest`, seed=0, `brier_threshold=0.5`, exécution du 2026-09-18)** :
+
+| Condition | Train | Holdout | Brier | ECE | Décision |
+|---|---|---|---|---|---|
+| `baseline` | 16 | 5 | 0,48125 | 0,025 | PROMOTE |
+| `+ witness` | 25 | 8 | 0,47 | 0,025 | PROMOTE |
+| `+ text claims` | 21 | 7 | **0,50794** | **0,09524** | **NE PROMEUT PAS** (`HOLDOUT_BRIER_ABOVE_THRESHOLD`) |
+| `+ both` | 30 | 10 | 0,48889 | 0,06667 | PROMOTE |
+
+Cette exécution a produit 8 enregistrements de preuve du parseur texte (6 `SUPPORTED`,
+2 `CONTRADICTED`) — différent du run précédent documenté en Sec. 5 (7 enregistrements, 5/2) :
+**nouvelle confirmation directe, et non plus seulement soupçonnée**, de l'instabilité d'un
+appel à l'autre du petit modèle local déjà signalée en Sec. 5.
+
+**Lecture honnête, contraire à l'hypothèse qui motivait ce choix** : ajouter *seul* le
+parseur texte au pipeline de promotion **dégrade** la calibration du holdout au point de
+bloquer la promotion au seuil actuel (Brier 0,48125 → 0,50794, ECE 0,025 → 0,095) — malgré sa
+diversité d'issue réelle, contrairement à l'hypothèse qui motivait ce choix (Sec. « Rôle
+architectural »/ROI). Ce n'est qu'en le combinant *aussi* avec le témoin à question fermée
+(`+ both`) que la promotion redevient possible (Brier 0,48889, proche du niveau de base). Ce
+résultat n'est pas dissimulé ni minimisé pour correspondre à l'hypothèse de départ : la bonne
+lecture est que **l'ajout isolé d'une source d'évidence LLM prometteuse en apparence (diversité
+réelle) peut dégrader la calibration nette**, et que seule une mesure réelle du pipeline
+complet — pas la seule diversité d'issue d'une source — permet de juger de son utilité. Aucune
+hypothèse causale définitive n'est avancée ici sur le mécanisme exact de cette dégradation
+(candidat plausible : les nouvelles preuves `SUPPORTED` majoritaires du parseur texte
+déplacent certains a-priori de bucket dans un sens qui dessert précisément les règles du
+holdout) — non vérifiée plus avant, pour ne pas fabriquer une explication a posteriori
+non testée.
+
+**Conclusion retenue** : ce résultat ne justifie pas d'intégrer le parseur texte seul comme
+source de promotion en l'état ; il justifie encore moins d'abandonner la piste, puisque la
+combinaison des trois sources reste `PROMOTE`. Aucune action corrective n'est appliquée ici
+(pas de réglage de seuil pour forcer un résultat plus flatteur, même discipline que partout
+ailleurs dans ce projet).
+
+Tests :
+- `tests/test_m7_mixed_corpus_v0_2_promotion_v0_1.py` (6 tests, backends simulés injectés,
+  aucun réseau) — équité de l'ensemble de règles à travers les quatre conditions, dégénérescence
+  correcte vers le seul baseline quand aucune source LLM ne répond, union exacte des trois
+  sources, non-régression du nombre déjà validé (0,48125), reproduction de la diversité connue
+  du parseur texte via un simulateur de parseur parfait.
+- `tests/test_m7_mixed_corpus_v0_2_live_demo_v0_1.py` (1 test, sautable) — exécute la
+  comparaison réelle à quatre conditions, n'affirme que les propriétés structurelles garanties
+  (holdout non vide, Brier dans `[0, 2]`), jamais qu'une condition précise doit promouvoir —
+  ce test passe même quand `+ text claims` seul ne promeut pas, comme observé réellement.

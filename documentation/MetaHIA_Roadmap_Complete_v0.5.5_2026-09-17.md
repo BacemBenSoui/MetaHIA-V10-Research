@@ -49,6 +49,7 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
 | M7 LLM loop | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | extension longueur > 1 |
 | M7 parseur texte→preuve | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "texte → preuve sur prédiction existante" — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) | amélioration fidélité de parsing |
+| M7 corpus mixte v0.2 (3 sources) | FAIT (2026-09-18, comparaison à 4 conditions — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 10) : `+texte` seul ne promeut pas (Brier 0,508 > seuil), `+both` promeut (Brier 0,489) | pas de validation tierce dédiée (réutilise des mécanismes déjà validés séparément) |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -195,6 +196,8 @@ M7 THIRD-PARTY VALIDATION    [FAIT -- clôturé par le porteur du projet 2026-09
 M7 TEXT CLAIM PARSER         [FAIT -- fidélité de parsing 50 %, 2026-09-18]
    ↓
 M7 TEXT CLAIM PARSER VALIDATION [FAIT -- clôturé par le porteur du projet 2026-09-18, JOURNAL_DE_BORD.md]
+   ↓
+M7 MIXED-CORPUS v0.2 (3 sources)  [FAIT -- +text claims seul ne promeut pas, +both promeut, 2026-09-18]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -231,5 +234,11 @@ tierce.~~ **FAIT** — `VALIDATED` (2026-09-18), voir
 `VALIDATED` (2026-09-18), deux exécutions externes indépendantes, voir
 `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 9 et `JOURNAL_DE_BORD.md`. Reste hors
 périmètre : amélioration de la fidélité de parsing, intégration au corpus mixte de promotion.
+
+~~Intégration au corpus mixte de promotion du parseur texte (comparaison à quatre
+conditions : baseline / +témoin / +texte / +les deux).~~ **FAIT (2026-09-18)** — résultat
+réel honnête et contraire à l'hypothèse de départ : `+texte` seul dégrade la calibration au
+point de bloquer la promotion (`HOLDOUT_BRIER_ABOVE_THRESHOLD`), `+both` restaure une
+promotion. Voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 10.
 
 **Prochaine étape : non encore décidée explicitement.**
