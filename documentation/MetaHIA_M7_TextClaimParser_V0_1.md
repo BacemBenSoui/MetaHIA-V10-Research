@@ -417,7 +417,71 @@ mécanisme s'améliore plus tard (modèle différent, corpus étendu). Détail c
 complète). Le consensus même-mécanisme (Sec. 11) et le consensus inter-mécanismes (Sec. 12)
 restent fermés, non retenus.
 
-## 13. Résultat local
+## 14. Extension longueur > 1 du témoin (2026-09-18)
 
-427 tests passés (414 précédents + 6 invariants du consensus inter-mécanismes + 6 invariants
-du corpus consensus inter-mécanismes + 1 démonstration live), 0 échec, 0 régression.
+Choisi explicitement, parmi trois options (témoin, parseur, les deux), comme la première
+extension à la longueur > 1 — complexité modérée par rapport au parseur (pas de nouveau
+corpus de phrases à rédiger ; réutilise directement la vérité terrain calculée par rejeu du
+noyau, comme le témoin longueur 1 le fait déjà).
+
+`m7_llm_fact_proposer_multihop_v0_1.py` + `m7_corpus_from_llm_multihop_v0_1.py` (nouveaux
+fichiers — le témoin gelé `m7_llm_fact_proposer_v0_1.py` reste longueur 1 uniquement, non
+modifié). Le candidat n'est plus une relation unique mais un **squelette** (chaîne ordonnée
+d'opérateurs/directions) ; le LLM est invité à déterminer la valeur finale de la chaîne, par
+exemple pour `Duc` avec le squelette `MERE_DE(FORWARD) → MERE_DE(FORWARD)` :
+« starting from X0 = "Duc": MERE_DE(X0, X1); MERE_DE(X1, X2). Determine X2. » — jamais la
+vraie réponse n'est communiquée. Reprend le même contrat fail-closed et le même backend réel
+(local puis repli LAN) que le témoin longueur 1, sans dupliquer la logique réseau.
+
+**Résultat réel (`llama3.2:latest`, 2026-09-18)** : sur 55 patterns candidats (motifs longueur
+2 découverts), 20 rejeux réels réussis → 20 preuves produites, **20/20 `CONTRADICTED`** —
+exactement le même schéma dégénéré déjà documenté pour le témoin longueur 1 (16/16
+`CONTRADICTED`, Sec. 4 de `MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`), maintenant confirmé une
+seconde fois sur une tâche à chaîne multi-sauts, plus difficile encore. Ce n'est pas surprenant
+et n'est pas traité comme un nouveau problème : c'est la même limite empirique du petit modèle
+local, cette fois sur un raisonnement composé.
+
+**Effet sur la calibration, ajouté à la configuration retenue** (adversarial + témoin longueur
+1 + parseur longueur 1, déjà validée le 2026-09-18) :
+
+| | Sans l'extension | Avec l'extension longueur 2 du témoin |
+|---|---|---|
+| Train | 28 | 41 |
+| Holdout | 8 | 13 |
+| Brier holdout | 0,48469 | **0,42649** |
+| ECE holdout | 0,08929 | **0,01501** |
+| Décision | PROMOTE | PROMOTE |
+
+**Lecture honnête, même prudence que pour l'effet déjà observé du témoin longueur 1 en
+Sec. 10** : c'est le meilleur Brier obtenu sur l'ensemble de ce projet jusqu'ici — mais cette
+amélioration ne doit **pas** être lue comme une preuve de compétence du LLM. L'explication
+mécanique la plus probable est la même que celle déjà avancée en Sec. 10 : ces 20
+enregistrements sont des règles **nouvelles** (jamais vues par le corpus adversarial ni par le
+témoin longueur 1), toutes étiquetées `CONTRADICTED` de façon parfaitement cohérente par le
+même biais systématique du modèle — si ce biais s'applique de façon identique aux exemples
+d'entraînement et de holdout d'une même règle, le modèle de calibration prédit correctement
+`CONTRADICTED` pour ces règles-là non pas parce qu'il a appris quelque chose de vrai sur le
+monde, mais parce qu'un biais constant se reproduit à l'identique des deux côtés de la
+partition. Aucune conclusion causale définitive n'est retenue ; ce résultat positif est
+rapporté aussi honnêtement que les résultats négatifs précédents, sans lui accorder plus de
+crédit qu'il n'en mérite tant qu'une vérification indépendante n'a pas isolé cette hypothèse.
+
+**Conclusion retenue** : l'extension longueur > 1 du témoin est techniquement réussie
+(mécanisme fonctionnel, fail-closed, non-fuyant) et confirme, une seconde fois, la limite
+empirique déjà connue du modèle local sur ce type de tâche — sans qu'aucune conclusion ne soit
+tirée sur un gain de calibration réellement causal. Reste à décider : intégration définitive à
+la configuration retenue, extension symétrique du parseur, ou statu quo — décision non prise
+ici.
+
+Tests : `tests/test_m7_llm_fact_proposer_multihop_v0_1.py` (6 tests) et
+`tests/test_m7_corpus_from_llm_multihop_v0_1.py` (4 tests), backends simulés injectés, aucun
+réseau — rendu correct de la chaîne (avant/arrière), non-fabrication sur réponse malformée,
+contrôle de câblage (une réponse fausse de façon cohérente produit uniquement des preuves
+`CONTRADICTED`, jamais `SUPPORTED` par erreur) ;
+`tests/test_m7_corpus_from_llm_multihop_live_demo_v0_1.py` (1 test, sautable) — exécute le
+mécanisme réel, n'affirme que les propriétés structurelles garanties.
+
+## 15. Résultat local
+
+438 tests passés (427 précédents + 6 invariants du témoin multi-sauts + 4 invariants du corpus
+multi-sauts + 1 démonstration live), 0 échec, 0 régression.

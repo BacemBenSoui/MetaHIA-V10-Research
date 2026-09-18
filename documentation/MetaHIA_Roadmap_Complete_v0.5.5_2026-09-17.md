@@ -204,6 +204,8 @@ M7 TEXT CLAIM CONSENSUS       [FAIT -- hypothèse infirmée, consensus aggrave l
 M7 CROSS-MECHANISM CONSENSUS  [FAIT -- dominé (32 appels, 0 preuve), piste fermée, 2026-09-18]
    ↓
 M7 CONFIGURATION RETENUE      [FAIT -- "les deux" (union) choisi par le porteur du projet, 2026-09-18]
+   ↓
+M7 TÉMOIN LONGUEUR > 1        [FAIT -- 20/20 CONTRADICTED (limite déjà connue confirmée), Brier améliore mais prudence méthodologique, 2026-09-18]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -266,4 +268,14 @@ légèrement moins bon que le témoin seul (0,489 contre 0,47), pour préserver 
 d'issue réelle du parseur en vue d'une amélioration future. Voir
 `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 12 et `JOURNAL_DE_BORD.md`.
 
-**Prochaine étape : non encore décidée explicitement.**
+~~Extension longueur > 1 du témoin ou du parseur.~~ **FAIT (2026-09-18, témoin uniquement,
+sur trois options présentées)** — mécanisme fonctionnel, 20/20 `CONTRADICTED` (même limite
+empirique déjà documentée pour la longueur 1, confirmée une seconde fois sur une tâche plus
+dure). Effet sur la calibration positif mais **non crédité comme compétence réelle du LLM**
+(explication mécanique probable : biais systématique constant entre train et holdout, même
+prudence que pour l'effet déjà observé en Sec. 10) — voir
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 14.
+
+**Prochaine étape : non encore décidée explicitement** — décisions ouvertes : intégrer
+l'extension longueur > 1 du témoin à la configuration retenue, étendre symétriquement le
+parseur, vérifier indépendamment l'hypothèse du biais mécanique, ou autre chantier.
