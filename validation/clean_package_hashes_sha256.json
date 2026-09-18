@@ -53,6 +53,7 @@
   "documentation/MetaHIA_ThirdParty_Validation_Protocol_M5_V0_1.md": "75017c53a2475cc34a97ee65fc81b2fa1b974f6757291b76273d86ea69bfb3b4",
   "documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_NonDegenerate_V0_2.md": "ba73e11c050853fb6569dacd9a3c9a3bd172bee4d2f36ceae245105d88a7e147",
   "documentation/MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md": "2f845e850428b844d505e16f309cdc14e2f2fd53b2b0aa2b0517110975fc6e4f",
+  "documentation/MetaHIA_ThirdParty_Validation_Protocol_M7_V0_1.md": "e43dded3171c026a18451c9b44947f7ad0020df46f9ca29b73f5d92fc25b32d2",
   "documentation/MetaHIA_Validation_Matrix_v0.1.md": "4572dc83405e01e5a03848b827cde1df5901099e6a6bebc8ee95f328d09782ae",
   "documentation/README.md": "c233ad58f01032f3e5ad0c52b7b27cc3b755eff7cc2404ce0bd91f923a834db7",
   "e20d_cognitive_control_v0_1.py": "e090f578ffa72adbc1a693748b879ca94967a63cb88a1eb1c13ccbaea6a15aba",
@@ -79,7 +80,7 @@
   "m7_llm_fact_proposer_v0_1.py": "973270e66c8d5661d04ef0697002d95fd0c6a245e771bdcbd388dbfc158e0642",
   "main.py": "1419ea6e736e19e24ca7d0e9fe5fc5ef54fe05cdf93f2142b07a3de20fd9f9d1",
   "operator_space_v0_1.py": "b1cbbf90d1cba56116314adeca1359a9de4e2c09d954b3359bd786544e8381f3",
-  "release_manifest.json": "bb9550a2a67d1982bcaaaf61f486f1882cc9d8d9632239e7dfe30ba4bc0f26c3",
+  "release_manifest.json": "7844fb087f740c37e25e71166ca444678aedaa3771342ddf8d2aa521a0a57a48",
   "scripts/print_mixed_corpus_comparison_v0_1.py": "032ca2640203be2d0b4fbf31736a0f6f1ae85ba99bd4f3cea00523e4331f8b35",
   "tests/m5_critical_corpus_v0_1.json": "0db5c1ae846470943a8548e21b866c32b9ea19fe0bc5296ef8e04394267a6c2f",
   "tests/test_ambiguity_probe_legacy_v0_1.py": "bfb6efc7e325140c0036c6724e577c8fc96e28040637b5dcd0d495215c3c599c",
@@ -122,6 +123,7 @@
   "tests/test_m6_real_corpus_v0_2_holdout_v0_1.py": "0cce0cbf79ab790e8a7b2f8c3bcfdcadb71266447838a3185347ed0dded91c44",
   "tests/test_m6_structural_learning_invariants_v0_1.py": "4ad852587fdc7a040797c6911d2c1d829b36f43c1c3f9bb5ff3821b101778b70",
   "tests/test_m6_v0_2_critical_validation_v0_1.py": "1d9ecdc48ccddefbd98d185bae4c9cb705057256674176b1343fe6321b4b8169",
+  "tests/test_m7_critical_validation_v0_1.py": "a1072e06973ecf64ccf92ad7e3b5f46605cbb511d03db7be8c3dcda2dc5263a5",
   "tests/test_m7_live_ollama_demo_v0_1.py": "3faf9e2a7f9a26b309cf0fc94f2f2ab44663f5684d1ae370ff5d5befb61fd4c3",
   "tests/test_m7_llm_fact_proposer_invariants_v0_1.py": "9ad6e544ed6d22ff784b3d139564bcee4faa8837bf8b2e5a1c58d4bbe7a14a3b",
   "tests/test_m7_mixed_corpus_live_demo_v0_1.py": "740f742bf34b7126c8532ded801ce985fa2be26be98040b72aacc0923dc6ba2d",
@@ -133,7 +135,7 @@
   "tests/test_rv1_propagation_legacy_v0_1.py": "938a7dc2dac16ea83a2cf8059aa824752f261931326a33d209b06bdb3fcacc26",
   "tests/test_rv_reserves_v0_4.py": "83e9adc172f4a848f116049823cf4e2e4e9488b38e852b781fa35169ee8ea14b",
   "tests/test_validation_corpus_legacy_v0_1.py": "0cfdd6c501bab02ff9ca73f918bb6da1ef6ddde1ff988169eed44f844f211489",
-  "validation/clean_package_hashes_sha256.json": "675d8e4a5266accca2892173ff68a5bd66b17650ae1aeadd36b79143b47db729",
+  "validation/clean_package_hashes_sha256.json": "42b9b9d6e9f63aba4069b7f05c22e0f0aef459ba123c96b26673e0b06f1e3fd7",
   "validation/local_regression_2026-09-17.txt": "d6ac30a164ab2eea554694e41528f9596e4c6246f396ea00bb27178c39d21742",
   "validation/local_regression_2026-09-17_m6_external_package.txt": "ed9005f432102e81f4032b714302027a138d08aed5c0874c5b2802b9b94fc10a",
   "validation/local_regression_2026-09-17_m6_hash_fix.txt": "6d7698be5ae08d978ab3e207027603ced76a1f69618547f4484f496074604b47",
@@ -146,5 +148,6 @@
   "validation/local_regression_2026-09-17_m7_lan_fallback.txt": "b0b30d962c31850c1cc9e934cf422c36ace470b2ae639932f549810d646d932f",
   "validation/local_regression_2026-09-17_m7_v0_1.txt": "f41f1296e9bdc308e053bbf16561273775273e9a3a8ac3a7ba18a8196e9acb98",
   "validation/local_regression_2026-09-17_v10_update.txt": "b5e045cda618c5641dd1f7980289ba29b42ac33689d81cc2712319a6b6922e6b",
-  "validation/local_regression_2026-09-18_m7_mixed_corpus.txt": "2e1c8cfea0c1211097121836fe0465d899affce11dd3c90da7478543f0a1161d"
+  "validation/local_regression_2026-09-18_m7_mixed_corpus.txt": "2e1c8cfea0c1211097121836fe0465d899affce11dd3c90da7478543f0a1161d",
+  "validation/local_regression_2026-09-18_m7_protocol.txt": "c3a77d00f8bdcd2aa5179c343ee56e533f4623c8acd67ef2b1be385e8672dcc7"
 }
