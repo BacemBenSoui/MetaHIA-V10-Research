@@ -48,7 +48,7 @@ Le LLM reste une branche d’observation/production; il n’est pas le fondement
 | M5 Dynamic Controller v0.1 | PASS_INDEPENDENT_SCOPE | benchmark sur inférence relationnelle réelle |
 | M6 Structural Learning | VALIDATED (2026-09-17, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`) | — |
 | M7 LLM loop | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "témoin LLM" — voir `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md`) | extension longueur > 1 |
-| M7 parseur texte→preuve | IMPLEMENTATION (2026-09-18, portée "texte → preuve sur prédiction existante" — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) | amélioration fidélité de parsing, validation tierce |
+| M7 parseur texte→preuve | VALIDATED (2026-09-18, clôturé par le porteur du projet sur preuves externes — `JOURNAL_DE_BORD.md`, portée "texte → preuve sur prédiction existante" — voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) | amélioration fidélité de parsing |
 | V6 production | DEFERRED | stabilité scientifique + hardening |
 | Cognitive Evolution | DEFERRED | shadow + holdout + rollback |
 
@@ -139,13 +139,18 @@ vérifiés entrant directement dans le graphe. `m7_text_claim_parser_v0_1.py` +
 validée. Résultat réel (`llama3.2:latest`, 2026-09-18) : fidélité de parsing 8/16 (50 %),
 7 enregistrements de preuve produits avec une diversité d'issue réelle (5 `SUPPORTED`,
 2 `CONTRADICTED`) — contrairement au résultat dégénéré du mécanisme témoin à question fermée.
-**M7 parseur texte→preuve = IMPLEMENTATION**, pas encore de validation tierce. Détail complet
-(y compris deux observations honnêtement signalées : instabilité d'un appel à l'autre du
-petit modèle local à température par défaut, et un artefact d'encodage console écarté après
-vérification directe des octets) dans `documentation/MetaHIA_M7_TextClaimParser_V0_1.md`.
+Protocole de validation tierce préparé le même jour (9 cas critiques C01–C09, délibérément
+sans dépendance réseau), puis remis à un tiers externe : deux exécutions externes
+indépendantes obtenues (9/9, 8/8 hashes conformes, 391/391 hors démonstrations live, 0
+modification, dans deux environnements distincts), encodage UTF-8 du corpus français
+vérifié explicitement et confirmé sans corruption par les deux relecteurs indépendamment.
+**M7 parseur texte→preuve = VALIDATED**, clôturé explicitement par le porteur du projet le
+2026-09-18 — détail complet (y compris deux observations honnêtement signalées : instabilité
+d'un appel à l'autre du petit modèle local à température par défaut, et un artefact
+d'encodage console écarté après vérification directe des octets) dans
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 9 et `JOURNAL_DE_BORD.md`.
 Reste hors périmètre : amélioration de la fidélité de parsing, option architecturale
-« texte → nouveaux faits du graphe », validation tierce, intégration au corpus mixte de
-promotion.
+« texte → nouveaux faits du graphe », intégration au corpus mixte de promotion.
 
 Apprendre :
 ```text
@@ -187,7 +192,9 @@ M7 MIXED-CORPUS PROMOTION    [FAIT -- résultat neutre pour la calibration, 2026
    ↓
 M7 THIRD-PARTY VALIDATION    [FAIT -- clôturé par le porteur du projet 2026-09-18, JOURNAL_DE_BORD.md]
    ↓
-M7 TEXT CLAIM PARSER         [IMPLEMENTATION, 2026-09-18 -- fidélité de parsing 50 %, pas encore de validation tierce]
+M7 TEXT CLAIM PARSER         [FAIT -- fidélité de parsing 50 %, 2026-09-18]
+   ↓
+M7 TEXT CLAIM PARSER VALIDATION [FAIT -- clôturé par le porteur du projet 2026-09-18, JOURNAL_DE_BORD.md]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -220,7 +227,9 @@ exécutions externes indépendantes, `JOURNAL_DE_BORD.md`.
 tierce.~~ **FAIT** — `VALIDATED` (2026-09-18), voir
 `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` Sec. 10.
 
-**Prochaine étape : parseur texte → preuve, portée « texte → preuve sur prédiction
-existante ».** Implémenté le 2026-09-18 (voir Sec. 10 et
-`documentation/MetaHIA_M7_TextClaimParser_V0_1.md`) ; reste hors périmètre : amélioration de
-la fidélité de parsing et validation tierce du mécanisme.
+~~Parseur texte → preuve, portée « texte → preuve sur prédiction existante ».~~ **FAIT** —
+`VALIDATED` (2026-09-18), deux exécutions externes indépendantes, voir
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 9 et `JOURNAL_DE_BORD.md`. Reste hors
+périmètre : amélioration de la fidélité de parsing, intégration au corpus mixte de promotion.
+
+**Prochaine étape : non encore décidée explicitement.**

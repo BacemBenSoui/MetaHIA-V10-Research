@@ -4,8 +4,9 @@
 
 - M7 fact-proposer scope (question fermée) : voir
   `documentation/MetaHIA_M7_LLM_Fact_Proposer_V0_1.md` (`VALIDATED`, 2026-09-18).
-- M7 parseur texte libre → preuve (ce document) : **IMPLEMENTATION** (2026-09-18) — pas de
-  validation tierce à ce stade.
+- M7 parseur texte libre → preuve (ce document) : **VALIDATED** (2026-09-18, clôturé
+  explicitement par le porteur du projet sur la base de deux exécutions externes
+  indépendantes — voir Sec. 9 et `JOURNAL_DE_BORD.md`).
 - Kernel `kernel2.py` : inchangé.
 
 ## 2. Rôle architectural choisi (décidé explicitement avant implémentation, 2026-09-18)
@@ -147,8 +148,8 @@ garanties, jamais une distribution d'issue précise.
 
 ## 7. Résultat local
 
-385 tests passés (373 précédents + 11 invariants du parseur de phrases + 1 démonstration
-live du parseur de phrases), 0 échec, 0 régression.
+394 tests passés (385 précédents + 9 cas critiques de validation tierce
+`test_m7_text_claim_parser_critical_validation_v0_1.py`), 0 échec, 0 régression.
 
 ## 8. Hors périmètre de cette version
 
@@ -157,6 +158,44 @@ live du parseur de phrases), 0 échec, 0 régression.
   raisonnement) — limite empirique réelle signalée en Sec. 5, pas corrigée ici ;
 - option architecturale « texte → nouveaux faits du graphe » (Sec. 2, écartée pour cette
   version) ;
-- validation tierce de ce mécanisme ;
-- intégration au corpus mixte de promotion (`m7_corpus_mixed_v0_1.py`) — pourrait être une
-  suite naturelle une fois ce mécanisme lui-même validé.
+- intégration au corpus mixte de promotion (`m7_corpus_mixed_v0_1.py`) — suite naturelle
+  possible maintenant que ce mécanisme est lui-même validé.
+
+## 9. Validation tierce et clôture (2026-09-18)
+
+`documentation/MetaHIA_ThirdParty_Validation_Protocol_M7_TextClaimParser_V0_1.md` (9 cas
+critiques C01-C09, `tests/test_m7_text_claim_parser_critical_validation_v0_1.py`,
+délibérément sans dépendance réseau) a été envoyé et exécuté par **deux relecteurs
+génuinement externes, dans deux environnements indépendants** :
+
+| | Retour #1 | Retour #2 |
+|---|---|---|
+| Environnement | non précisé, rapport en français | Linux 5.10.134, Python 3.11.2, pytest 7.2.1 |
+| Cas critiques C01–C09 | 9/9 PASS | 9/9 PASS |
+| Suite complète | 391 PASS / 3 SKIP / 0 FAIL | 391 PASS / 3 SKIP / 0 FAIL |
+| Hashes gelés (8 fichiers) | 8/8 conformes | 8/8 conformes |
+| Encodage UTF-8 du corpus français | PASS | PASS, échantillons vérifiés explicitement |
+| Modification du dépôt | 0 | 0 |
+
+Les 3 `SKIP` (démonstrations live Ollama) sont attendus et documentés. Les deux relecteurs
+ont, chacun indépendamment, vérifié explicitement l'encodage UTF-8 du corpus français — point
+que le protocole identifiait comme sensible après l'artefact de console rencontré pendant le
+développement — et confirmé l'absence de corruption. Aucun des deux relecteurs n'a arrondi son
+verdict à une clôture de gate — chacun l'a explicitement laissée à la décision du porteur du
+projet. Détail complet, y compris les citations verbatim des deux verdicts, dans
+`JOURNAL_DE_BORD.md` (entrée du 2026-09-18).
+
+**Clôture** : sur la base de ces deux retours indépendants, le porteur du projet
+(Bacem Ben Soui) a explicitement clôturé le gate de validation externe le 2026-09-18. C'est
+une décision de gouvernance du porteur du projet, pas une auto-déclaration.
+
+**Ce que cette clôture établit** : le mécanisme (extraction fail-closed, rejet du vocabulaire
+fermé, exclusion honnête des erreurs de correspondance, non-circularité vis-à-vis de
+`asserted_object`, câblage correct) est honnête, non circulaire, et reproductible dans ses
+parties déterministes, confirmé par deux exécutions indépendantes.
+
+**Ce que cette clôture n'établit pas** (inchangé depuis Sec. 5/8) : que le LLM est un parseur
+français compétent (fidélité réelle 50 %) ; une extension aux patterns de longueur > 1 ; une
+intégration au corpus mixte de promotion ; une quelconque readiness de production.
+
+**Statut : `VALIDATED`**, au même titre de gouvernance que M6 et le mécanisme témoin M7.
