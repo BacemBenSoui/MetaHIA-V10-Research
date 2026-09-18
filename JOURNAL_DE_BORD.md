@@ -238,3 +238,40 @@ referme pas le gate. La décision de clôturer reste celle du porteur du projet.
 **Statut M7 parseur texte→preuve après cette entrée** : `IMPLEMENTATION` (inchangé) —
 `PASS_INDEPENDENT_SCOPE` (reproductibilité confirmée par une première exécution externe
 réelle), gate de clôture externe toujours `OPEN`.
+
+### Retour externe #2 (archive GitHub, environnement indépendant)
+
+- Environnement : `Linux-5.10.134-18.0.12.lifsea8.x86_64`, `Python 3.11.2`, `pytest 7.2.1` —
+  même signature d'environnement que le retour #2 déjà reçu pour M6 et pour le mécanisme
+  témoin M7, distinct du retour #1 ci-dessus (rootdir, sortie ANSI colorée, durée 1,61 s puis
+  7,78 s, rapport en anglais).
+
+| Vérification | Résultat |
+|---|---|
+| Critique (C01–C09), détail par cas | 9/9 PASS, chacun nommément identifié à sa fonction de test |
+| Suite complète | 391 PASS / 3 SKIP / 0 FAIL |
+| Hashes gelés (8 fichiers) | 8/8 conformes |
+| Encodage UTF-8 du corpus français | PASS — échantillons vérifiés explicitement (« Mai est l'épouse de Hoang. », etc.), aucun mojibake |
+| Démonstration live Ollama (3 tests) | SKIP, Ollama injoignable dans cet environnement |
+| Fichiers source modifiés pendant les tests | 0 |
+
+- Même réserve méthodologique, formulée indépendamment : archive sans `.git`,
+  `git rev-parse HEAD` inexécutable — signalée explicitement comme « procedural
+  discrepancy with the protocol », les hashes de fichiers gelés restant le contrôle
+  d'intégrité substantiel et concluant.
+- Verdict explicite du relecteur, non arrondi par l'assistant : *« M7 free-text claim parser
+  = PASS_INDEPENDENT_SCOPE (mechanism-level), subject to the governance rule that the final
+  independent gate is closed by the project owner. »*
+
+### Bilan après ces deux retours
+Deux exécutions externes indépendantes (environnements distincts, langues de rapport
+distinctes, formats distincts) confirment toutes deux, sans exception : 9/9 cas critiques,
+hashes gelés 8/8 conformes, zéro régression, zéro modification, vérification explicite et
+concordante de l'encodage UTF-8 du corpus français. C'est la même configuration factuelle qui
+avait justifié la clôture de M6 (2026-09-17) et du mécanisme témoin M7 (2026-09-18) — sans que
+l'assistant ne préjuge ici de la décision de gouvernance, qui reste celle du porteur du
+projet.
+
+**Statut M7 parseur texte→preuve après ces deux entrées** : `IMPLEMENTATION` (inchangé) —
+`PASS_INDEPENDENT_SCOPE` confirmé deux fois indépendamment. Clôture du gate externe : décision
+en attente du porteur du projet.
