@@ -198,6 +198,8 @@ M7 TEXT CLAIM PARSER         [FAIT -- fidélité de parsing 50 %, 2026-09-18]
 M7 TEXT CLAIM PARSER VALIDATION [FAIT -- clôturé par le porteur du projet 2026-09-18, JOURNAL_DE_BORD.md]
    ↓
 M7 MIXED-CORPUS v0.2 (3 sources)  [FAIT -- +text claims seul ne promeut pas, +both promeut, 2026-09-18]
+   ↓
+M7 TEXT CLAIM CONSENSUS       [FAIT -- hypothèse infirmée, consensus aggrave la calibration, 2026-09-18]
 ```
 
 Parallèlement : `E20-D GLOBAL DISCOVERY = OPEN`.
@@ -240,5 +242,11 @@ conditions : baseline / +témoin / +texte / +les deux).~~ **FAIT (2026-09-18)** 
 réel honnête et contraire à l'hypothèse de départ : `+texte` seul dégrade la calibration au
 point de bloquer la promotion (`HOLDOUT_BRIER_ABOVE_THRESHOLD`), `+both` restaure une
 promotion. Voir `documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 10.
+
+~~Consensus multi-modèles sur le parseur texte (llama3.2 local + qwen2.5-coder LAN, votants
+indépendants, accord exact requis).~~ **FAIT (2026-09-18)** — hypothèse de départ **infirmée** :
+le filtrage par consensus aggrave la calibration (Brier 0,58527 contre 0,50794 non filtré et
+0,48125 baseline), au lieu de la corriger. Voir
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` Sec. 11.
 
 **Prochaine étape : non encore décidée explicitement.**

@@ -270,3 +270,73 @@ Tests :
   comparaison réelle à quatre conditions, n'affirme que les propriétés structurelles garanties
   (holdout non vide, Brier dans `[0, 2]`), jamais qu'une condition précise doit promouvoir —
   ce test passe même quand `+ text claims` seul ne promeut pas, comme observé réellement.
+
+## 11. Consensus multi-modèles sur le parseur texte (2026-09-18)
+
+Question posée directement par le résultat de la Sec. 10 : l'ajout non filtré de l'évidence du
+parseur texte dégrade la calibration — **exiger l'accord de deux modèles indépendants
+avant d'accepter une extraction filtre-t-il les cas non fiables et corrige-t-il ce
+problème ?** Choisi explicitement, parmi trois options, comme le test le plus directement
+motivé par ce constat (plutôt qu'un consensus inter-mécanismes témoin/parseur, ou les deux
+combinés — gardés pour un axe de variation unique afin que le résultat reste interprétable).
+
+Mécanisme (`m7_text_claim_parser_consensus_v0_1.py` + `m7_corpus_from_text_claims_consensus_v0_1.py`,
+nouveaux fichiers, aucune modification des mécanismes gelés) : les deux modèles déjà câblés
+(`llama3.2:latest` local et `qwen2.5-coder:7b` du LAN sandbox) sont **toujours tous deux
+appelés en votants indépendants** (pas en primaire/repli) sur la phrase identique ; l'évidence
+n'est acceptée que si les deux extraient exactement le même triplet (sujet, relation, objet).
+Quatre raisons d'exclusion honnêtement distinctes : un votant échoue à son propre contrat
+fail-closed, désaccord entre les deux votants, ou accord des deux votants sur un sujet/relation
+qui ne correspond pas à ce que la phrase est censée affirmer.
+
+**Résultat réel (`llama3.2:latest` + `qwen2.5-coder:7b`, 2026-09-18)** :
+
+| | Nombre |
+|---|---|
+| Candidats considérés | 14 |
+| Enregistrements produits | 6 |
+| `excluded_voter_failed` | 9 (dont 7 échecs du seul votant local) |
+| `excluded_disagreement` | 1 |
+| `excluded_parsing_mismatch` | 0 |
+| Issue `SUPPORTED` | 4 |
+| Issue `CONTRADICTED` | 2 |
+
+Effet sur la calibration (adversarial + preuve filtrée par consensus, seed=0,
+`brier_threshold=0.5`) : **Brier holdout = 0,58527, ECE = 0,21849, NE PROMEUT PAS**
+(`HOLDOUT_BRIER_ABOVE_THRESHOLD`).
+
+**Lecture honnête, contraire à l'hypothèse qui motivait ce test** : le filtrage par consensus
+n'a pas corrigé le problème de la Sec. 10 — il l'a **aggravé**. Le Brier holdout (0,58527) est
+pire que celui du parseur texte non filtré seul (0,50794) et pire que le baseline (0,48125).
+Hypothèse plausible, non vérifiée davantage pour ne pas fabriquer une explication a posteriori :
+les deux modèles ne commettent pas des erreurs indépendantes mais partiellement corrélées sur
+cette tâche simple — le consensus filtre alors surtout les cas où un modèle a échoué
+franchement (`excluded_voter_failed`, majoritairement le modèle local), pas nécessairement les
+cas où les deux se trompent de la même façon en étant d'accord ; il retire aussi de l'information
+potentiellement valable d'un seul votant qui aurait répondu correctement pendant que l'autre
+échouait à son contrat fail-closed. Aucune conclusion causale définitive n'est retenue.
+
+**Conclusion retenue** : l'hypothèse « le consensus multi-modèles améliore la fiabilité de
+l'évidence LLM » n'est **pas confirmée** sur ce corpus et ces deux modèles — c'est même
+l'inverse qui est observé. Ce résultat négatif est documenté tel quel, sans réglage de seuil ni
+changement de modèle pour obtenir un résultat plus flatteur, même discipline que partout
+ailleurs dans ce projet. Il ne clôt pas la piste du consensus en général (un consensus
+inter-mécanismes, ou avec des modèles moins corrélés, pourrait se comporter différemment) mais
+ferme, en l'état, la piste consensus-même-mécanisme testée ici.
+
+Tests :
+- `tests/test_m7_text_claim_parser_consensus_v0_1.py` (7 tests) et
+  `tests/test_m7_corpus_from_text_claims_consensus_v0_1.py` (5 tests), backends simulés
+  injectés, aucun réseau — accord/désaccord/échec de votant distingués honnêtement, jamais
+  résolus arbitrairement ; un simulateur de deux votants parfaitement d'accord reproduit
+  exactement la diversité déjà connue (10 `SUPPORTED`, 6 `CONTRADICTED`) — contrôle de câblage,
+  pas une affirmation sur la compétence réelle des modèles.
+- `tests/test_m7_text_claim_parser_consensus_live_demo_v0_1.py` (1 test, sautable — nécessite
+  les DEUX hôtes Ollama accessibles, pas seulement le local) — exécute le mécanisme réel,
+  n'affirme que les propriétés structurelles garanties, jamais une distribution d'issue ou une
+  décision de promotion précise.
+
+## 12. Résultat local
+
+414 tests passés (401 précédents + 7 invariants du consensus parseur + 5 invariants du corpus
+consensus + 1 démonstration live du consensus), 0 échec, 0 régression.
