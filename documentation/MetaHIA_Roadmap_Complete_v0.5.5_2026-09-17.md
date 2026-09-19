@@ -228,4 +228,27 @@ utilisable par un humain (CLI/API), seulement un contrat de composition interne.
 0 régression. Voir `documentation/MetaHIA_Corpus_Diversification_and_M1_M6_Interface_V0_1.md`
 Sec. 9.
 
+~~Interface M1-M6 v0.2 (contrat versionné, stable) + régression multi-domaines + probe
+multi-seed.~~ **FAIT (2026-09-19)**, reçu dans le même paquet qu'une chaîne d'expériences
+« P4.1-P4.5 » de transfert structurel inter-domaines — **adopté séparément après vérification
+par exécution réelle** : `m1_m6_interface_v0_2.py` (enveloppe versionnée, métadonnées d'audit
+qui n'atteignent jamais M6), `p5_m1_m6_multidomain_regression_v0_1.py` +
+`p5_multiseed_regression_v0_1.py` (utilisent correctement `build_real_corpus_v2`, tous les
+chiffres confirmés exacts : Famille 0,48125, Organisation 0,6953125, combiné 0,4919875).
+Probe multi-seed (10 graines) : la variance de calibration reste sensible au split sur ces
+petits corpus — aucun chiffre de performance M6 n'est encore considéré représentatif. Voir
+`documentation/P5_M1_M6_Stabilization_Multidomain_Regression_v0_1.md`.
+
+~~Chaîne d'expériences P4.1-P4.5 (transfert structurel inter-domaines, invariant autonome,
+opération exécutable).~~ **REJETÉE (2026-09-19)**, non adoptée — deux défauts méthodologiques
+réels trouvés par exécution directe, pas par simple lecture : (1) P4.1/P4.2 utilisent
+`m6_corpus_from_m4_m5_v0_1.py` (mécanisme dégénéré déjà documenté, remplacé par v0.2 partout
+ailleurs dans ce projet) comme source « Famille », donnant 23 enregistrements 100 %
+`SUPPORTED` — aucun signal négatif possible ; (2) P4.4/P4.5, l'affirmation la plus forte
+(« opération exécutable → nouvelle structure », touchant directement les critères de clôture
+E20-D), est **circulaire** : le motif « prédisant » `Module_D → Direction_H` est généralisé à
+partir d'exactement 2 exemples qui incluent le cas lui-même testé — confirmé par
+instrumentation directe du code, pas par supposition. E20-D reste `OPEN`, sans changement.
+Détail complet : `documentation/P4_Transfer_Review_and_Rejection_2026-09-19.md`.
+
 **Prochaine étape : non encore décidée explicitement.**

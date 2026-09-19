@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-18",
+  "interface_version": "0.2",
+  "seed_set": [0,1,2,3,4,5,6,7,8,9],
+  "domains": {
+    "FAMILY": {
+      "records": 26,
+      "rules": 20,
+      "brier_mean": 0.5352780360664976,
+      "brier_std_population": 0.10361923370344096,
+      "brier_min": 0.40625,
+      "brier_max": 0.7644444444444445,
+      "ece_mean": 0.1433645765998707
+    },
+    "ORGANIZATION": {
+      "records": 24,
+      "rules": 12,
+      "brier_mean": 0.471875,
+      "brier_std_population": 0.21540976576631804,
+      "brier_min": 0.125,
+      "brier_max": 0.6953125,
+      "ece_mean": 0.2
+    },
+    "COMBINED": {
+      "records": 50,
+      "rules": 32,
+      "brier_mean": 0.44456494355287046,
+      "brier_std_population": 0.10716688709065138,
+      "brier_min": 0.287773933103,
+      "brier_max": 0.6807912658091017,
+      "ece_mean": 0.12095042884514845
+    }
+  },
+  "decision": "INTERFACE_REGRESSION_PASS_METRIC_STABILITY_OPEN"
+}

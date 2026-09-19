@@ -1,0 +1,24 @@
+MetaHIA V10 — P5 M1-M6 regression — 2026-09-18
+
+Interface: v0.2
+Seeds: 0..9
+M7 dependency: false
+
+FAMILY
+records=26 rules=20
+seed0: train=16 val=5 holdout=5 holdout_rules=4 brier=0.48125 ece=0.025
+10-seed Brier mean=0.5352780360664976 std=0.10361923370344096 min=0.40625 max=0.7644444444444445
+
+ORGANIZATION
+records=24 rules=12
+seed0: train=16 val=4 holdout=4 holdout_rules=2 brier=0.6953125 ece=0.3125
+10-seed Brier mean=0.471875 std=0.21540976576631804 min=0.125 max=0.6953125
+
+COMBINED
+records=50 rules=32
+seed0: train=31 val=9 holdout=10 holdout_rules=6 brier=0.49198751300728405 ece=0.07741935483870965
+10-seed Brier mean=0.44456494355287046 std=0.10716688709065138 min=0.2877739331026528 max=0.6807912658091017
+
+Decision:
+PASS_INTERFACE_REGRESSION_BASELINE
+METRIC_STABILITY_OPEN

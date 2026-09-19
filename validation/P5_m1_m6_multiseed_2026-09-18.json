@@ -1,0 +1,302 @@
+{
+  "COMBINED": {
+    "brier_max": 0.6807912658091017,
+    "brier_mean": 0.44456494355287046,
+    "brier_min": 0.2877739331026528,
+    "brier_std_population": 0.10716688709065138,
+    "domain_id": "COMBINED",
+    "ece_mean": 0.12095042884514845,
+    "seeds": [
+      {
+        "brier": 0.49198751300728405,
+        "ece": 0.07741935483870965,
+        "holdout": 10,
+        "holdout_rules": 6,
+        "seed": 0,
+        "train": 31,
+        "validation": 9
+      },
+      {
+        "brier": 0.35495432998034465,
+        "ece": 0.06810035842293904,
+        "holdout": 9,
+        "holdout_rules": 6,
+        "seed": 1,
+        "train": 31,
+        "validation": 10
+      },
+      {
+        "brier": 0.6807912658091017,
+        "ece": 0.30407523510971796,
+        "holdout": 11,
+        "holdout_rules": 6,
+        "seed": 2,
+        "train": 29,
+        "validation": 10
+      },
+      {
+        "brier": 0.423828125,
+        "ece": 0.043749999999999956,
+        "holdout": 10,
+        "holdout_rules": 6,
+        "seed": 3,
+        "train": 32,
+        "validation": 8
+      },
+      {
+        "brier": 0.361328125,
+        "ece": 0.14375000000000004,
+        "holdout": 10,
+        "holdout_rules": 6,
+        "seed": 4,
+        "train": 32,
+        "validation": 8
+      },
+      {
+        "brier": 0.2877739331026528,
+        "ece": 0.21241830065359468,
+        "holdout": 9,
+        "holdout_rules": 6,
+        "seed": 5,
+        "train": 34,
+        "validation": 7
+      },
+      {
+        "brier": 0.5633021158515437,
+        "ece": 0.18637992831541217,
+        "holdout": 9,
+        "holdout_rules": 6,
+        "seed": 6,
+        "train": 31,
+        "validation": 10
+      },
+      {
+        "brier": 0.4446614583333333,
+        "ece": 0.01041666666666663,
+        "holdout": 9,
+        "holdout_rules": 6,
+        "seed": 7,
+        "train": 32,
+        "validation": 9
+      },
+      {
+        "brier": 0.4446614583333333,
+        "ece": 0.01041666666666663,
+        "holdout": 9,
+        "holdout_rules": 6,
+        "seed": 8,
+        "train": 32,
+        "validation": 9
+      },
+      {
+        "brier": 0.3923611111111111,
+        "ece": 0.1527777777777778,
+        "holdout": 9,
+        "holdout_rules": 6,
+        "seed": 9,
+        "train": 32,
+        "validation": 9
+      }
+    ]
+  },
+  "FAMILY": {
+    "brier_max": 0.7644444444444445,
+    "brier_mean": 0.5352780360664976,
+    "brier_min": 0.40625,
+    "brier_std_population": 0.10361923370344096,
+    "domain_id": "FAMILY",
+    "ece_mean": 0.1433645765998707,
+    "seeds": [
+      {
+        "brier": 0.48125,
+        "ece": 0.025000000000000022,
+        "holdout": 5,
+        "holdout_rules": 4,
+        "seed": 0,
+        "train": 16,
+        "validation": 5
+      },
+      {
+        "brier": 0.5555555555555556,
+        "ece": 0.16666666666666663,
+        "holdout": 6,
+        "holdout_rules": 4,
+        "seed": 1,
+        "train": 15,
+        "validation": 5
+      },
+      {
+        "brier": 0.5155709342560554,
+        "ece": 0.08823529411764708,
+        "holdout": 4,
+        "holdout_rules": 4,
+        "seed": 2,
+        "train": 17,
+        "validation": 5
+      },
+      {
+        "brier": 0.4497041420118344,
+        "ece": 0.05128205128205121,
+        "holdout": 6,
+        "holdout_rules": 4,
+        "seed": 3,
+        "train": 13,
+        "validation": 7
+      },
+      {
+        "brier": 0.6222222222222222,
+        "ece": 0.2666666666666666,
+        "holdout": 5,
+        "holdout_rules": 4,
+        "seed": 4,
+        "train": 15,
+        "validation": 6
+      },
+      {
+        "brier": 0.4844290657439446,
+        "ece": 0.04705882352941182,
+        "holdout": 5,
+        "holdout_rules": 4,
+        "seed": 5,
+        "train": 17,
+        "validation": 4
+      },
+      {
+        "brier": 0.4444444444444445,
+        "ece": 0.0,
+        "holdout": 6,
+        "holdout_rules": 4,
+        "seed": 6,
+        "train": 15,
+        "validation": 5
+      },
+      {
+        "brier": 0.40625,
+        "ece": 0.125,
+        "holdout": 4,
+        "holdout_rules": 4,
+        "seed": 7,
+        "train": 16,
+        "validation": 6
+      },
+      {
+        "brier": 0.7644444444444445,
+        "ece": 0.39999999999999997,
+        "holdout": 6,
+        "holdout_rules": 4,
+        "seed": 8,
+        "train": 15,
+        "validation": 5
+      },
+      {
+        "brier": 0.628909551986475,
+        "ece": 0.26373626373626374,
+        "holdout": 7,
+        "holdout_rules": 4,
+        "seed": 9,
+        "train": 13,
+        "validation": 6
+      }
+    ]
+  },
+  "ORGANIZATION": {
+    "brier_max": 0.6953125,
+    "brier_mean": 0.471875,
+    "brier_min": 0.125,
+    "brier_std_population": 0.21540976576631804,
+    "domain_id": "ORGANIZATION",
+    "ece_mean": 0.2,
+    "seeds": [
+      {
+        "brier": 0.6953125,
+        "ece": 0.3125,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 0,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.625,
+        "ece": 0.25,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 1,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.6953125,
+        "ece": 0.3125,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 2,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.625,
+        "ece": 0.25,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 3,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.3828125,
+        "ece": 0.0625,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 4,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.125,
+        "ece": 0.25,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 5,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.375,
+        "ece": 0.0,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 6,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.6953125,
+        "ece": 0.3125,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 7,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.375,
+        "ece": 0.0,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 8,
+        "train": 16,
+        "validation": 4
+      },
+      {
+        "brier": 0.125,
+        "ece": 0.25,
+        "holdout": 4,
+        "holdout_rules": 2,
+        "seed": 9,
+        "train": 16,
+        "validation": 4
+      }
+    ]
+  }
+}

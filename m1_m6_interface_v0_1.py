@@ -141,6 +141,12 @@ class M6LearningPacket:
     def validate(self) -> None:
         if not self.packet_id:
             raise ValueError("packet_id is required")
+        if not isinstance(self.rule, (Node, PathPattern)):
+            raise ValueError(
+                "rule must be a kernel Node or PathPattern -- checked here too (not only in "
+                "M1StructuralPacket.validate()) since M6LearningPacket can also be constructed "
+                "directly, bypassing compose_m1_to_m6"
+            )
         if self.depth < 0:
             raise ValueError("depth must be >= 0")
         if not 0.0 <= float(self.novelty) <= 1.0:
