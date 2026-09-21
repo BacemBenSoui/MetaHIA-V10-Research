@@ -271,12 +271,31 @@ paquet sera préparé si/quand une vraie règle de dérivation indépendante est
 gate d'endpoint fort. Détail complet : `documentation/P4R_Non_Circular_Structural_Transfer_V0_2.md`
 Sec. 6.
 
-**Prochaine étape (décidée le 2026-09-21) : interface minimale CLI/API préproduction pour
-test humain sur le cœur M1-M6** — reprend directement la question initiale de ce chantier
-(« le core algébrique peut-il être mis en préprod pour test humain ? »), jugée non prête
-à l'ouverture de ce chantier (aucune interface humaine, seulement des contrats de
-composition internes M1-M6 v0.1/v0.2). Choisie comme étape la plus rentable disponible :
-coût nul en appels LLM, ne touche pas à l'Évolution Cognitive (ROI jugé faible avec les
-paramètres M7 actuels, non reconsidéré ici), et exploite directement l'interface v0.2 déjà
-stabilisée et régression-testée sur deux domaines. M7 reste explicitement hors périmètre
-de cette interface (déjà exclu par construction de `m1_m6_interface_v0_2.py`).
+~~Interface minimale CLI/API préproduction pour test humain sur le cœur M1-M6.~~ **FAIT
+(2026-09-21)** — `cli_preprod_v0_1.py`, quatre commandes (`manifest`, `list-records`,
+`regression`, `predict`), n'ajoute aucune capacité nouvelle : expose seulement l'API déjà
+validée (`build_real_corpus_v2`, `build_organization_corpus`, `StructuralLearningPolicy`,
+`split_by_rule`) derrière une surface qu'un humain peut lancer sans lire le code Python.
+Discipline de transparence non négociable : `predict` renvoie toujours le champ `basis` de
+chaque prédiction (jamais masqué), et `regression` renvoie `basis_distribution_over_holdout`
+— un testeur voit dès la première commande que 100 % des prédictions holdout de ce projet
+reposent sur `BASIS_GLOBAL_PRIOR` (la découverte du 2026-09-18), pas seulement dans un
+document séparé. `manifest.m7_excluded=true` vérifié par exécution, pas seulement par
+lecture. 7 tests (sous-processus réels, pas de mock) : reproduisent exactement les deux
+baselines déjà validés (Famille Brier 0,48125 ; Organisation Brier 0,6953125), vérifient
+l'échec fermé sur un `record_id` inconnu, et vérifient qu'un enregistrement réellement en
+holdout reçoit bien `basis=GLOBAL_PRIOR` en itérant sur tous les enregistrements, pas en le
+supposant. Répond directement à la question initiale de ce chantier (« le core algébrique
+peut-il être mis en préprod pour test humain ? ») pour le périmètre M1-M6 — M7 reste hors
+périmètre (déjà exclu par construction de `m1_m6_interface_v0_2.py`), aucune capacité
+nouvelle, aucune clôture de gate scientifique revendiquée. Détail complet :
+`documentation/MetaHIA_CLI_Preprod_M1_M6_V0_1.md`.
+
+**Prochaine étape : non encore décidée explicitement** — options restantes sans nouveau
+LLM ni Évolution Cognitive : (a) étendre la CLI à une commande `regression --domain
+combined` (déjà calculée ailleurs par `p5_m1_m6_multidomain_regression_v0_1.py`, jamais
+exposée en CLI) ; (b) troisième domaine indépendant pour re-tester si le transfert
+inter-domaines reste non démontré à plus grande échelle ; (c) concevoir une vraie règle de
+dérivation indépendante pour le gate d'endpoint fort de P4-R (seule voie vers une clôture
+partielle d'E20-D identifiée jusqu'ici). Aucune de ces trois n'est urgente ; à décider
+explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
