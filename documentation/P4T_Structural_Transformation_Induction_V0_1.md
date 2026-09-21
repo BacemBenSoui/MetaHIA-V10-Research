@@ -118,6 +118,42 @@ l'écriture de ce document) et confirme qu'aucun identifiant NodeRef
 d'entraînement n'y apparaît : `sigma` ne contient que des entiers de
 position.
 
+### 6.1 Durcissement P4-T.1 (2026-09-21, revue externe, deux bugs réels confirmés par exécution)
+
+Une revue externe a identifié deux défauts réels dans la branche
+PERMUTATION/RECURSIVE de `freeze()` (celle testée en Sec. 6 ci-dessus ne
+couvrait que la branche SELECTION_MAPPING) — **confirmés par exécution
+directe avant correction**, pas acceptés sur récit :
+
+- **Fuite de provenance réelle** : `freeze()` stockait le `CrossSlotCandidate`
+  brut, dont les champs `evidence_rows`/`source_target_provenance`
+  contiennent littéralement les identifiants de lignes d'entraînement
+  (`"row1"`, `"row2"`, ...). Pire : même le `Node` PATTERN produit par
+  `e20d_protocol.py` embarque ces identifiants dans ses propres champs
+  `node_id`/`provenance` (ex. `"pattern::column::1::row1::row2::row3::..."`).
+  Vérifié : `"row1" in repr(frozen)` → `True` avant correction.
+- **Digest trop faible** : le hash ne dépendait que de `(family,
+  relation_kind)` — constant pour toute une famille. Deux permutations
+  structurellement différentes de la même famille produisaient le **même**
+  digest. Vérifié par construction de deux permutations différentes :
+  digests identiques avant correction.
+
+**Correction** : `freeze()` reconstruit désormais une copie anonymisée du
+`Node` PATTERN (`_anonymize_pattern`, remplace `node_id`/`provenance` par
+des labels canoniques — `apply()`/le replay n'utilisent jamais ces champs
+pour leur logique, seulement `kind`/`children`) et calcule le digest via
+`kernel2.structural_signature()`, déjà utilisé ailleurs dans ce projet
+(`_rule_signature` de M6) pour la même fonction : un fingerprint canonique
+et sans référence d'entraînement. `blind_replay()` applique directement
+cette copie anonymisée via `kernel2.apply()`, sans plus jamais appeler
+`replay_candidate()`.
+
+Deux nouveaux tests de régression permanents :
+`test_frozen_recursive_transformation_does_not_leak_training_row_ids`,
+`test_structural_digest_distinguishes_two_different_permutations_of_the_same_family`
+— tous deux exécutés et vérifiés après correction (avant, ils auraient
+échoué, confirmant que le bug était réel et pas seulement théorique).
+
 ## 7. Porte G : mesure de coût, honnêtement bornée
 
 `run_costed_pipeline()` mesure réellement (jamais estimé) : temps de
@@ -167,16 +203,60 @@ principale vers E20-D. **E20-D reste `OPEN`** — ce document ne le
 prétend pas fermer, il ferme seulement la question de savoir si le
 mécanisme de génération d'une nouvelle structure à partir d'une
 transformation découverte est réel et non circulaire (il l'est,
-maintenant vérifié pour quatre familles et leur composition).
+maintenant vérifié pour quatre familles et leur composition, et gelé sans
+fuite de provenance depuis le durcissement Sec. 6.1).
 
 Aucune modification de `kernel2.py`/`e20d_protocol.py` : architecture
 compatible avec la trajectoire M1 v0.4 (« M1 reste minimal ; la richesse
 vit dans les objets structurels dérivés »).
 
+### 9.1 Matrice de clôture E20-D (mise à jour après durcissement)
+
+| Critère E20-D | Ce que P4-T apporte | Ce qui manque |
+|---|---|---|
+| Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
+| Holdout aveugle | 🟢 mécanisme, gel maintenant réellement opaque | benchmark réellement gelé séparément par un tiers |
+| Relation → opération → structure | 🟢 fort pour transformations structurelles | généralisation au-delà du langage actuel (projection/duplication/composition) |
+| Coût/ROI | 🟠 mesure réelle (Porte G) | intégration à `e20d_cognitive_control_v0_1.py` (E20-D.19) |
+| Non-circularité | 🟢 forte | validation tierce formelle |
+| Provenance (gel) | 🟢 maintenant réellement vérifié (Sec. 6.1) | — |
+| Sélection d'hypothèses | 🔴 absente | étape « hypothèses → rationalisation → transformation retenue » |
+
+### 9.2 Séquence de suite proposée (P4-T.1 → P4-T.7)
+
+Remplace l'ancienne liste plate d'options ouvertes par une progression
+explicite :
+
+1. **P4-T.1 — durcissement du gel.** **FAIT (2026-09-21, Sec. 6.1)** :
+   provenance d'entraînement supprimée de `FrozenTransformation`, digest
+   canonique via `structural_signature()`, 2 tests de régression permanents.
+2. **P4-T.2 — vrai benchmark séparé** (train / holdout aveugle / témoin
+   indépendant, verrouillé avant exécution) — pas encore fait.
+3. **P4-T.3 — sélection d'hypothèses** (plusieurs candidats → comparaison
+   structurelle → rationalisation → décision fail-closed) — pas encore
+   fait ; peut s'appuyer sur E20-D.6/D.19 sans dictionnaire sémantique.
+4. **P4-T.4 — nouvelles familles de transformation** au-delà de
+   permutation/récursif/projection/duplication/composition — pas encore
+   fait.
+5. **P4-T.5 — structure émergente** (opération figée appliquée à de
+   nouveaux opérandes, structure absente du graphe, vérification
+   indépendante) — recouvre partiellement E20-D.17, à relier explicitement.
+6. **P4-T.6 — ROI** (adaptateur vers `e20d_cognitive_control_v0_1.py`,
+   E20-D.19) — pas encore fait.
+7. **P4-T.7 — validation indépendante** (paquet tiers, comme M4-M7) — pas
+   encore fait.
+
+Aucune étape au-delà de P4-T.1 n'est urgente ; à décider explicitement
+avant de commencer, comme pour chaque étape précédente de ce chantier.
+P6/P7 (diversité de corpus M6) et JEV/Kev (M7) restent **explicitement
+séparés** de cette trajectoire — ni preuve de clôture E20-D, ni substitut
+à P4-T.2-P4-T.7.
+
 ## 10. Tests
 
-`tests/test_p4t_structural_transformation_induction_v0_1.py` (13 tests) :
-2 réutilisation (permutation, récursif + replay aveugle), 3 nouvelles
-familles (projection, duplication, composition) chacune avec replay aveugle
-et vérification, 4 anti-triche, 2 gel (fuite + refus sur non-candidat), 2
-coût. Tous exécutés réellement, aucun résultat inventé.
+`tests/test_p4t_structural_transformation_induction_v0_1.py` (15 tests,
+après durcissement Sec. 6.1) : 2 réutilisation (permutation, récursif +
+replay aveugle), 3 nouvelles familles (projection, duplication,
+composition) chacune avec replay aveugle et vérification, 4 anti-triche, 4
+gel (fuite SELECTION_MAPPING, fuite RECURSIVE, digest canonique, refus sur
+non-candidat), 2 coût. Tous exécutés réellement, aucun résultat inventé.

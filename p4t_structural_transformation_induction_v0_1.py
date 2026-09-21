@@ -10,9 +10,18 @@ replay verified there directly by this project's own adversarial probes
 (constant-target rejected, many-to-one rejected).
 
 This module does NOT modify `e20d_protocol.py` or `kernel2.py`. It reuses
-`e20d_protocol.discover_cross_slot_candidates`/`replay_candidate` for the
+`e20d_protocol.discover_cross_slot_candidates` for discovery of the
 REFERENCE_EQUALITY / PERMUTATION / RECURSIVE_PERMUTATION families (already
-validated there), and adds exactly one new, genuinely missing capability:
+validated there). Gate B (freeze) does NOT reuse `replay_candidate`'s
+`CrossSlotCandidate` object as-is: that object's own `evidence_rows`/
+`source_target_provenance` fields, and even the PATTERN Node's own
+`node_id`/`provenance` strings built by `e20d_protocol.py`, embed the
+training row ids directly (found and fixed 2026-09-21, confirmed by direct
+execution before fixing -- see `tests/test_frozen_recursive_transformation_does_not_leak_training_row_ids`).
+`freeze()` instead rebuilds an anonymized copy of the pattern (`_anonymize_pattern`)
+and `blind_replay()` applies it directly via `kernel2.apply()`, never
+calling `replay_candidate()`. This module also adds exactly one new,
+genuinely missing capability:
 arity-changing selection mappings (projection, duplication, and their
 composition), which `kernel2.compare()`/`compare_candidates()` cannot
 express because they require equal arity between the two sides being
@@ -50,13 +59,18 @@ from kernel2 import (
     Node,
     NodeRef,
     OBSERVATION,
+    PATTERN,
+    PatternSlot,
+    apply,
+    ref_object,
     reference_equal,
+    resolve_structure,
     structural_equal,
+    structural_signature,
 )
 from e20d_protocol import (
     CrossSlotCandidate,
     discover_cross_slot_candidates,
-    replay_candidate,
 )
 
 FAMILY_REFERENCE_EQUALITY = "REFERENCE_EQUALITY"
@@ -231,6 +245,46 @@ def discover(
 # ---------------------------------------------------------------------------
 
 
+def _anonymize_pattern(node: object, _counter: list[int] | None = None) -> object:
+    """Rebuilds a PATTERN Node tree with every `node_id`/`provenance` field
+    replaced by a canonical, training-data-free label.
+
+    Found and fixed (2026-09-21, external review): `e20d_protocol.py`'s own
+    pattern construction bakes the training row ids directly into the
+    PATTERN Node's `node_id`/`provenance` strings (e.g.
+    `"pattern::column::1::row1::row2::row3::..."`)-- confirmed by direct
+    execution, not assumed. `apply()`/`replay_candidate()` never read
+    `node_id`/`provenance` for their logic (only `kind`/`children` matter
+    functionally), so rebuilding the tree with anonymized labels changes
+    nothing about replay behaviour while actually satisfying Gate B's own
+    stated contract instead of only appearing to.
+    """
+    if _counter is None:
+        _counter = [0]
+    if not isinstance(node, Node):
+        return node
+    new_children = []
+    for child in node.children:
+        if isinstance(child, PatternSlot) and child.nested_pattern is not None:
+            new_children.append(
+                PatternSlot(
+                    source_position=child.source_position,
+                    literal_constraint=child.literal_constraint,
+                    nested_pattern=_anonymize_pattern(child.nested_pattern, _counter),
+                    requires_source_equal=child.requires_source_equal,
+                )
+            )
+        else:
+            new_children.append(child)
+    _counter[0] += 1
+    return Node(
+        node_id=f"anon::pattern::{_counter[0]}",
+        kind=node.kind,
+        children=tuple(new_children),
+        provenance=(),
+    )
+
+
 @dataclass(frozen=True)
 class FrozenTransformation:
     frozen_id: str
@@ -239,15 +293,17 @@ class FrozenTransformation:
     source_arity: int
     target_arity: int
     structural_digest: str
-    cross_slot_transformation: Optional[object] = None  # opaque RefObject, for PERMUTATION/RECURSIVE only
+    pattern_ref: Optional[object] = None  # anonymized RefObject, for PERMUTATION/RECURSIVE only
+    source_position: Optional[int] = None  # slot position to replay from, for PERMUTATION/RECURSIVE only
 
 
 def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTransformation:
     """Gate B. After this call, nothing in the returned object lets a
     caller recover which training rows produced it: no row ids, no NodeRef
-    identities, only the positional sigma (for SELECTION_MAPPING) or the
-    already-opaque RefObject (for the reused e20d_protocol families) plus a
-    structural digest for tamper detection.
+    identities, only the positional sigma (for SELECTION_MAPPING) or an
+    anonymized pattern (for the reused e20d_protocol families) plus a
+    structural digest that fingerprints the actual transformation, not just
+    its family label.
     """
     if candidate.outcome != OUTCOME_CANDIDATE:
         raise ValueError(f"cannot freeze a non-candidate outcome: {candidate.outcome}")
@@ -264,7 +320,14 @@ def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTrans
         )
     cs = candidate.cross_slot
     assert cs is not None
-    digest = sha256(repr((candidate.family, cs.relation_kind)).encode("utf-8")).hexdigest()
+    pattern_node = resolve_structure(cs.transformation)
+    anonymized = _anonymize_pattern(pattern_node)
+    anonymized_ref = ref_object(f"T::{candidate.family}::anon", anonymized)
+    # Fingerprints the transformation's actual mapping (source positions,
+    # nesting, literal constraints), never the training row ids -- fixes
+    # the previously class-only digest, verified distinct for two
+    # different permutations of the same family before trusting it.
+    digest = sha256(repr((candidate.family, structural_signature(cs.transformation))).encode("utf-8")).hexdigest()
     return FrozenTransformation(
         frozen_id=frozen_id,
         family=candidate.family,
@@ -272,7 +335,8 @@ def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTrans
         source_arity=-1,
         target_arity=-1,
         structural_digest=digest,
-        cross_slot_transformation=cs,
+        pattern_ref=anonymized_ref,
+        source_position=cs.source_position,
     )
 
 
@@ -299,31 +363,30 @@ def _blind_replay_one(frozen: FrozenTransformation, source_obs: Node) -> Optiona
 
 def blind_replay(frozen: FrozenTransformation, source_observations: Sequence[Node]) -> Tuple[Optional[Node], ...]:
     """Gate C. Applies the frozen transformation to fresh source
-    observations, batched (matching `e20d_protocol.replay_candidate`'s own
-    batch-column design for the reused families). Never receives, and
-    never needs, any target/ground-truth value -- callers proving
+    observations, batched (mirroring `e20d_protocol.replay_candidate`'s
+    original batch-column design, without calling it -- see `freeze()`'s
+    docstring for why). Never receives, and never needs, any
+    target/ground-truth value -- callers proving
     non-circularity should construct their holdout target slot with an
     opaque placeholder never read here (see the same discipline already
     used by `tests/test_e20d_v03_recursive_transform.py`).
     """
     if frozen.family == FAMILY_SELECTION_MAPPING:
         return tuple(_blind_replay_one(frozen, obs) for obs in source_observations)
-    if frozen.cross_slot_transformation is not None:
-        cs = frozen.cross_slot_transformation
-        width = cs.source_position + 1
-        synthetic_rows = [
-            Node(
-                node_id=f"synthetic::{frozen.frozen_id}::{i}",
-                kind=OBSERVATION,
-                children=tuple(
-                    source_obs if pos == cs.source_position else NodeRef(f"_unused_{pos}")
-                    for pos in range(width)
-                ),
-                provenance=(source_obs.node_id,),
-            )
-            for i, source_obs in enumerate(source_observations)
-        ]
-        out = replay_candidate(cs, synthetic_rows)
+    if frozen.pattern_ref is not None and frozen.source_position is not None:
+        pattern = resolve_structure(frozen.pattern_ref)
+        if not isinstance(pattern, Node) or pattern.kind != PATTERN:
+            return tuple(None for _ in source_observations)
+        # Column of fresh source values only -- built here (not via
+        # e20d_protocol._column_node) so no training-derived label ever
+        # enters even a transient object during replay.
+        source_column = Node(
+            node_id=f"anon::column::{frozen.frozen_id}",
+            kind=OBSERVATION,
+            children=tuple(source_observations),
+            provenance=(),
+        )
+        out = apply(pattern, source_column)
         if out is None:
             return tuple(None for _ in source_observations)
         return tuple(out.children)

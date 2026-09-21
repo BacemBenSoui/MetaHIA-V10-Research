@@ -219,6 +219,54 @@ def test_frozen_transformation_does_not_leak_training_node_refs():
     assert all(isinstance(s, int) for s in frozen.sigma)
 
 
+def test_frozen_recursive_transformation_does_not_leak_training_row_ids():
+    """Regression guard for a real bug found 2026-09-21 (external review,
+    confirmed by direct execution before fixing): freeze() used to store
+    the raw CrossSlotCandidate for the PERMUTATION/RECURSIVE families,
+    whose own `evidence_rows`/`source_target_provenance` fields -- and even
+    e20d_protocol.py's own PATTERN Node `node_id`/`provenance` strings --
+    embed the training row ids (e.g. "row1", "row2", "row3") directly.
+    freeze() now rebuilds an anonymized pattern instead."""
+    rows = []
+    for i in range(1, 4):
+        src = Node(f"src{i}", OBSERVATION, ("O", NodeRef(f"{i}x"), NodeRef(f"{i}y"), NodeRef("z")))
+        tgt = Node(f"tgt{i}", OBSERVATION, ("O", NodeRef(f"{i}y"), NodeRef(f"{i}x"), NodeRef("z")))
+        rows.append(_row(f"row{i}", f"op{i}", src, tgt, out="out"))
+    candidate = p4t.discover(rows, source_position=1, target_position=2)
+    assert candidate.family == p4t.FAMILY_RECURSIVE_PERMUTATION
+    frozen = p4t.freeze(candidate, frozen_id="RECURSIVE_LEAK_CHECK")
+    non_digest_fields = {f.name: getattr(frozen, f.name) for f in dataclasses.fields(frozen) if f.name != "structural_digest"}
+    non_digest_repr = repr(non_digest_fields)
+    for training_id in ("row1", "row2", "row3", "src1", "src2", "src3", "tgt1", "tgt2", "tgt3"):
+        assert training_id not in non_digest_repr
+
+
+def test_structural_digest_distinguishes_two_different_permutations_of_the_same_family():
+    """Regression guard for a real bug found 2026-09-21 (external review,
+    confirmed by direct execution before fixing): the digest used to hash
+    only (family, relation_kind), which is constant for an entire family --
+    two structurally different permutations got the identical digest. It
+    now fingerprints the actual mapping via kernel2.structural_signature()."""
+    rows_swap = []
+    for i in range(1, 4):
+        src = Node(f"s1_{i}", OBSERVATION, ("O", NodeRef(f"{i}x"), NodeRef(f"{i}y"), NodeRef("z")))
+        tgt = Node(f"t1_{i}", OBSERVATION, ("O", NodeRef(f"{i}y"), NodeRef(f"{i}x"), NodeRef("z")))
+        rows_swap.append(_row(f"rowA{i}", f"opA{i}", src, tgt, out="out"))
+    candidate_swap = p4t.discover(rows_swap, source_position=1, target_position=2)
+    frozen_swap = p4t.freeze(candidate_swap, frozen_id="DIGEST_A")
+
+    rows_rotate = []
+    for i in range(1, 4):
+        src = Node(f"s2_{i}", OBSERVATION, ("O", NodeRef(f"{i}p"), NodeRef(f"{i}q"), NodeRef(f"{i}r")))
+        tgt = Node(f"t2_{i}", OBSERVATION, ("O", NodeRef(f"{i}r"), NodeRef(f"{i}p"), NodeRef(f"{i}q")))
+        rows_rotate.append(_row(f"rowB{i}", f"opB{i}", src, tgt, out="out"))
+    candidate_rotate = p4t.discover(rows_rotate, source_position=1, target_position=2)
+    frozen_rotate = p4t.freeze(candidate_rotate, frozen_id="DIGEST_B")
+
+    assert frozen_swap.family == frozen_rotate.family == p4t.FAMILY_RECURSIVE_PERMUTATION
+    assert frozen_swap.structural_digest != frozen_rotate.structural_digest
+
+
 def test_freeze_refuses_a_non_candidate_outcome():
     rows = []
     for i in range(3):

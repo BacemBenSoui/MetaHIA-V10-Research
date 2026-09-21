@@ -377,12 +377,50 @@ de holdout verrouillé séparément par un tiers, pas de sélection automatique 
 hypothèses candidates). Détail complet :
 `documentation/P4T_Structural_Transformation_Induction_V0_1.md`.
 
-**Prochaine étape : non encore décidée explicitement** — options restantes sans nouveau
-LLM ni Évolution Cognitive : (a) étape « hypothèses → sélection/rationalisation »
-manquante (Sec. 8 du document P4-T) — quand plusieurs paires source/cible candidates
-existent, rien ne choisit encore laquelle retenir ; (b) brancher la Porte G sur le modèle
-ROI d'E20-D.19 via un adaptateur ; (c) concevoir un vrai protocole de holdout avec corpus
-verrouillé séparément par un tiers (au lieu des données synthétiques construites dans le
-même fichier que les tests) ; (d) cinquième domaine M6 si la non-monotonie de la Sec. 4
-de P7 doit être étudiée plus finement. Aucune de ces quatre n'est urgente ; à décider
-explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
+~~Revue externe de durcissement de P4-T avant d'en faire un véritable gate E20-D.~~
+**FAIT (2026-09-21) — P4-T.1.** Revue externe recentrant explicitement la trajectoire
+E20-D sur P4-T (pas le transfert inter-domaines), et proposant une séquence P4-T.1→P4-T.7.
+Deux affirmations techniques concrètes vérifiées par exécution directe avant correction
+(pas acceptées sur récit) : (1) `freeze()` laissait fuiter les identifiants de lignes
+d'entraînement pour la branche PERMUTATION/RECURSIVE (`CrossSlotCandidate.evidence_rows`
+et même le `node_id`/`provenance` du `Node` PATTERN lui-même) — confirmé `"row1" in
+repr(frozen)` avant correction ; (2) le `structural_digest` de cette même branche ne
+dépendait que de `(family, relation_kind)`, constant pour toute une famille — deux
+permutations différentes produisaient le même digest, confirmé par construction directe.
+Corrigé : `freeze()` reconstruit une copie anonymisée du PATTERN (`_anonymize_pattern`) et
+calcule le digest via `kernel2.structural_signature()` (déjà utilisé ailleurs dans ce
+projet pour la même fonction). 2 tests de régression permanents ajoutés (15 au total sur
+P4-T). **P4-T.1 clôt le premier point de la séquence proposée** ; voir
+`documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 6.1 et 9.1-9.2 pour
+la matrice de clôture E20-D mise à jour et la séquence complète P4-T.2→P4-T.7.
+
+~~Explorer JEV (TypeSafe System One) et ses alternatives locales comme mécanisme
+d'évidence M7.~~ **FAIT (2026-09-21) — planification P8, explicitement séparée de la
+trajectoire E20-D/P4-T** (la revue externe le confirme : JEV ne doit jamais servir à
+« fermer » E20-D, seulement à proposer une évidence analogique M7, comme tout LLM déjà
+utilisé dans ce projet). Benchmark réel exécuté contre l'API Jev officielle (22/22 cas,
+`jev-1.13.0`) : 100 % sujet/relation sur cas positifs, 81 % objet (bug de bouclage
+auto-référentiel réel, 3/16 cas), coercition d'un quasi-synonyme hors-vocabulaire
+(« conjoint » → `EPOUX_DE`, confiance 0,98 — échec net sur le critère le plus important
+pour ce projet). Trois alternatives locales proposées par l'utilisateur vérifiées réelles
+(pas hallucinées) par requête directe à l'API GitHub : `jaredpalmer/kev` (recommandé —
+compatible fil-à-fil avec `jev_client_v0_1.py`, probabilités réellement calibrées par
+lecture de logits) ; `razorback16/openjev` et `githubnext/localjev` (probabilités
+auto-rapportées par le modèle, pas des logits — le README de LocalJev le déclare
+lui-même). **P8 = PRIORISÉ, EN ATTENTE D'INFRASTRUCTURE** : bloqué sur la configuration
+Ollama/LAN (`192.168.1.11`) que l'utilisateur fournira. Aucun code d'intégration écrit
+avant cette information — seul le plan technique complet (fichiers
+`m7_jev_relation_choice_v0_1.py`/`m7_corpus_from_jev_v0_1.py`, garde-fous
+sujet≠objet/GROUNDED_ANALOGY) est documenté. Détail complet :
+`documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md`.
+
+**Prochaine étape : non encore décidée explicitement** — options restantes, par ordre de
+la séquence proposée par la dernière revue externe : (a) **P4-T.2** — vrai benchmark
+séparé (train/holdout aveugle/témoin indépendant, verrouillé avant exécution), identifié
+comme le verrou le plus pertinent, devant un cinquième domaine M6 ou JEV/Kev ; (b) P4-T.3
+— étape « hypothèses → sélection/rationalisation » manquante ; (c) P4-T.6 — brancher la
+Porte G sur le modèle ROI d'E20-D.19 ; (d) P8 — dès que l'infrastructure Ollama/LAN promise
+par l'utilisateur est disponible. Aucune de ces quatre n'est urgente à l'exception de
+l'ordre de priorité déjà exprimé par l'utilisateur (P4-T avant un cinquième domaine M6) ;
+à décider explicitement avant de commencer, comme pour chaque étape précédente de ce
+chantier.
