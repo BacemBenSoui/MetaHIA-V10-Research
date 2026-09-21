@@ -251,4 +251,32 @@ partir d'exactement 2 exemples qui incluent le cas lui-même testé — confirm�
 instrumentation directe du code, pas par supposition. E20-D reste `OPEN`, sans changement.
 Détail complet : `documentation/P4_Transfer_Review_and_Rejection_2026-09-19.md`.
 
-**Prochaine étape : non encore décidée explicitement.**
+~~P4-R v0.2 — remplacement non-circulaire de la chaîne P4.1-P4.5.~~ **FAIT/ADOPTÉ
+(2026-09-21)**, reçu en paquet externe séparé, exécuté réellement dans une copie locale
+isolée (aucun accès réseau, aucun serveur LAN) avant intégration. Corrige les deux modes
+d'invalidité identifiés le 2026-09-19 : flux `SOURCE DISCOVERY -> FREEZE -> TARGET
+EXECUTION` strict (audité — aucune identité source/cible ne fuit dans l'opération figée,
+vérifié), et gate d'endpoint fort qui renvoie honnêtement `NOT_DERIVABLE` au lieu de
+revendiquer une prédiction. Deux sous-résultats distincts, tous deux confirmés par
+exécution directe : micro-gate structurel `PASS` (génération d'un nouvel objet K3 à partir
+de deux opérandes cibles — ne prouve aucune sémantique) ; gate d'endpoint `OPEN_EXPECTED`
+(aucune invention d'endpoint, comme attendu de l'absence d'évaluateur sémantique
+transitif dans le noyau K3 actuel). **E20-D reste `OPEN`** — ce protocole ne le ferme pas,
+il ferme seulement les défauts méthodologiques P4.1-P4.5. Un import mort supprimé avant
+intégration. 473/474 tests passing (1 skip Ollama déjà documenté) dans la copie isolée,
+confirmé de nouveau dans le dépôt live avant commit. Aucun paquet de validation tierce
+préparé pour ce protocole : contrairement à M4-M7, P4-R ne revendique aucune clôture
+(`OPEN_EXPECTED`/`OPEN`), donc rien à faire valider par un tiers pour l'instant — un
+paquet sera préparé si/quand une vraie règle de dérivation indépendante est conçue pour le
+gate d'endpoint fort. Détail complet : `documentation/P4R_Non_Circular_Structural_Transfer_V0_2.md`
+Sec. 6.
+
+**Prochaine étape (décidée le 2026-09-21) : interface minimale CLI/API préproduction pour
+test humain sur le cœur M1-M6** — reprend directement la question initiale de ce chantier
+(« le core algébrique peut-il être mis en préprod pour test humain ? »), jugée non prête
+à l'ouverture de ce chantier (aucune interface humaine, seulement des contrats de
+composition internes M1-M6 v0.1/v0.2). Choisie comme étape la plus rentable disponible :
+coût nul en appels LLM, ne touche pas à l'Évolution Cognitive (ROI jugé faible avec les
+paramètres M7 actuels, non reconsidéré ici), et exploite directement l'interface v0.2 déjà
+stabilisée et régression-testée sur deux domaines. M7 reste explicitement hors périmètre
+de cette interface (déjà exclu par construction de `m1_m6_interface_v0_2.py`).

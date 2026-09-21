@@ -1,0 +1,142 @@
+{
+  "experiment": "P4R_NON_CIRCULAR_STRUCTURAL_TRANSFER_V0.2",
+  "source": {
+    "invariant_id": "INV::2::FORWARD,REVERSE::0,1,2",
+    "support_count": 62,
+    "source_path_ids": [
+      "path::edge::0::F1:FORWARD::edge::13::F14:REVERSE",
+      "path::edge::0::F1:FORWARD::edge::6::F7:REVERSE",
+      "path::edge::0::F1:FORWARD::edge::4::F5:REVERSE",
+      "path::edge::0::F1:FORWARD::edge::2::F3:REVERSE",
+      "path::edge::13::F14:FORWARD::edge::0::F1:REVERSE",
+      "path::edge::13::F14:FORWARD::edge::6::F7:REVERSE",
+      "path::edge::13::F14:FORWARD::edge::4::F5:REVERSE",
+      "path::edge::13::F14:FORWARD::edge::2::F3:REVERSE",
+      "path::edge::15::F16:FORWARD::edge::14::F15:REVERSE",
+      "path::edge::16::B1:FORWARD::edge::18::B3:REVERSE",
+      "path::edge::17::B2:FORWARD::edge::19::B4:REVERSE",
+      "path::edge::16::B1:FORWARD::edge::26::B11:REVERSE",
+      "path::edge::29::B14:FORWARD::edge::23::B8:REVERSE",
+      "path::edge::17::B2:FORWARD::edge::25::B10:REVERSE",
+      "path::edge::29::B14:FORWARD::edge::21::B6:REVERSE",
+      "path::edge::29::B14:FORWARD::edge::28::B13:REVERSE",
+      "path::edge::3::F4:FORWARD::edge::7::F8:REVERSE",
+      "path::edge::3::F4:FORWARD::edge::5::F6:REVERSE",
+      "path::edge::6::F7:FORWARD::edge::0::F1:REVERSE",
+      "path::edge::6::F7:FORWARD::edge::13::F14:REVERSE",
+      "path::edge::7::F8:FORWARD::edge::3::F4:REVERSE",
+      "path::edge::6::F7:FORWARD::edge::4::F5:REVERSE",
+      "path::edge::7::F8:FORWARD::edge::5::F6:REVERSE",
+      "path::edge::6::F7:FORWARD::edge::2::F3:REVERSE",
+      "path::edge::12::F13:FORWARD::edge::11::F12:REVERSE",
+      "path::edge::14::F15:FORWARD::edge::15::F16:REVERSE",
+      "path::edge::18::B3:FORWARD::edge::16::B1:REVERSE",
+      "path::edge::19::B4:FORWARD::edge::17::B2:REVERSE",
+      "path::edge::18::B3:FORWARD::edge::26::B11:REVERSE",
+      "path::edge::20::B5:FORWARD::edge::24::B9:REVERSE",
+      "path::edge::20::B5:FORWARD::edge::27::B12:REVERSE",
+      "path::edge::19::B4:FORWARD::edge::25::B10:REVERSE",
+      "path::edge::20::B5:FORWARD::edge::22::B7:REVERSE",
+      "path::edge::4::F5:FORWARD::edge::0::F1:REVERSE",
+      "path::edge::4::F5:FORWARD::edge::13::F14:REVERSE",
+      "path::edge::5::F6:FORWARD::edge::3::F4:REVERSE",
+      "path::edge::4::F5:FORWARD::edge::6::F7:REVERSE",
+      "path::edge::5::F6:FORWARD::edge::7::F8:REVERSE",
+      "path::edge::4::F5:FORWARD::edge::2::F3:REVERSE",
+      "path::edge::11::F12:FORWARD::edge::12::F13:REVERSE",
+      "path::edge::2::F3:FORWARD::edge::0::F1:REVERSE",
+      "path::edge::2::F3:FORWARD::edge::13::F14:REVERSE",
+      "path::edge::2::F3:FORWARD::edge::6::F7:REVERSE",
+      "path::edge::2::F3:FORWARD::edge::4::F5:REVERSE",
+      "path::edge::23::B8:FORWARD::edge::29::B14:REVERSE",
+      "path::edge::26::B11:FORWARD::edge::16::B1:REVERSE",
+      "path::edge::24::B9:FORWARD::edge::20::B5:REVERSE",
+      "path::edge::26::B11:FORWARD::edge::18::B3:REVERSE",
+      "path::edge::27::B12:FORWARD::edge::20::B5:REVERSE",
+      "path::edge::23::B8:FORWARD::edge::21::B6:REVERSE",
+      "path::edge::23::B8:FORWARD::edge::28::B13:REVERSE",
+      "path::edge::24::B9:FORWARD::edge::22::B7:REVERSE",
+      "path::edge::27::B12:FORWARD::edge::22::B7:REVERSE",
+      "path::edge::21::B6:FORWARD::edge::29::B14:REVERSE",
+      "path::edge::25::B10:FORWARD::edge::17::B2:REVERSE",
+      "path::edge::28::B13:FORWARD::edge::29::B14:REVERSE",
+      "path::edge::22::B7:FORWARD::edge::20::B5:REVERSE",
+      "path::edge::25::B10:FORWARD::edge::19::B4:REVERSE",
+      "path::edge::21::B6:FORWARD::edge::23::B8:REVERSE",
+      "path::edge::22::B7:FORWARD::edge::24::B9:REVERSE",
+      "path::edge::22::B7:FORWARD::edge::27::B12:REVERSE",
+      "path::edge::28::B13:FORWARD::edge::23::B8:REVERSE"
+    ],
+    "left_path_id": "path::edge::0::F1:FORWARD::edge::13::F14:REVERSE",
+    "right_path_id": "path::edge::0::F1:FORWARD::edge::6::F7:REVERSE",
+    "relation_id": "P4R::INV::2::FORWARD,REVERSE::0,1,2",
+    "relation_kind": "STRUCTURAL_RELATION"
+  },
+  "frozen_operation": {
+    "operation_id": "OP::P4R::INV::2::FORWARD,REVERSE::0,1,2",
+    "length": 2,
+    "direction_sequence": [
+      "FORWARD",
+      "REVERSE"
+    ],
+    "node_binding": [
+      0,
+      1,
+      2
+    ],
+    "arity": 2,
+    "relation_kind": "STRUCTURAL_RELATION",
+    "field_relation_kinds": [
+      "EQUAL",
+      "EQUAL",
+      "EQUAL",
+      "EQUAL",
+      "EQUAL",
+      "EQUAL",
+      "DIFFERENT",
+      "DIFFERENT",
+      "EQUAL",
+      "EQUAL"
+    ]
+  },
+  "target_structural_generation": {
+    "operands": [
+      "Module_A",
+      "Projet_X"
+    ],
+    "derived_node_id": "P4R::TARGET::NEW",
+    "novelty_verified": true,
+    "candidate_children": [
+      "*OP::P4R::INV::2::FORWARD,REVERSE::0,1,2",
+      "*Module_A",
+      "*Projet_X"
+    ],
+    "candidate_kind": "OBSERVATION"
+  },
+  "masked_endpoint_gate": {
+    "status": "NOT_DERIVABLE",
+    "predicted_end": null,
+    "hidden_endpoint": "Direction_H",
+    "hidden_endpoint_visible_in_execution_input": false,
+    "semantic_endpoint_invention_supported": false
+  },
+  "leakage_audit": {
+    "target_operands_in_frozen_operation": false,
+    "source_path_ids_in_frozen_operation": false,
+    "target_leaks": [],
+    "source_path_leaks": []
+  },
+  "discipline": {
+    "target_verification_consulted_before_prediction": false,
+    "hidden_endpoint_supplied_to_execution": false,
+    "semantic_dictionary_used": false,
+    "m1_changed": false,
+    "m6_changed": false,
+    "m7_dependency": false
+  },
+  "status": {
+    "micro_structural_transfer": "PASS",
+    "strong_endpoint_transfer": "OPEN_EXPECTED",
+    "e20d_closure": "OPEN"
+  }
+}
