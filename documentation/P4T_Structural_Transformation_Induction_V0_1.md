@@ -1,0 +1,182 @@
+# MetaHIA V10 — P4-T : induction de transformation structurelle (Gates A-G) v0.1
+
+Date : 2026-09-21
+Statut : **`STRONG_MICROSTRUCTURAL_CANDIDATE` — E20-D reste `OPEN`**
+
+## 1. Contexte et origine
+
+Ce chantier remplace **P4-R** (transfert inter-domaines avec endpoint cible,
+`documentation/P4R_Non_Circular_Structural_Transfer_V0_2.md`) comme voie
+principale vers E20-D, sur la base d'une revue externe qui a audité
+`e20d_protocol.py` — un fichier **déjà présent dans ce dépôt** depuis le
+commit `92d396d`, antérieur à ce document. Cette revue proposait un
+protocole formel en sept portes (A-G) ; ce document l'implémente et en
+vérifie chaque affirmation par exécution directe, jamais par lecture seule
+du récit.
+
+**Vérification indépendante des affirmations de la revue**, avant toute
+adoption :
+
+- Suite E20-D existante rejouée : **99 tests, 0 échec** (périmètre
+  légèrement plus large que les « 69 tests » cités, probablement un
+  sous-ensemble de fichiers différent — aucune contradiction).
+- `tests/test_e20d_v03_recursive_transform.py::test_recursive_transformation_replays_on_unseen_rows`
+  inspecté ligne à ligne : le replay utilise des entités fraîches
+  (`fresh_src1/2/3`, `f{i}x`/`f{i}y`) totalement disjointes des entités
+  d'entraînement — confirmé non circulaire, à la différence du bug trouvé
+  dans P4.4/P4.5 (`documentation/P4_Transfer_Review_and_Rejection_2026-09-19.md`).
+- Sondes adversariales exécutées indépendamment (pas celles de la revue) :
+  cible constante → rejetée ; many-to-one → rejeté. Confirmées.
+
+## 2. Ce que `e20d_protocol.py` faisait déjà (réutilisé, non modifié)
+
+- `REFERENCE_EQUALITY` : même référence NodeRef en source et cible sur
+  toutes les lignes.
+- `COMPARE_PERMUTATION` : réordonnancement de colonnes découvert via
+  `kernel2.compare_candidates()`.
+- `COMPARE_RECURSIVE` : permutation imbriquée découverte récursivement.
+- Échec fermé sur ambiguïté (`compare_candidates()` ne devine jamais entre
+  plusieurs permutations également valides).
+
+`p4t_structural_transformation_induction_v0_1.py` **ne modifie ni
+`e20d_protocol.py` ni `kernel2.py`** — il délègue à `discover_cross_slot_candidates`/
+`replay_candidate` pour ces trois familles.
+
+## 3. La limite réelle trouvée, et la capacité réellement nouvelle ajoutée ici
+
+`kernel2.compare()`/`compare_candidates()` exigent
+`len(a.children) == len(b.children)` — **la comparaison générique ne peut
+donc jamais exprimer une transformation qui change l'arité** entre source
+et cible (projection, duplication). C'est exactement la limite identifiée
+par la revue (« il ne sait pas identifier génériquement `f(x,y)=x`,
+`f(x)=(x,x)` »).
+
+`discover_selection_mapping()` (nouveau, dans ce fichier uniquement) ajoute
+cette capacité manquante par un mécanisme unique et général : pour chaque
+position cible `j`, il cherche la position source `i` telle que
+`reference_equal(cible[j], source[i])` est vraie sur **toutes** les lignes.
+
+- **Une seule position source correspond** → résolu, `sigma[j] = i`.
+- **Zéro position ne correspond** → rejeté (pas deviné).
+- **Plusieurs positions correspondent également** → ambigu (pas deviné).
+
+Ce mécanisme unifie, sans code dupliqué :
+
+| Famille | Condition sur sigma |
+|---|---|
+| Permutation | bijective, arité égale |
+| Projection | injective, arité cible < arité source |
+| Duplication | non injective (une position source réutilisée) |
+
+## 4. Portes A-D : pipeline complet, vérifié par exécution
+
+```text
+Gate A  discover(train_rows)          -- train uniquement
+Gate B  freeze(candidate)             -- opaque, aucune référence aux Node d'entraînement
+Gate C  blind_replay(frozen, source)  -- source seule, cible jamais consultée
+Gate D  verify(predicted, truth)      -- seulement après la prédiction
+```
+
+Vérifié réellement (pas simulé) pour **quatre familles**, chacune avec des
+entités totalement fraîches côté holdout :
+
+- `COMPARE_RECURSIVE` (réutilisé) : `test_discover_reuses_e20d_protocol_for_recursive_permutation_and_replays_blind_on_fresh_entities`.
+- `PROJECTION` : `test_projection_is_discovered_and_replays_blind_on_fresh_entities`.
+- `DUPLICATION` : `test_duplication_is_discovered_and_replays_blind_on_fresh_entities`.
+- **Composition de deux transformations indépendamment gelées** :
+  `test_two_independently_discovered_mappings_compose_and_replay_blind` —
+  `compose_frozen(outer, inner)` chaîne deux `FrozenTransformation`
+  séparées (`sigma_composé[j] = inner.sigma[outer.sigma[j]]`), sans
+  ré-exécuter la découverte sur des données pré-composées. C'est la lecture
+  la plus littérale de « composition » proposée par la revue.
+
+## 5. Porte E : anti-triche, vérifiée par sondes adversariales
+
+Quatre propriétés testées directement dans
+`tests/test_p4t_structural_transformation_induction_v0_1.py`, chacune sur
+des données construites pour ce fichier (pas réutilisées d'ailleurs) :
+
+1. **Ambiguïté exposée, pas devinée** : deux positions source partageant la
+   même référence sur toutes les lignes → `OUTCOME_AMBIGUOUS`.
+2. **Contradiction rejetée** : une cible qui correspond à la position 0 sur
+   deux lignes mais à la position 2 sur la troisième → `OUTCOME_REJECTED`.
+3. **Cible constante rejetée** : une référence indépendante, jamais issue
+   de la source → `OUTCOME_REJECTED`.
+4. **Cible non structurelle rejetée** : une référence qui varie à chaque
+   ligne mais n'est jamais égale par référence à aucune position source →
+   `OUTCOME_REJECTED`. C'est la garantie que le mécanisme ne « hallucine »
+   jamais une fonction sémantique arbitraire.
+
+## 6. Porte B, vérifiée : aucune fuite de provenance d'entraînement
+
+`test_frozen_transformation_does_not_leak_training_node_refs` inspecte
+chaque champ de `FrozenTransformation` (hors le hash SHA-256 lui-même,
+exclu du test car un hash de 64 caractères hexadécimaux peut contenir
+n'importe quelle sous-chaîne courte par coïncidence — ceci a été trouvé et
+corrigé comme un faux positif du test lui-même, pas du mécanisme, pendant
+l'écriture de ce document) et confirme qu'aucun identifiant NodeRef
+d'entraînement n'y apparaît : `sigma` ne contient que des entiers de
+position.
+
+## 7. Porte G : mesure de coût, honnêtement bornée
+
+`run_costed_pipeline()` mesure réellement (jamais estimé) : temps de
+découverte, nombre de lignes d'entraînement, nombre de paires de positions
+essayées, temps de replay, nombre de lignes de holdout, temps de
+vérification — voir `P4TCostReport`.
+
+**Ce que cette porte ne fait PAS encore, déclaré explicitement** : ces
+chiffres ne sont pas encore branchés sur `e20d_cognitive_control_v0_1.py`
+(E20-D.19, `score_candidate`/ROI). Cette fonction est couplée à
+`PathCandidate`/`PathRecord` (issus de l'exploration de chemins), pas à un
+candidat de transformation — les y connecter exigerait un adaptateur
+supplémentaire, non construit ici. La revue elle-même présentait ceci comme
+un objectif final (« pour pouvoir finalement connecter »), pas comme déjà
+fait ; ce document ne le revendique pas non plus.
+
+## 8. Ce qui N'EST PAS démontré — lecture honnête, pas optimiste
+
+- **Découverte non supervisée générale** : le mécanisme reçoit des paires
+  `(source, cible)` appariées à l'entraînement. C'est une **induction de
+  transformation à partir d'exemples appariés**, pas une découverte de
+  relation dans un graphe sans structure cible — exactement la distinction
+  posée par la revue (`STRUCTURAL_TRANSFORMATION_INDUCTION`, pas
+  `AUTONOMOUS_DISCOVERY_GENERAL`).
+- **Holdout scientifique formel avec corpus verrouillé séparément** : les
+  tests de ce fichier construisent leurs propres données synthétiques dans
+  le même fichier que l'assertion — c'est une preuve de mécanisme
+  unitaire, pas un protocole avec un corpus gelé et remis par un tiers
+  avant exécution. Aucun paquet de validation tierce n'est préparé ici.
+- **Langage général de fonctions structurelles** : seules les familles
+  RÉFÉRENCE-ÉGALITÉ / PERMUTATION / RÉCURSIVE / SÉLECTION (projection,
+  duplication, composition de sélections) sont couvertes. Une fonction
+  authentiquement sémantique (ex. calcul arithmétique sur des valeurs
+  opaques) reste, par construction, rejetée — vérifié, pas supposé.
+- **Sélection automatique entre plusieurs hypothèses candidates** : quand
+  `discover_cross_slot_candidates()` renvoie plusieurs paires
+  source/cible candidates à des positions différentes, ce module ne
+  choisit pas laquelle retenir — l'appelant doit préciser
+  `source_position`/`target_position`. Il n'y a pas encore d'étape
+  « hypothèses → sélection/rationalisation → transformation retenue »
+  proposée par la revue (Sec. 7 du rapport).
+
+## 9. Décision
+
+**P4-T = `STRONG_MICROSTRUCTURAL_CANDIDATE`.** Remplace P4-R comme voie
+principale vers E20-D. **E20-D reste `OPEN`** — ce document ne le
+prétend pas fermer, il ferme seulement la question de savoir si le
+mécanisme de génération d'une nouvelle structure à partir d'une
+transformation découverte est réel et non circulaire (il l'est,
+maintenant vérifié pour quatre familles et leur composition).
+
+Aucune modification de `kernel2.py`/`e20d_protocol.py` : architecture
+compatible avec la trajectoire M1 v0.4 (« M1 reste minimal ; la richesse
+vit dans les objets structurels dérivés »).
+
+## 10. Tests
+
+`tests/test_p4t_structural_transformation_induction_v0_1.py` (13 tests) :
+2 réutilisation (permutation, récursif + replay aveugle), 3 nouvelles
+familles (projection, duplication, composition) chacune avec replay aveugle
+et vérification, 4 anti-triche, 2 gel (fuite + refus sur non-candidat), 2
+coût. Tous exécutés réellement, aucun résultat inventé.

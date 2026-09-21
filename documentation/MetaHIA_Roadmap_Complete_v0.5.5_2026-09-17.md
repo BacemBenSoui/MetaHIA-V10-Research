@@ -340,11 +340,49 @@ le test lui-même). 19 nouveaux tests (9 corpus + 6 régression + 4 multiseed, d
 qui gèle explicitement la non-monotonie comme régression permanente), 2 mis à jour sur la
 CLI. Détail complet : `documentation/P7_Fourth_Domain_Library_V0_1.md`.
 
+~~Reconsidérer la voie principale vers E20-D à la lumière d'une revue externe de
+`e20d_protocol.py` (déjà présent dans ce dépôt, commit `92d396d`).~~ **FAIT (2026-09-21) —
+P4-T, Induction de transformation structurelle, Gates A-G.** Remplace P4-R comme voie
+principale vers E20-D. Revue externe vérifiée par exécution directe avant adoption (pas
+acceptée sur récit) : 99 tests E20-D existants rejoués (0 échec, périmètre plus large que
+les « 69 » cités, sans contradiction) ; `test_recursive_transformation_replays_on_unseen_rows`
+inspecté ligne à ligne et confirmé non circulaire (entités de holdout totalement fraîches,
+à la différence du bug P4.4/P4.5) ; sondes adversariales indépendantes confirmant cible
+constante rejetée et many-to-one rejeté.
+
+Limite réelle trouvée dans `kernel2.compare()`/`compare_candidates()` : ces fonctions
+exigent une arité égale entre les deux côtés comparés, donc ne peuvent structurellement
+pas exprimer une transformation qui change l'arité (projection `f(x,y)=x`, duplication
+`f(x)=(x,x)`) — exactement la limite que la revue avait identifiée. Nouveau fichier
+`p4t_structural_transformation_induction_v0_1.py` (ne modifie ni `e20d_protocol.py` ni
+`kernel2.py`) : réutilise le mécanisme déjà validé pour RÉFÉRENCE-ÉGALITÉ/PERMUTATION/
+RÉCURSIF, et ajoute un mécanisme unique et général (`discover_selection_mapping`) qui
+couvre projection et duplication sans code dupliqué — vérifié par exécution avec replay
+aveugle sur entités fraîches pour les deux familles, plus une composition littérale de
+deux transformations indépendamment gelées (`compose_frozen`). Pipeline complet Gates
+A→D (discovery → freeze opaque → replay aveugle → vérification) vérifié pour quatre
+familles. Porte E (anti-triche) vérifiée par 4 sondes adversariales : ambiguïté exposée,
+contradiction rejetée, cible constante rejetée, cible non structurelle rejetée. Porte B
+(gel) vérifiée sans fuite de provenance d'entraînement (un faux positif de test dû à une
+coïncidence de sous-chaîne dans un hash SHA-256 a été trouvé et corrigé pendant la
+rédaction, pas dans le mécanisme lui-même). Porte G (coût) mesure réellement temps et
+comptes d'opérations, mais n'est explicitement PAS encore branchée sur le modèle ROI
+d'E20-D.19 (`e20d_cognitive_control_v0_1.py`, couplé à `PathCandidate`/`PathRecord`, pas à
+un candidat de transformation) — déclaré ouvert, pas revendiqué fait. 13 nouveaux tests,
+tous exécutés réellement. **Verdict : `P4-T = STRONG_MICROSTRUCTURAL_CANDIDATE`. E20-D
+reste `OPEN`** — ce chantier ferme seulement la question du mécanisme (réel, non
+circulaire, maintenant pour quatre familles + leur composition), pas la clôture
+scientifique d'E20-D elle-même (pas de découverte non supervisée générale, pas de corpus
+de holdout verrouillé séparément par un tiers, pas de sélection automatique entre
+hypothèses candidates). Détail complet :
+`documentation/P4T_Structural_Transformation_Induction_V0_1.md`.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes sans nouveau
-LLM ni Évolution Cognitive : (a) concevoir une vraie règle de dérivation indépendante pour
-le gate d'endpoint fort de P4-R (seule voie vers une clôture partielle d'E20-D identifiée
-jusqu'ici) ; (b) cinquième domaine si la non-monotonie de la Sec. 4 de P7 doit être
-étudiée plus finement (par exemple en contrôlant la taille du holdout ou la proportion
-`SUPPORTED`/`CONTRADICTED` de chaque nouveau domaine, plutôt que leur seul nombre).
-Aucune des deux n'est urgente ; à décider explicitement avant de commencer, comme pour
-chaque étape précédente de ce chantier.
+LLM ni Évolution Cognitive : (a) étape « hypothèses → sélection/rationalisation »
+manquante (Sec. 8 du document P4-T) — quand plusieurs paires source/cible candidates
+existent, rien ne choisit encore laquelle retenir ; (b) brancher la Porte G sur le modèle
+ROI d'E20-D.19 via un adaptateur ; (c) concevoir un vrai protocole de holdout avec corpus
+verrouillé séparément par un tiers (au lieu des données synthétiques construites dans le
+même fichier que les tests) ; (d) cinquième domaine M6 si la non-monotonie de la Sec. 4
+de P7 doit être étudiée plus finement. Aucune de ces quatre n'est urgente ; à décider
+explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
