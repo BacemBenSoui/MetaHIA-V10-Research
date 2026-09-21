@@ -63,14 +63,27 @@ def test_regression_matches_the_already_validated_supply_chain_baseline():
     assert abs(payload["brier_holdout"] - 0.375) < 1e-9
 
 
-def test_regression_combined_matches_the_already_validated_p6_three_domain_baseline():
+def test_regression_matches_the_already_validated_library_baseline():
+    code, out, _err = _run("regression", "--domain", "library")
+    assert code == 0
+    payload = json.loads(out)
+    assert payload["records"] == 20
+    assert payload["rules"] == 10
+    assert abs(payload["brier_holdout"] - 0.375) < 1e-9
+
+
+def test_regression_combined_matches_the_already_validated_p7_four_domain_baseline():
+    """combined's own definition evolves as REAL_DOMAINS grows -- it always
+    means 'everything currently known' (see cli_preprod_v0_1.py's comment),
+    so this test intentionally supersedes the earlier three-domain
+    assertion rather than adding a parallel one."""
     code, out, _err = _run("regression", "--domain", "combined")
     assert code == 0
     payload = json.loads(out)
-    assert payload["records"] == 74
-    assert payload["rules"] == 44
-    assert abs(payload["brier_holdout"] - 0.35555555555555557) < 1e-9
-    assert payload["corpus_id"] == "FAMILY-TREE-V0.2+ORGANIZATION-V0.1+SUPPLY-CHAIN-V0.1"
+    assert payload["records"] == 94
+    assert payload["rules"] == 54
+    assert abs(payload["brier_holdout"] - 0.37540049839800665) < 1e-9
+    assert payload["corpus_id"] == "FAMILY-TREE-V0.2+ORGANIZATION-V0.1+SUPPLY-CHAIN-V0.1+LIBRARY-V0.1"
 
 
 def test_manifest_lists_combined_and_names_it_is_not_a_transfer_claim():
@@ -81,13 +94,13 @@ def test_manifest_lists_combined_and_names_it_is_not_a_transfer_claim():
     assert "NOT a cross-domain transfer claim" in payload["combined_domain_caveat"]
 
 
-def test_list_records_combined_pools_all_three_real_domains():
+def test_list_records_combined_pools_all_four_real_domains():
     code, out, _err = _run("list-records", "--domain", "combined")
     assert code == 0
     payload = json.loads(out)
-    assert payload["record_count"] == 74
+    assert payload["record_count"] == 94
     prefixes = {r["record_id"].split("::", 1)[0] for r in payload["records"]}
-    assert prefixes == {"realv2", "orgv1", "supplyv1"}
+    assert prefixes == {"realv2", "orgv1", "supplyv1", "libraryv1"}
 
 
 def test_predict_never_hides_its_own_basis_and_matches_actual_for_a_known_record():

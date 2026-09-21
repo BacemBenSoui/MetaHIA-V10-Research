@@ -1,0 +1,26 @@
+{
+  "corpus_id": "LIBRARY-VERIFICATION-CLAIMS-V0.1",
+  "purpose": "Independent verification witnesses for the library corpus. Claims are authored separately from discovery and evidence facts and deliberately include both agreeing and conflicting endpoints, exactly like the family-tree, organization, and supply-chain claim corpora.",
+  "claims": [
+    {"subject": "Livre_7", "skeleton": [["APPARTIENT_A", "FORWARD"]], "claimed_object": "Collection_C", "source_id": "LIB-WITNESS-01"},
+    {"subject": "Livre_8", "skeleton": [["APPARTIENT_A", "FORWARD"]], "claimed_object": "Collection_D", "source_id": "LIB-WITNESS-02"},
+    {"subject": "Livre_7", "skeleton": [["ECRIT_PAR", "FORWARD"], ["PUBLIE_CHEZ", "FORWARD"]], "claimed_object": "Editeur_3", "source_id": "LIB-WITNESS-03"},
+    {"subject": "Livre_8", "skeleton": [["ECRIT_PAR", "FORWARD"], ["PUBLIE_CHEZ", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "LIB-WITNESS-04"},
+    {"subject": "Livre_7", "skeleton": [["ECRIT_PAR", "FORWARD"]], "claimed_object": "Khaled", "source_id": "LIB-WITNESS-05"},
+    {"subject": "Livre_8", "skeleton": [["ECRIT_PAR", "FORWARD"]], "claimed_object": "Ines", "source_id": "LIB-WITNESS-06"},
+    {"subject": "Ines", "skeleton": [["ECRIT_PAR", "REVERSE"], ["APPARTIENT_A", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "LIB-WITNESS-07"},
+    {"subject": "Khaled", "skeleton": [["ECRIT_PAR", "REVERSE"], ["APPARTIENT_A", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "LIB-WITNESS-08"},
+    {"subject": "Ines", "skeleton": [["ECRIT_PAR", "REVERSE"]], "claimed_object": "Livre_8", "source_id": "LIB-WITNESS-09"},
+    {"subject": "Khaled", "skeleton": [["ECRIT_PAR", "REVERSE"]], "claimed_object": "Livre_7", "source_id": "LIB-WITNESS-10"},
+    {"subject": "Ines", "skeleton": [["PUBLIE_CHEZ", "FORWARD"], ["SITUE_A", "FORWARD"]], "claimed_object": "Ville_4", "source_id": "LIB-WITNESS-11"},
+    {"subject": "Khaled", "skeleton": [["PUBLIE_CHEZ", "FORWARD"], ["SITUE_A", "FORWARD"]], "claimed_object": "Ville_3", "source_id": "LIB-WITNESS-12"},
+    {"subject": "Ines", "skeleton": [["PUBLIE_CHEZ", "FORWARD"]], "claimed_object": "Editeur_4", "source_id": "LIB-WITNESS-13"},
+    {"subject": "Khaled", "skeleton": [["PUBLIE_CHEZ", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "LIB-WITNESS-14"},
+    {"subject": "Editeur_3", "skeleton": [["PUBLIE_CHEZ", "REVERSE"], ["ECRIT_PAR", "REVERSE"]], "claimed_object": "Livre_7", "source_id": "LIB-WITNESS-15"},
+    {"subject": "Editeur_4", "skeleton": [["PUBLIE_CHEZ", "REVERSE"], ["ECRIT_PAR", "REVERSE"]], "claimed_object": "Livre_8", "source_id": "LIB-WITNESS-16"},
+    {"subject": "Editeur_3", "skeleton": [["PUBLIE_CHEZ", "REVERSE"]], "claimed_object": "Khaled", "source_id": "LIB-WITNESS-17"},
+    {"subject": "Editeur_4", "skeleton": [["PUBLIE_CHEZ", "REVERSE"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "LIB-WITNESS-18"},
+    {"subject": "Editeur_3", "skeleton": [["SITUE_A", "FORWARD"]], "claimed_object": "Ville_3", "source_id": "LIB-WITNESS-19"},
+    {"subject": "Editeur_4", "skeleton": [["SITUE_A", "FORWARD"]], "claimed_object": "Ville_4", "source_id": "LIB-WITNESS-20"}
+  ]
+}

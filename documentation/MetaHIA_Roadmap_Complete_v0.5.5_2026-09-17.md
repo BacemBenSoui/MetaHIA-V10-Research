@@ -318,9 +318,33 @@ transfert inter-domaines — le même disclaimer que P6 Sec. 3-4, jamais laissé
 tests ajoutés (11 au total sur la CLI). Détail complet :
 `documentation/MetaHIA_CLI_Preprod_M1_M6_V0_1.md` Sec. 2 et 5.
 
+~~Quatrième domaine si le motif de stabilisation de la Sec. 4 de P6 doit être confirmé
+au-delà de trois points.~~ **FAIT (2026-09-21) — P7.** Nouveau domaine « bibliothèque »
+(`corpus/library_facts_v0_1.json`, `m6_corpus_from_library_v0_1.py`, mécanisme déjà validé
+réutilisé à l'identique), topologie encore différente (auteurs 2/1/3 livres, éditeurs 2/1
+auteurs) pour éviter tout renommage. Résultat réel : 20 enregistrements, 10 règles,
+diversité réelle (15 `SUPPORTED`/5 `CONTRADICTED`), Brier holdout 0,375. **Conclusion
+« transfert non démontré » toujours inchangée** — reconfirmée une troisième fois (100 %
+`BASIS_GLOBAL_PRIOR` sur le holdout combiné à quatre domaines). **Résultat le plus
+important, et il infirme l'hypothèse implicite de la question posée** :
+`p7_four_domain_multiseed_v0_1.py` (10 graines) montre que l'écart-type du Brier combiné
+NE continue PAS à baisser — il **remonte légèrement** de 0,056129 (trois domaines, P6) à
+0,066963 (quatre domaines), tout en restant bien inférieur au chiffre à deux domaines
+(0,107167, P5). La stabilisation observée P5→P6 n'était donc pas le début d'une tendance
+monotone — trois domaines constituaient un minimum local sur cette plage, pas une loi
+générale. CLI étendue (`--domain library`) ; `--domain combined` évolue pour pool
+désormais quatre domaines (94 enregistrements, 54 règles) — comportement d'outil qui
+évolue avec le nombre de domaines connus, documenté explicitement comme tel (le test CLI
+correspondant a été mis à jour vers les nouveaux chiffres, avec la raison expliquée dans
+le test lui-même). 19 nouveaux tests (9 corpus + 6 régression + 4 multiseed, dont un test
+qui gèle explicitement la non-monotonie comme régression permanente), 2 mis à jour sur la
+CLI. Détail complet : `documentation/P7_Fourth_Domain_Library_V0_1.md`.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes sans nouveau
 LLM ni Évolution Cognitive : (a) concevoir une vraie règle de dérivation indépendante pour
 le gate d'endpoint fort de P4-R (seule voie vers une clôture partielle d'E20-D identifiée
-jusqu'ici) ; (b) quatrième domaine si le motif de stabilisation de la Sec. 4 de P6 doit
-être confirmé au-delà de trois points. Aucune des deux n'est urgente ; à décider
-explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
+jusqu'ici) ; (b) cinquième domaine si la non-monotonie de la Sec. 4 de P7 doit être
+étudiée plus finement (par exemple en contrôlant la taille du holdout ou la proportion
+`SUPPORTED`/`CONTRADICTED` de chaque nouveau domaine, plutôt que leur seul nombre).
+Aucune des deux n'est urgente ; à décider explicitement avant de commencer, comme pour
+chaque étape précédente de ce chantier.

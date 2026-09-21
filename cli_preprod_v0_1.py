@@ -8,12 +8,15 @@ research line was asked whether the core algebra could go to human-testing
 preprod.
 
 Scope, deliberately narrow:
-  - reads the three existing real corpora (Family Tree v0.2, Organization
-    v0.1, Supply Chain v0.1) via the already-validated non-degenerate
-    builders, plus a pooled `combined` pseudo-domain (all three real domains
-    together -- a stabilization baseline over the pooled global prior, NOT a
-    cross-domain transfer claim, see documentation/P6_Third_Domain_Supply_Chain_V0_1.md
-    Sec.3-4);
+  - reads the four existing real corpora (Family Tree v0.2, Organization
+    v0.1, Supply Chain v0.1, Library v0.1) via the already-validated
+    non-degenerate builders, plus a pooled `combined` pseudo-domain (all real
+    domains together -- a stabilization baseline over the pooled global
+    prior, NOT a cross-domain transfer claim, see
+    documentation/P6_Third_Domain_Supply_Chain_V0_1.md Sec.3-4 and
+    documentation/P7_Fourth_Domain_Library_V0_1.md; `combined`'s own
+    definition evolves as domains are added -- it is a tool's current view,
+    not a frozen scientific result);
   - runs the same rule-disjoint split/fit/holdout evaluation M6 always uses;
   - never hides the BASIS_GLOBAL_PRIOR finding: every single prediction this
     CLI prints names its own basis (BASIS_EXACT_BUCKET / BASIS_RULE_ONLY /
@@ -33,6 +36,7 @@ from m1_m6_interface_v0_2 import interface_manifest_v0_2
 from m6_corpus_from_m4_m5_v0_2 import build_real_corpus_v2
 from m6_corpus_from_organization_v0_1 import build_organization_corpus
 from m6_corpus_from_supply_chain_v0_1 import build_supply_chain_corpus
+from m6_corpus_from_library_v0_1 import build_library_corpus
 from m6_structural_learning_v0_1 import (
     StructuralLearningPolicy,
     StructuralOutcomeRecord,
@@ -41,7 +45,7 @@ from m6_structural_learning_v0_1 import (
     split_by_rule,
 )
 
-REAL_DOMAINS = ("family", "organization", "supply_chain")
+REAL_DOMAINS = ("family", "organization", "supply_chain", "library")
 DOMAINS = REAL_DOMAINS + ("combined",)
 
 
@@ -55,13 +59,18 @@ def _records_for_domain(domain: str) -> tuple[str, tuple[StructuralOutcomeRecord
     if domain == "supply_chain":
         report = build_supply_chain_corpus()
         return "SUPPLY-CHAIN-V0.1", tuple(report.records)
+    if domain == "library":
+        report = build_library_corpus()
+        return "LIBRARY-V0.1", tuple(report.records)
     if domain == "combined":
-        # Pools all three real domains -- mirrors p6_three_domain_regression_v0_1.py's
-        # combined_three exactly. This is a regression/stabilization baseline over the
+        # Pools all real domains -- mirrors p7_four_domain_regression_v0_1.py's
+        # combined_four exactly. This is a regression/stabilization baseline over the
         # pooled global class-frequency prior, NOT a cross-domain transfer claim: each
         # domain's rule signatures come from that domain's own relation vocabulary, so
         # split_by_rule() can never place one domain's rule in another's holdout (see
-        # documentation/P6_Third_Domain_Supply_Chain_V0_1.md Sec.3).
+        # documentation/P6_Third_Domain_Supply_Chain_V0_1.md Sec.3). This pseudo-domain's
+        # own definition evolves as REAL_DOMAINS grows -- it always means "everything
+        # currently known", not a number frozen at any past commit.
         corpus_ids = []
         all_records: list[StructuralOutcomeRecord] = []
         for real_domain in REAL_DOMAINS:

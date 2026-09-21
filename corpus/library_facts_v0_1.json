@@ -1,0 +1,33 @@
+{
+  "corpus_id": "LIBRARY-V0.1",
+  "purpose": "Independent fourth-domain corpus for M1-M6 multi-domain regression (P7). The domain is a library catalogue (books/authors/publishers/cities/collections), independent from the family-tree, organization, and supply-chain corpora. Topology is deliberately NOT an isomorphic renaming of any prior domain: 3 authors with uneven book counts (2/1/3), 2 publishers each serving a different-sized author group, 2 collections each holding exactly the books of one publisher's authors -- a different branching shape from both the organization corpus (uniform 2x2) and the supply-chain corpus (3-vs-1 asymmetry concentrated on a single branch).",
+  "discovery_facts": [
+    ["L-D01", "ECRIT_PAR", "Livre_1", "Nour"],
+    ["L-D02", "ECRIT_PAR", "Livre_2", "Nour"],
+    ["L-D03", "ECRIT_PAR", "Livre_3", "Amine"],
+    ["L-D04", "ECRIT_PAR", "Livre_4", "Salma"],
+    ["L-D05", "ECRIT_PAR", "Livre_5", "Salma"],
+    ["L-D06", "ECRIT_PAR", "Livre_6", "Salma"],
+    ["L-D07", "PUBLIE_CHEZ", "Nour", "Editeur_1"],
+    ["L-D08", "PUBLIE_CHEZ", "Amine", "Editeur_1"],
+    ["L-D09", "PUBLIE_CHEZ", "Salma", "Editeur_2"],
+    ["L-D10", "SITUE_A", "Editeur_1", "Ville_1"],
+    ["L-D11", "SITUE_A", "Editeur_2", "Ville_2"],
+    ["L-D12", "APPARTIENT_A", "Livre_1", "Collection_A"],
+    ["L-D13", "APPARTIENT_A", "Livre_2", "Collection_A"],
+    ["L-D14", "APPARTIENT_A", "Livre_3", "Collection_A"],
+    ["L-D15", "APPARTIENT_A", "Livre_4", "Collection_B"],
+    ["L-D16", "APPARTIENT_A", "Livre_5", "Collection_B"],
+    ["L-D17", "APPARTIENT_A", "Livre_6", "Collection_B"]
+  ],
+  "evidence_facts": [
+    ["L-E01", "ECRIT_PAR", "Livre_7", "Khaled"],
+    ["L-E02", "ECRIT_PAR", "Livre_8", "Ines"],
+    ["L-E03", "PUBLIE_CHEZ", "Khaled", "Editeur_3"],
+    ["L-E04", "PUBLIE_CHEZ", "Ines", "Editeur_4"],
+    ["L-E05", "SITUE_A", "Editeur_3", "Ville_3"],
+    ["L-E06", "SITUE_A", "Editeur_4", "Ville_4"],
+    ["L-E07", "APPARTIENT_A", "Livre_7", "Collection_C"],
+    ["L-E08", "APPARTIENT_A", "Livre_8", "Collection_D"]
+  ]
+}
