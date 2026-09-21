@@ -329,3 +329,125 @@ def test_costed_pipeline_produces_no_verifications_when_discovery_is_rejected():
     assert candidate.outcome == p4t.OUTCOME_REJECTED
     assert frozen is None
     assert verifications == ()
+
+
+# ---------------------------------------------------------------------------
+# Gate A.3 (P4-T.3): hypothesis selection among multiple candidates
+# ---------------------------------------------------------------------------
+
+
+def test_discover_all_hypotheses_reports_a_symmetric_reference_equality_pair_both_ways():
+    """Reference equality is genuinely undirected: if column i always
+    equals column j by reference, (i, j) and (j, i) are both structurally
+    valid hypotheses. This is confirmed real behaviour, not a bug to hide."""
+    rows = []
+    for i in range(1, 4):
+        eq = NodeRef(f"{i}eq")
+        rows.append(Node(f"row{i}", OBSERVATION, (eq, eq, NodeRef(f"{i}y"), NodeRef(f"{i}y"))))
+    hyps = p4t.discover_all_hypotheses(rows)
+    pairs = {(h.source_position, h.target_position) for h in hyps}
+    assert (0, 1) in pairs and (1, 0) in pairs
+    assert (2, 3) in pairs and (3, 2) in pairs
+    assert all(h.complexity_rank == 0 for h in hyps)
+
+
+def test_select_hypothesis_exposes_ambiguity_for_symmetric_tied_families():
+    rows = []
+    for i in range(1, 4):
+        eq = NodeRef(f"{i}eq")
+        rows.append(Node(f"row{i}", OBSERVATION, (eq, eq, NodeRef(f"{i}y"), NodeRef(f"{i}y"))))
+    hyps = p4t.discover_all_hypotheses(rows)
+    result = p4t.select_hypothesis(hyps)
+    assert result.outcome == p4t.OUTCOME_AMBIGUOUS_SELECTION
+    assert result.retained is None
+
+
+def test_select_hypothesis_retains_a_unique_lowest_rank_hypothesis():
+    rows = []
+    for i in range(1, 4):
+        src = Node(f"src{i}", OBSERVATION, (NodeRef(f"{i}a"), NodeRef(f"{i}b"), NodeRef(f"{i}c")))
+        tgt = Node(f"tgt{i}", OBSERVATION, (NodeRef(f"{i}a"),))
+        rows.append(Node(f"row{i}", OBSERVATION, (NodeRef(f"op{i}"), src, tgt)))
+    hyps = p4t.discover_all_hypotheses(rows)
+    result = p4t.select_hypothesis(hyps)
+    assert result.outcome == p4t.OUTCOME_RETAINED
+    assert (result.retained.source_position, result.retained.target_position) == (1, 2)
+    assert result.retained.candidate.family == p4t.FAMILY_SELECTION_MAPPING
+
+
+def test_select_hypothesis_prefers_lower_rank_over_a_coexisting_higher_rank_alternative():
+    """A rank-2 SELECTION_MAPPING hypothesis and a rank-3 (tied, symmetric)
+    RECURSIVE_PERMUTATION hypothesis are both discoverable in the same
+    observation set. Only the lower-rank one is retained -- the tie at
+    rank 3 never even enters the decision, because selection only compares
+    hypotheses at the single best rank present."""
+    rows = []
+    for i in range(1, 4):
+        rsrc = Node(f"rsrc{i}", OBSERVATION, ("O", NodeRef(f"{i}x"), NodeRef(f"{i}y"), NodeRef("z")))
+        rtgt = Node(f"rtgt{i}", OBSERVATION, ("O", NodeRef(f"{i}y"), NodeRef(f"{i}x"), NodeRef("z")))
+        psrc = Node(f"psrc{i}", OBSERVATION, (NodeRef(f"{i}a"), NodeRef(f"{i}b"), NodeRef(f"{i}c")))
+        ptgt = Node(f"ptgt{i}", OBSERVATION, (NodeRef(f"{i}a"),))
+        rows.append(Node(f"row{i}", OBSERVATION, (rsrc, rtgt, psrc, ptgt)))
+    hyps = p4t.discover_all_hypotheses(rows)
+    ranks_present = {h.complexity_rank for h in hyps}
+    assert ranks_present == {2, 3}
+    result = p4t.select_hypothesis(hyps)
+    assert result.outcome == p4t.OUTCOME_RETAINED
+    assert (result.retained.source_position, result.retained.target_position) == (2, 3)
+    assert result.retained.candidate.family == p4t.FAMILY_SELECTION_MAPPING
+
+
+def test_select_hypothesis_returns_no_hypotheses_when_nothing_is_discoverable():
+    rows = []
+    for i in range(3):
+        rows.append(Node(f"row{i}", OBSERVATION, (NodeRef(f"{i}a"), NodeRef(f"{i}b"))))
+    hyps = p4t.discover_all_hypotheses(rows)
+    result = p4t.select_hypothesis(hyps)
+    assert result.outcome == p4t.OUTCOME_NO_HYPOTHESES
+    assert result.retained is None
+    assert result.all_hypotheses == ()
+
+
+# ---------------------------------------------------------------------------
+# Gate A.3: optional E20-D.6 rationalization hook
+# ---------------------------------------------------------------------------
+
+
+def _recursive_candidate(prefix: str):
+    rows = []
+    for i in range(1, 4):
+        src = Node(f"{prefix}src{i}", OBSERVATION, ("O", NodeRef(f"{prefix}{i}x"), NodeRef(f"{prefix}{i}y"), NodeRef("z")))
+        tgt = Node(f"{prefix}tgt{i}", OBSERVATION, ("O", NodeRef(f"{prefix}{i}y"), NodeRef(f"{prefix}{i}x"), NodeRef("z")))
+        rows.append(_row(f"{prefix}row{i}", f"{prefix}op{i}", src, tgt, out="out"))
+    return p4t.discover(rows, source_position=1, target_position=2)
+
+
+def test_rationalize_retained_hypothesis_finds_exact_historical_match():
+    """Two independently-discovered recursive permutations built from
+    entirely different NodeRef labels are the SAME transformation
+    structurally -- E20-D.6's own similarity mechanism (reused unchanged)
+    must find them exactly similar via the anonymized pattern, not by
+    coincidence of shared training identifiers (there are none shared)."""
+    frozen_a = p4t.freeze(_recursive_candidate("a"), frozen_id="HIST_A")
+    frozen_b = p4t.freeze(_recursive_candidate("b"), frozen_id="NEW_B")
+    result = p4t.rationalize_retained_hypothesis(frozen_b, [frozen_a])
+    assert result is not None
+    assert result.status == "SUPPORTED_HISTORICAL"
+    assert result.similarity == 1.0
+
+
+def test_rationalize_retained_hypothesis_returns_none_for_selection_mapping_family():
+    rows = []
+    for i in range(1, 4):
+        src = Node(f"src{i}", OBSERVATION, (NodeRef(f"{i}a"), NodeRef(f"{i}b"), NodeRef(f"{i}c")))
+        tgt = Node(f"tgt{i}", OBSERVATION, (NodeRef(f"{i}a"),))
+        rows.append(_row(f"row{i}", f"op{i}", src, tgt))
+    selection_candidate = p4t.discover(rows, source_position=1, target_position=2)
+    frozen_selection = p4t.freeze(selection_candidate, frozen_id="SEL_SCOPE_CHECK")
+    frozen_historical = p4t.freeze(_recursive_candidate("h"), frozen_id="HIST_H")
+    assert p4t.rationalize_retained_hypothesis(frozen_selection, [frozen_historical]) is None
+
+
+def test_rationalize_retained_hypothesis_returns_none_without_historical_candidates():
+    frozen_a = p4t.freeze(_recursive_candidate("a"), frozen_id="NO_HIST")
+    assert p4t.rationalize_retained_hypothesis(frozen_a, []) is None

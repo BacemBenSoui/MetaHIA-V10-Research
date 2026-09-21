@@ -414,13 +414,31 @@ avant cette information — seul le plan technique complet (fichiers
 sujet≠objet/GROUNDED_ANALOGY) est documenté. Détail complet :
 `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md`.
 
+~~P4-T.3 — étape « hypothèses → sélection/rationalisation » manquante.~~ **FAIT
+(2026-09-21).** `discover_all_hypotheses()`/`select_hypothesis()` : classement des
+hypothèses candidates par complexité structurelle uniquement (rasoir d'Occam,
+`REFERENCE_EQUALITY` < `COMPARE_PERMUTATION` < `SELECTION_MAPPING` < `COMPARE_RECURSIVE`),
+égalité de rang exposée comme `AMBIGUOUS_SELECTION`, jamais choisie arbitrairement.
+Constat vérifié par exécution, pas supposé : `REFERENCE_EQUALITY`/`COMPARE_PERMUTATION`
+sont intrinsèquement non orientées (une relation d'égalité de référence vaut dans les deux
+sens) — documenté comme propriété réelle, pas caché. Corroboration optionnelle via
+`e20d_rationalization_v0_1.rationalize()` **réutilisé sans aucune modification** : deux
+transformations récursives découvertes indépendamment à partir de données totalement
+disjointes et structurellement identiques donnent `similarity=1.0`/`SUPPORTED_HISTORICAL`,
+vérifié par exécution. Frontière de portée explicite : ne s'applique pas à
+`SELECTION_MAPPING` (`sigma` est un tuple d'entiers, pas un `RefObject` comparable par
+E20-D.6) — renvoie `None`, pas une comparaison forcée. 8 nouveaux tests (23 au total sur
+P4-T). Détail complet : `documentation/P4T_Structural_Transformation_Induction_V0_1.md`
+Sec. 8.1 et 9.1-9.2 (matrice de clôture E20-D mise à jour : sélection d'hypothèses passe de
+🔴 absente à 🟢 fait).
+
 **Prochaine étape : non encore décidée explicitement** — options restantes, par ordre de
 la séquence proposée par la dernière revue externe : (a) **P4-T.2** — vrai benchmark
-séparé (train/holdout aveugle/témoin indépendant, verrouillé avant exécution), identifié
-comme le verrou le plus pertinent, devant un cinquième domaine M6 ou JEV/Kev ; (b) P4-T.3
-— étape « hypothèses → sélection/rationalisation » manquante ; (c) P4-T.6 — brancher la
-Porte G sur le modèle ROI d'E20-D.19 ; (d) P8 — dès que l'infrastructure Ollama/LAN promise
-par l'utilisateur est disponible. Aucune de ces quatre n'est urgente à l'exception de
-l'ordre de priorité déjà exprimé par l'utilisateur (P4-T avant un cinquième domaine M6) ;
-à décider explicitement avant de commencer, comme pour chaque étape précédente de ce
-chantier.
+séparé (train/holdout aveugle/témoin indépendant, verrouillé avant exécution), toujours
+identifié comme le verrou le plus pertinent restant, devant un cinquième domaine M6 ou
+JEV/Kev ; (b) P4-T.4 — nouvelles familles de transformation au-delà de
+permutation/récursif/projection/duplication/composition ; (c) P4-T.6 — brancher la Porte G
+sur le modèle ROI d'E20-D.19 ; (d) P8 — dès que l'infrastructure Ollama/LAN promise par
+l'utilisateur est disponible. Aucune de ces quatre n'est urgente à l'exception de l'ordre
+de priorité déjà exprimé par l'utilisateur (P4-T avant un cinquième domaine M6) ; à décider
+explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.

@@ -72,6 +72,7 @@ from e20d_protocol import (
     CrossSlotCandidate,
     discover_cross_slot_candidates,
 )
+from e20d_rationalization_v0_1 import RationalizationResult, rationalize
 
 FAMILY_REFERENCE_EQUALITY = "REFERENCE_EQUALITY"
 FAMILY_PERMUTATION = "COMPARE_PERMUTATION"
@@ -241,6 +242,99 @@ def discover(
 
 
 # ---------------------------------------------------------------------------
+# Gate A.3 (P4-T.3): hypothesis selection among multiple candidates
+#
+# `discover()` above requires the caller to already name the
+# (source_position, target_position) pair to test -- it never decides
+# WHICH pair is "the" transformation when several are structurally
+# viable. This section keeps that distinction explicit: discovery
+# enumerates every viable hypothesis; selection ranks them by structural
+# complexity only (no semantic dictionary) and retains the unique
+# simplest one, exposing a genuine tie as AMBIGUOUS_SELECTION rather than
+# picking arbitrarily -- extending this project's existing "never guess
+# among competing candidates" discipline (kernel2.compare_candidates(),
+# discover_selection_mapping()) to the selection layer itself.
+# ---------------------------------------------------------------------------
+
+FAMILY_COMPLEXITY_RANK = {
+    FAMILY_REFERENCE_EQUALITY: 0,
+    FAMILY_PERMUTATION: 1,
+    FAMILY_SELECTION_MAPPING: 2,
+    FAMILY_RECURSIVE_PERMUTATION: 3,
+}
+
+OUTCOME_RETAINED = "RETAINED"
+OUTCOME_AMBIGUOUS_SELECTION = "AMBIGUOUS_SELECTION"
+OUTCOME_NO_HYPOTHESES = "NO_HYPOTHESES"
+
+
+@dataclass(frozen=True)
+class Hypothesis:
+    source_position: int
+    target_position: int
+    candidate: TransformationCandidate
+    complexity_rank: int
+
+
+@dataclass(frozen=True)
+class HypothesisSelectionResult:
+    outcome: str
+    retained: Optional[Hypothesis]
+    all_hypotheses: Tuple[Hypothesis, ...]
+
+
+def discover_all_hypotheses(observations: Sequence[Node], *, min_evidence: int = 3) -> Tuple[Hypothesis, ...]:
+    """Enumerates every ordered (source_position, target_position) pair and
+    collects every non-rejected, non-ambiguous transformation candidate as
+    one structural hypothesis. Discovery itself never decides which one is
+    retained -- see `select_hypothesis()`.
+
+    Note on symmetry: a REFERENCE_EQUALITY relationship is genuinely
+    undirected (if column i always equals column j, then (i, j) and (j, i)
+    are both structurally valid, equally-ranked hypotheses). This function
+    reports both rather than silently picking a direction -- `select_hypothesis()`
+    will then correctly expose that as an ambiguous tie rather than an
+    arbitrary choice.
+    """
+    if not observations:
+        return ()
+    width = len(observations[0].children)
+    hypotheses: list[Hypothesis] = []
+    for source_position in range(width):
+        for target_position in range(width):
+            if source_position == target_position:
+                continue
+            candidate = discover(
+                observations,
+                source_position=source_position,
+                target_position=target_position,
+                min_evidence=min_evidence,
+            )
+            if candidate.outcome != OUTCOME_CANDIDATE:
+                continue
+            rank = FAMILY_COMPLEXITY_RANK.get(candidate.family, 99)
+            hypotheses.append(Hypothesis(source_position, target_position, candidate, rank))
+    return tuple(hypotheses)
+
+
+def select_hypothesis(hypotheses: Sequence[Hypothesis]) -> HypothesisSelectionResult:
+    """Gate A.3. Ranks candidate hypotheses by structural complexity only
+    (Occam's razor: REFERENCE_EQUALITY < PERMUTATION < SELECTION_MAPPING <
+    RECURSIVE_PERMUTATION -- prefer the simplest family that already
+    explains the data over a more elaborate one) and retains the unique
+    lowest-rank hypothesis. A genuine tie at the lowest rank is exposed as
+    `AMBIGUOUS_SELECTION`, never picked arbitrarily.
+    """
+    if not hypotheses:
+        return HypothesisSelectionResult(OUTCOME_NO_HYPOTHESES, None, tuple(hypotheses))
+    best_rank = min(h.complexity_rank for h in hypotheses)
+    best = [h for h in hypotheses if h.complexity_rank == best_rank]
+    if len(best) == 1:
+        return HypothesisSelectionResult(OUTCOME_RETAINED, best[0], tuple(hypotheses))
+    return HypothesisSelectionResult(OUTCOME_AMBIGUOUS_SELECTION, None, tuple(hypotheses))
+
+
+# ---------------------------------------------------------------------------
 # Gate B: freeze -- opaque, no reference to training Node objects
 # ---------------------------------------------------------------------------
 
@@ -338,6 +432,34 @@ def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTrans
         pattern_ref=anonymized_ref,
         source_position=cs.source_position,
     )
+
+
+def rationalize_retained_hypothesis(
+    frozen: FrozenTransformation,
+    historical_frozen: Sequence[FrozenTransformation],
+    *,
+    threshold: float = 0.97,
+) -> Optional[RationalizationResult]:
+    """Gate A.3 optional corroboration -- reuses E20-D.6
+    (`e20d_rationalization_v0_1.rationalize`) completely unchanged, no new
+    semantic layer added. Compares the retained hypothesis's frozen
+    pattern against previously-frozen transformations already adopted in
+    this project; a high similarity yields `SUPPORTED_HISTORICAL`, never a
+    rewrite of the retained hypothesis itself (E20-D.6's own invariant).
+
+    Explicit scope boundary, not a silent gap: only meaningful for the
+    PERMUTATION/RECURSIVE families, whose `pattern_ref` is a RefObject
+    E20-D.6's structural-similarity mechanism can compare. SELECTION_MAPPING's
+    `sigma` is a plain tuple of integer positions with no RefObject to
+    compare against -- this function returns None for that family rather
+    than forcing an ill-fitting comparison.
+    """
+    if frozen.pattern_ref is None:
+        return None
+    historical_refs = [h.pattern_ref for h in historical_frozen if h.pattern_ref is not None]
+    if not historical_refs:
+        return None
+    return rationalize(frozen.pattern_ref, historical_refs, threshold=threshold)
 
 
 # ---------------------------------------------------------------------------
@@ -505,14 +627,20 @@ def run_costed_pipeline(
 
 
 __all__ = [
+    "FAMILY_COMPLEXITY_RANK",
     "FAMILY_PERMUTATION",
     "FAMILY_RECURSIVE_PERMUTATION",
     "FAMILY_REFERENCE_EQUALITY",
     "FAMILY_SELECTION_MAPPING",
     "OUTCOME_AMBIGUOUS",
+    "OUTCOME_AMBIGUOUS_SELECTION",
     "OUTCOME_CANDIDATE",
+    "OUTCOME_NO_HYPOTHESES",
     "OUTCOME_REJECTED",
+    "OUTCOME_RETAINED",
     "FrozenTransformation",
+    "Hypothesis",
+    "HypothesisSelectionResult",
     "P4TCostReport",
     "SelectionMappingResult",
     "TransformationCandidate",
@@ -521,8 +649,11 @@ __all__ = [
     "classify_selection_mapping",
     "compose_frozen",
     "discover",
+    "discover_all_hypotheses",
     "discover_selection_mapping",
     "freeze",
+    "rationalize_retained_hypothesis",
     "run_costed_pipeline",
+    "select_hypothesis",
     "verify",
 ]

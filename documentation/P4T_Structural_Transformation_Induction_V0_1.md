@@ -196,6 +196,57 @@ fait ; ce document ne le revendique pas non plus.
   « hypothèses → sélection/rationalisation → transformation retenue »
   proposée par la revue (Sec. 7 du rapport).
 
+### 8.1 P4-T.3 — sélection d'hypothèses (2026-09-21, FAIT)
+
+`discover_all_hypotheses()` énumère désormais tous les couples
+`(source_position, target_position)` ordonnés et collecte chaque candidat
+non rejeté/non ambigu comme une hypothèse structurelle distincte — la
+découverte ne décide toujours pas laquelle retenir. `select_hypothesis()`
+classe les hypothèses par **complexité structurelle uniquement** (rasoir
+d'Occam, aucun dictionnaire sémantique) :
+
+```text
+REFERENCE_EQUALITY (rang 0) < COMPARE_PERMUTATION (rang 1)
+  < SELECTION_MAPPING (rang 2) < COMPARE_RECURSIVE (rang 3)
+```
+
+et retient l'unique hypothèse de rang minimal — une égalité au rang
+minimal est exposée comme `AMBIGUOUS_SELECTION`, jamais choisie
+arbitrairement.
+
+**Constat vérifié par exécution, pas supposé** : `REFERENCE_EQUALITY` et
+`COMPARE_PERMUTATION` sont des relations **intrinsèquement non
+orientées** — si la colonne *i* égale toujours la colonne *j* par
+référence, `(i,j)` et `(j,i)` sont tous deux des hypothèses valides. Ce
+n'est pas un bug de ce module : c'est une propriété réelle de ces deux
+familles, et `select_hypothesis()` l'expose honnêtement comme une
+ambiguïté plutôt que de choisir une direction arbitraire. Vérifié par 4
+constructions différentes avant d'écrire les tests correspondants (pas
+après) : deux paires symétriques → ambigu ; une hypothèse `SELECTION_MAPPING`
+unique → retenue ; une hypothèse de rang 2 en présence d'une alternative
+de rang 3 (elle-même symétrique) → la rang 2 gagne, la symétrie du rang 3
+n'entre jamais en jeu puisque seul le meilleur rang est comparé ; aucune
+hypothèse découvrable → `NO_HYPOTHESES`.
+
+**Corroboration optionnelle via E20-D.6** (`rationalize_retained_hypothesis`) :
+réutilise `e20d_rationalization_v0_1.rationalize()` **sans aucune
+modification**, en comparant le `pattern_ref` (déjà anonymisé par le
+durcissement Sec. 6.1) de l'hypothèse retenue à des transformations déjà
+gelées précédemment. Deux transformations récursives découvertes
+indépendamment à partir de données totalement disjointes (aucun
+identifiant partagé) et structurellement identiques donnent
+`similarity=1.0`, `SUPPORTED_HISTORICAL` — vérifié par exécution directe,
+pas suggéré par construction du test. **Frontière de portée explicite,
+pas une lacune cachée** : pour `SELECTION_MAPPING`, `sigma` est un simple
+tuple d'entiers sans `RefObject` à comparer — la fonction renvoie `None`
+plutôt que de forcer une comparaison qui ne correspond pas au mécanisme
+d'E20-D.6.
+
+8 nouveaux tests (23 au total sur P4-T) : 1 énumération/symétrie, 4
+sélection (ambiguïté, unicité, priorité de rang, aucune hypothèse), 3
+rationalisation (correspondance exacte, frontière `SELECTION_MAPPING`,
+absence d'historique).
+
 ## 9. Décision
 
 **P4-T = `STRONG_MICROSTRUCTURAL_CANDIDATE`.** Remplace P4-R comme voie
@@ -220,7 +271,7 @@ vit dans les objets structurels dérivés »).
 | Coût/ROI | 🟠 mesure réelle (Porte G) | intégration à `e20d_cognitive_control_v0_1.py` (E20-D.19) |
 | Non-circularité | 🟢 forte | validation tierce formelle |
 | Provenance (gel) | 🟢 maintenant réellement vérifié (Sec. 6.1) | — |
-| Sélection d'hypothèses | 🔴 absente | étape « hypothèses → rationalisation → transformation retenue » |
+| Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
 
 ### 9.2 Séquence de suite proposée (P4-T.1 → P4-T.7)
 
@@ -232,9 +283,10 @@ explicite :
    canonique via `structural_signature()`, 2 tests de régression permanents.
 2. **P4-T.2 — vrai benchmark séparé** (train / holdout aveugle / témoin
    indépendant, verrouillé avant exécution) — pas encore fait.
-3. **P4-T.3 — sélection d'hypothèses** (plusieurs candidats → comparaison
-   structurelle → rationalisation → décision fail-closed) — pas encore
-   fait ; peut s'appuyer sur E20-D.6/D.19 sans dictionnaire sémantique.
+3. **P4-T.3 — sélection d'hypothèses.** **FAIT (2026-09-21, Sec. 8.1)** :
+   `discover_all_hypotheses()`/`select_hypothesis()` (rasoir d'Occam,
+   ambiguïté exposée sur égalité de rang) + corroboration optionnelle via
+   E20-D.6 réutilisé sans modification. 8 tests de régression.
 4. **P4-T.4 — nouvelles familles de transformation** au-delà de
    permutation/récursif/projection/duplication/composition — pas encore
    fait.
@@ -254,9 +306,12 @@ séparés** de cette trajectoire — ni preuve de clôture E20-D, ni substitut
 
 ## 10. Tests
 
-`tests/test_p4t_structural_transformation_induction_v0_1.py` (15 tests,
-après durcissement Sec. 6.1) : 2 réutilisation (permutation, récursif +
-replay aveugle), 3 nouvelles familles (projection, duplication,
-composition) chacune avec replay aveugle et vérification, 4 anti-triche, 4
-gel (fuite SELECTION_MAPPING, fuite RECURSIVE, digest canonique, refus sur
-non-candidat), 2 coût. Tous exécutés réellement, aucun résultat inventé.
+`tests/test_p4t_structural_transformation_induction_v0_1.py` (23 tests,
+après P4-T.1 et P4-T.3) : 2 réutilisation (permutation, récursif + replay
+aveugle), 3 nouvelles familles (projection, duplication, composition)
+chacune avec replay aveugle et vérification, 4 anti-triche, 4 gel (fuite
+SELECTION_MAPPING, fuite RECURSIVE, digest canonique, refus sur
+non-candidat), 2 coût, 1 énumération/symétrie, 4 sélection d'hypothèses
+(ambiguïté, unicité, priorité de rang, aucune hypothèse), 3 rationalisation
+E20-D.6 (correspondance exacte, frontière SELECTION_MAPPING, absence
+d'historique). Tous exécutés réellement, aucun résultat inventé.
