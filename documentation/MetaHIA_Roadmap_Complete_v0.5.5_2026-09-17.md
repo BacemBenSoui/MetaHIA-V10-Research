@@ -308,12 +308,19 @@ stabilise l'estimation du prior global, sans transfert sémantique. CLI étendue
 (`--domain supply_chain`). 19 nouveaux tests (9 corpus + 6 régression + 4 multiseed),
 1 ajouté à la CLI. Détail complet : `documentation/P6_Third_Domain_Supply_Chain_V0_1.md`.
 
+~~Étendre la CLI à une commande `regression --domain combined`.~~ **FAIT (2026-09-21)** —
+`cli_preprod_v0_1.py` accepte désormais `--domain combined` sur les trois commandes
+(`list-records`, `regression`, `predict`), qui pool les trois domaines réels et reproduit
+exactement le baseline `combined_three` de P6 (74 enregistrements, 44 règles, Brier
+holdout 0,35556). `manifest` liste `combined` et porte un nouveau champ
+`combined_domain_caveat` qui rappelle explicitement que ce n'est pas une revendication de
+transfert inter-domaines — le même disclaimer que P6 Sec. 3-4, jamais laissé implicite. 3
+tests ajoutés (11 au total sur la CLI). Détail complet :
+`documentation/MetaHIA_CLI_Preprod_M1_M6_V0_1.md` Sec. 2 et 5.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes sans nouveau
-LLM ni Évolution Cognitive : (a) étendre la CLI à une commande `regression --domain
-combined` (déjà calculée par `p5_m1_m6_multidomain_regression_v0_1.py` et
-`p6_three_domain_regression_v0_1.py`, jamais exposée en CLI) ; (b) concevoir une vraie
-règle de dérivation indépendante pour le gate d'endpoint fort de P4-R (seule voie vers une
-clôture partielle d'E20-D identifiée jusqu'ici) ; (c) quatrième domaine si le motif de
-stabilisation de la Sec. 4 de P6 doit être confirmé au-delà de trois points. Aucune de ces
-trois n'est urgente ; à décider explicitement avant de commencer, comme pour chaque étape
-précédente de ce chantier.
+LLM ni Évolution Cognitive : (a) concevoir une vraie règle de dérivation indépendante pour
+le gate d'endpoint fort de P4-R (seule voie vers une clôture partielle d'E20-D identifiée
+jusqu'ici) ; (b) quatrième domaine si le motif de stabilisation de la Sec. 4 de P6 doit
+être confirmé au-delà de trois points. Aucune des deux n'est urgente ; à décider
+explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.

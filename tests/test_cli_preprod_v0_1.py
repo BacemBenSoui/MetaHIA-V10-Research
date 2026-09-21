@@ -63,6 +63,33 @@ def test_regression_matches_the_already_validated_supply_chain_baseline():
     assert abs(payload["brier_holdout"] - 0.375) < 1e-9
 
 
+def test_regression_combined_matches_the_already_validated_p6_three_domain_baseline():
+    code, out, _err = _run("regression", "--domain", "combined")
+    assert code == 0
+    payload = json.loads(out)
+    assert payload["records"] == 74
+    assert payload["rules"] == 44
+    assert abs(payload["brier_holdout"] - 0.35555555555555557) < 1e-9
+    assert payload["corpus_id"] == "FAMILY-TREE-V0.2+ORGANIZATION-V0.1+SUPPLY-CHAIN-V0.1"
+
+
+def test_manifest_lists_combined_and_names_it_is_not_a_transfer_claim():
+    code, out, _err = _run("manifest")
+    assert code == 0
+    payload = json.loads(out)
+    assert "combined" in payload["domains_available"]
+    assert "NOT a cross-domain transfer claim" in payload["combined_domain_caveat"]
+
+
+def test_list_records_combined_pools_all_three_real_domains():
+    code, out, _err = _run("list-records", "--domain", "combined")
+    assert code == 0
+    payload = json.loads(out)
+    assert payload["record_count"] == 74
+    prefixes = {r["record_id"].split("::", 1)[0] for r in payload["records"]}
+    assert prefixes == {"realv2", "orgv1", "supplyv1"}
+
+
 def test_predict_never_hides_its_own_basis_and_matches_actual_for_a_known_record():
     code, out, _err = _run("list-records", "--domain", "organization")
     records = json.loads(out)["records"]

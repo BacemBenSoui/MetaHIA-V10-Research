@@ -8,8 +8,12 @@ research line was asked whether the core algebra could go to human-testing
 preprod.
 
 Scope, deliberately narrow:
-  - reads the two existing real corpora (Family Tree v0.2, Organization v0.1)
-    via the already-validated non-degenerate builders;
+  - reads the three existing real corpora (Family Tree v0.2, Organization
+    v0.1, Supply Chain v0.1) via the already-validated non-degenerate
+    builders, plus a pooled `combined` pseudo-domain (all three real domains
+    together -- a stabilization baseline over the pooled global prior, NOT a
+    cross-domain transfer claim, see documentation/P6_Third_Domain_Supply_Chain_V0_1.md
+    Sec.3-4);
   - runs the same rule-disjoint split/fit/holdout evaluation M6 always uses;
   - never hides the BASIS_GLOBAL_PRIOR finding: every single prediction this
     CLI prints names its own basis (BASIS_EXACT_BUCKET / BASIS_RULE_ONLY /
@@ -37,7 +41,8 @@ from m6_structural_learning_v0_1 import (
     split_by_rule,
 )
 
-DOMAINS = ("family", "organization", "supply_chain")
+REAL_DOMAINS = ("family", "organization", "supply_chain")
+DOMAINS = REAL_DOMAINS + ("combined",)
 
 
 def _records_for_domain(domain: str) -> tuple[str, tuple[StructuralOutcomeRecord, ...]]:
@@ -50,6 +55,20 @@ def _records_for_domain(domain: str) -> tuple[str, tuple[StructuralOutcomeRecord
     if domain == "supply_chain":
         report = build_supply_chain_corpus()
         return "SUPPLY-CHAIN-V0.1", tuple(report.records)
+    if domain == "combined":
+        # Pools all three real domains -- mirrors p6_three_domain_regression_v0_1.py's
+        # combined_three exactly. This is a regression/stabilization baseline over the
+        # pooled global class-frequency prior, NOT a cross-domain transfer claim: each
+        # domain's rule signatures come from that domain's own relation vocabulary, so
+        # split_by_rule() can never place one domain's rule in another's holdout (see
+        # documentation/P6_Third_Domain_Supply_Chain_V0_1.md Sec.3).
+        corpus_ids = []
+        all_records: list[StructuralOutcomeRecord] = []
+        for real_domain in REAL_DOMAINS:
+            corpus_id, records = _records_for_domain(real_domain)
+            corpus_ids.append(corpus_id)
+            all_records.extend(records)
+        return "+".join(corpus_ids), tuple(all_records)
     raise ValueError(f"unknown domain {domain!r}; choose from {DOMAINS}")
 
 
@@ -75,6 +94,13 @@ def cmd_manifest(_args: argparse.Namespace) -> dict:
             "project's history -- every holdout Brier/ECE number measures global "
             "class-frequency generalization, never rule-specific learning. This CLI "
             "surfaces `basis` on every prediction so this is never hidden."
+        ),
+        "combined_domain_caveat": (
+            "--domain combined pools all three real domains for a stabilization/"
+            "regression baseline over the pooled global-class-frequency prior. It is "
+            "NOT a cross-domain transfer claim: each domain's rule signatures come "
+            "from that domain's own relation vocabulary, so split_by_rule() can never "
+            "place one domain's rule in another's holdout."
         ),
     }
 
