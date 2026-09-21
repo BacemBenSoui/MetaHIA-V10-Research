@@ -20,10 +20,14 @@ est déjà validé (`build_real_corpus_v2`, `build_organization_corpus`,
 
 ```bash
 python cli_preprod_v0_1.py manifest
-python cli_preprod_v0_1.py list-records --domain family|organization
-python cli_preprod_v0_1.py regression --domain family|organization [--seed N]
-python cli_preprod_v0_1.py predict --domain family|organization --record-id <id> [--seed N]
+python cli_preprod_v0_1.py list-records --domain family|organization|supply_chain
+python cli_preprod_v0_1.py regression --domain family|organization|supply_chain [--seed N]
+python cli_preprod_v0_1.py predict --domain family|organization|supply_chain --record-id <id> [--seed N]
 ```
+
+`supply_chain` (added 2026-09-21, P6) is a third, structurally distinct domain
+(industrial supply chain: workers/workshops/factories/markets/parts) — see
+`documentation/P6_Third_Domain_Supply_Chain_V0_1.md`.
 
 Chaque sortie est un JSON structuré sur stdout.
 
@@ -74,10 +78,10 @@ mock) :
 
 - Portée M1-M6 uniquement (M7 exclu par construction, comme l'interface
   v0.2).
-- Deux domaines seulement (Famille, Organisation) — pas de commande
-  `regression --domain combined` dans cette version (le calcul combiné existe
-  déjà dans `p5_m1_m6_multidomain_regression_v0_1.py`, non dupliqué ici pour
-  rester minimal).
+- Trois domaines (Famille, Organisation, Chaîne d'approvisionnement) — pas de
+  commande `regression --domain combined` dans cette version (le calcul
+  combiné existe déjà dans `p5_m1_m6_multidomain_regression_v0_1.py` et
+  `p6_three_domain_regression_v0_1.py`, non dupliqué ici pour rester minimal).
 - Aucune persistance, aucun état entre appels — chaque commande reconstruit le
   corpus et réentraîne la politique à chaque exécution (corpus assez petit
   pour que ce ne soit pas un problème de performance).

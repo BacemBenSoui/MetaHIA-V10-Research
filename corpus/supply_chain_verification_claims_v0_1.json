@@ -1,0 +1,30 @@
+{
+  "corpus_id": "SUPPLY-CHAIN-VERIFICATION-CLAIMS-V0.1",
+  "purpose": "Independent verification witnesses for the supply-chain corpus. Claims are authored separately from discovery and evidence facts and deliberately include both agreeing and conflicting endpoints, exactly like the family-tree and organization claim corpora.",
+  "claims": [
+    {"subject": "Piece_E", "skeleton": [["DESTINEE_A", "FORWARD"], ["LIVRE_A", "FORWARD"]], "claimed_object": "Marche_5", "source_id": "SUPPLY-WITNESS-01"},
+    {"subject": "Piece_F", "skeleton": [["DESTINEE_A", "FORWARD"], ["LIVRE_A", "FORWARD"]], "claimed_object": "Marche_6", "source_id": "SUPPLY-WITNESS-02"},
+    {"subject": "Piece_E", "skeleton": [["DESTINEE_A", "FORWARD"], ["RATTACHE_A", "REVERSE"]], "claimed_object": "Atelier_C", "source_id": "SUPPLY-WITNESS-03"},
+    {"subject": "Piece_F", "skeleton": [["DESTINEE_A", "FORWARD"], ["RATTACHE_A", "REVERSE"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-04"},
+    {"subject": "Piece_E", "skeleton": [["DESTINEE_A", "FORWARD"]], "claimed_object": "Usine_5", "source_id": "SUPPLY-WITNESS-05"},
+    {"subject": "Piece_F", "skeleton": [["DESTINEE_A", "FORWARD"]], "claimed_object": "Usine_6", "source_id": "SUPPLY-WITNESS-06"},
+    {"subject": "Usine_5", "skeleton": [["DESTINEE_A", "REVERSE"], ["FABRIQUEE_PAR", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-07"},
+    {"subject": "Usine_6", "skeleton": [["DESTINEE_A", "REVERSE"], ["FABRIQUEE_PAR", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-08"},
+    {"subject": "Usine_5", "skeleton": [["DESTINEE_A", "REVERSE"]], "claimed_object": "Piece_E", "source_id": "SUPPLY-WITNESS-09"},
+    {"subject": "Usine_6", "skeleton": [["DESTINEE_A", "REVERSE"]], "claimed_object": "Piece_F", "source_id": "SUPPLY-WITNESS-10"},
+    {"subject": "Piece_E", "skeleton": [["FABRIQUEE_PAR", "FORWARD"], ["FABRIQUEE_PAR", "REVERSE"]], "claimed_object": "Piece_F", "source_id": "SUPPLY-WITNESS-11"},
+    {"subject": "Piece_F", "skeleton": [["FABRIQUEE_PAR", "FORWARD"], ["FABRIQUEE_PAR", "REVERSE"]], "claimed_object": "Piece_E", "source_id": "SUPPLY-WITNESS-12"},
+    {"subject": "Piece_E", "skeleton": [["FABRIQUEE_PAR", "FORWARD"]], "claimed_object": "Atelier_C", "source_id": "SUPPLY-WITNESS-13"},
+    {"subject": "Piece_F", "skeleton": [["FABRIQUEE_PAR", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-14"},
+    {"subject": "Usine_5", "skeleton": [["LIVRE_A", "FORWARD"]], "claimed_object": "Marche_5", "source_id": "SUPPLY-WITNESS-15"},
+    {"subject": "Usine_6", "skeleton": [["LIVRE_A", "FORWARD"]], "claimed_object": "Marche_6", "source_id": "SUPPLY-WITNESS-16"},
+    {"subject": "Usine_5", "skeleton": [["RATTACHE_A", "REVERSE"], ["RATTACHE_A", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-17"},
+    {"subject": "Usine_6", "skeleton": [["RATTACHE_A", "REVERSE"], ["RATTACHE_A", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-18"},
+    {"subject": "Usine_5", "skeleton": [["RATTACHE_A", "REVERSE"]], "claimed_object": "Atelier_C", "source_id": "SUPPLY-WITNESS-19"},
+    {"subject": "Usine_6", "skeleton": [["RATTACHE_A", "REVERSE"]], "claimed_object": "Atelier_C", "source_id": "SUPPLY-WITNESS-20"},
+    {"subject": "Yasmine", "skeleton": [["TRAVAILLE_DANS", "FORWARD"], ["TRAVAILLE_DANS", "REVERSE"]], "claimed_object": "Zied", "source_id": "SUPPLY-WITNESS-21"},
+    {"subject": "Zied", "skeleton": [["TRAVAILLE_DANS", "FORWARD"], ["TRAVAILLE_DANS", "REVERSE"]], "claimed_object": "Yasmine", "source_id": "SUPPLY-WITNESS-22"},
+    {"subject": "Yasmine", "skeleton": [["TRAVAILLE_DANS", "FORWARD"]], "claimed_object": "Atelier_C", "source_id": "SUPPLY-WITNESS-23"},
+    {"subject": "Zied", "skeleton": [["TRAVAILLE_DANS", "FORWARD"]], "claimed_object": "WRONG_ENDPOINT", "source_id": "SUPPLY-WITNESS-24"}
+  ]
+}

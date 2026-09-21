@@ -54,6 +54,15 @@ def test_regression_matches_the_already_validated_organization_baseline():
     assert abs(payload["brier_holdout"] - 0.6953125) < 1e-9
 
 
+def test_regression_matches_the_already_validated_supply_chain_baseline():
+    code, out, _err = _run("regression", "--domain", "supply_chain")
+    assert code == 0
+    payload = json.loads(out)
+    assert payload["records"] == 24
+    assert payload["rules"] == 12
+    assert abs(payload["brier_holdout"] - 0.375) < 1e-9
+
+
 def test_predict_never_hides_its_own_basis_and_matches_actual_for_a_known_record():
     code, out, _err = _run("list-records", "--domain", "organization")
     records = json.loads(out)["records"]

@@ -1,0 +1,39 @@
+{
+  "corpus_id": "SUPPLY-CHAIN-V0.1",
+  "purpose": "Independent third-domain corpus for M1-M6 multi-domain regression. The domain is industrial supply chain (workers/workshops/factories/markets/parts), independent from the family-tree and organization corpora. Topology is deliberately NOT an isomorphic renaming of the organization corpus: branching is asymmetric (3 workers in Atelier_A vs 2 in Atelier_B; 3 factories under Atelier_A vs 1 under Atelier_B; all 4 parts manufactured by Atelier_A, none by Atelier_B) to exercise a genuinely different graph shape, not just new labels on the same shape.",
+  "discovery_facts": [
+    ["S-D01", "TRAVAILLE_DANS", "Marc", "Atelier_A"],
+    ["S-D02", "TRAVAILLE_DANS", "Sophie", "Atelier_A"],
+    ["S-D03", "TRAVAILLE_DANS", "Karim", "Atelier_A"],
+    ["S-D04", "TRAVAILLE_DANS", "Julie", "Atelier_B"],
+    ["S-D05", "TRAVAILLE_DANS", "Nadia", "Atelier_B"],
+    ["S-D06", "RATTACHE_A", "Atelier_A", "Usine_1"],
+    ["S-D07", "RATTACHE_A", "Atelier_A", "Usine_2"],
+    ["S-D08", "RATTACHE_A", "Atelier_A", "Usine_3"],
+    ["S-D09", "RATTACHE_A", "Atelier_B", "Usine_4"],
+    ["S-D10", "LIVRE_A", "Usine_1", "Marche_1"],
+    ["S-D11", "LIVRE_A", "Usine_2", "Marche_2"],
+    ["S-D12", "LIVRE_A", "Usine_3", "Marche_3"],
+    ["S-D13", "LIVRE_A", "Usine_4", "Marche_4"],
+    ["S-D14", "DESTINEE_A", "Piece_A", "Usine_1"],
+    ["S-D15", "DESTINEE_A", "Piece_B", "Usine_2"],
+    ["S-D16", "DESTINEE_A", "Piece_C", "Usine_3"],
+    ["S-D17", "DESTINEE_A", "Piece_D", "Usine_1"],
+    ["S-D18", "FABRIQUEE_PAR", "Piece_A", "Atelier_A"],
+    ["S-D19", "FABRIQUEE_PAR", "Piece_B", "Atelier_A"],
+    ["S-D20", "FABRIQUEE_PAR", "Piece_C", "Atelier_A"],
+    ["S-D21", "FABRIQUEE_PAR", "Piece_D", "Atelier_A"]
+  ],
+  "evidence_facts": [
+    ["S-E01", "TRAVAILLE_DANS", "Yasmine", "Atelier_C"],
+    ["S-E02", "TRAVAILLE_DANS", "Zied", "Atelier_C"],
+    ["S-E03", "RATTACHE_A", "Atelier_C", "Usine_5"],
+    ["S-E04", "RATTACHE_A", "Atelier_C", "Usine_6"],
+    ["S-E05", "LIVRE_A", "Usine_5", "Marche_5"],
+    ["S-E06", "LIVRE_A", "Usine_6", "Marche_6"],
+    ["S-E07", "DESTINEE_A", "Piece_E", "Usine_5"],
+    ["S-E08", "FABRIQUEE_PAR", "Piece_E", "Atelier_C"],
+    ["S-E09", "DESTINEE_A", "Piece_F", "Usine_6"],
+    ["S-E10", "FABRIQUEE_PAR", "Piece_F", "Atelier_C"]
+  ]
+}

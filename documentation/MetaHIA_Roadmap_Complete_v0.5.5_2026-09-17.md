@@ -291,11 +291,29 @@ périmètre (déjà exclu par construction de `m1_m6_interface_v0_2.py`), aucune
 nouvelle, aucune clôture de gate scientifique revendiquée. Détail complet :
 `documentation/MetaHIA_CLI_Preprod_M1_M6_V0_1.md`.
 
+~~Troisième domaine indépendant pour re-tester si le transfert inter-domaines reste non
+démontré à plus grande échelle.~~ **FAIT (2026-09-21) — P6.** Nouveau domaine
+« chaîne d'approvisionnement » (`corpus/supply_chain_facts_v0_1.json`,
+`m6_corpus_from_supply_chain_v0_1.py`, réutilise exactement le mécanisme déjà validé
+d'Organisation), topologie délibérément non isomorphe (asymétrie 3/1 ouvriers-usines,
+toutes les pièces sur une seule branche) pour éviter un simple renommage. Résultat réel :
+24 enregistrements, 12 règles, diversité réelle (17 `SUPPORTED`/7 `CONTRADICTED`), Brier
+holdout 0,375. **Conclusion inchangée, vérifiée par exécution** : le transfert
+inter-domaines reste structurellement impossible à observer (signatures de règle
+disjointes par vocabulaire de domaine) — confirmé par 100 % `BASIS_GLOBAL_PRIOR` sur le
+holdout combiné à trois domaines, pas seulement supposé. Ce qui CHANGE réellement :
+`p6_three_domain_multiseed_v0_1.py` (10 graines) montre que l'écart-type du Brier combiné
+passe de 0,107167 (deux domaines, P5) à 0,056129 (trois domaines) — la mise en commun
+stabilise l'estimation du prior global, sans transfert sémantique. CLI étendue
+(`--domain supply_chain`). 19 nouveaux tests (9 corpus + 6 régression + 4 multiseed),
+1 ajouté à la CLI. Détail complet : `documentation/P6_Third_Domain_Supply_Chain_V0_1.md`.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes sans nouveau
 LLM ni Évolution Cognitive : (a) étendre la CLI à une commande `regression --domain
-combined` (déjà calculée ailleurs par `p5_m1_m6_multidomain_regression_v0_1.py`, jamais
-exposée en CLI) ; (b) troisième domaine indépendant pour re-tester si le transfert
-inter-domaines reste non démontré à plus grande échelle ; (c) concevoir une vraie règle de
-dérivation indépendante pour le gate d'endpoint fort de P4-R (seule voie vers une clôture
-partielle d'E20-D identifiée jusqu'ici). Aucune de ces trois n'est urgente ; à décider
-explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
+combined` (déjà calculée par `p5_m1_m6_multidomain_regression_v0_1.py` et
+`p6_three_domain_regression_v0_1.py`, jamais exposée en CLI) ; (b) concevoir une vraie
+règle de dérivation indépendante pour le gate d'endpoint fort de P4-R (seule voie vers une
+clôture partielle d'E20-D identifiée jusqu'ici) ; (c) quatrième domaine si le motif de
+stabilisation de la Sec. 4 de P6 doit être confirmé au-delà de trois points. Aucune de ces
+trois n'est urgente ; à décider explicitement avant de commencer, comme pour chaque étape
+précédente de ce chantier.

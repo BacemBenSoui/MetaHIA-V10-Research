@@ -28,6 +28,7 @@ from typing import Sequence
 from m1_m6_interface_v0_2 import interface_manifest_v0_2
 from m6_corpus_from_m4_m5_v0_2 import build_real_corpus_v2
 from m6_corpus_from_organization_v0_1 import build_organization_corpus
+from m6_corpus_from_supply_chain_v0_1 import build_supply_chain_corpus
 from m6_structural_learning_v0_1 import (
     StructuralLearningPolicy,
     StructuralOutcomeRecord,
@@ -36,7 +37,7 @@ from m6_structural_learning_v0_1 import (
     split_by_rule,
 )
 
-DOMAINS = ("family", "organization")
+DOMAINS = ("family", "organization", "supply_chain")
 
 
 def _records_for_domain(domain: str) -> tuple[str, tuple[StructuralOutcomeRecord, ...]]:
@@ -46,6 +47,9 @@ def _records_for_domain(domain: str) -> tuple[str, tuple[StructuralOutcomeRecord
     if domain == "organization":
         report = build_organization_corpus()
         return "ORGANIZATION-V0.1", tuple(report.records)
+    if domain == "supply_chain":
+        report = build_supply_chain_corpus()
+        return "SUPPLY-CHAIN-V0.1", tuple(report.records)
     raise ValueError(f"unknown domain {domain!r}; choose from {DOMAINS}")
 
 
