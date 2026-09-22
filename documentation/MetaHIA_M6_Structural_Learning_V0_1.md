@@ -330,3 +330,127 @@ réserve restante, légitime, est que les 20 sorties LLM brutes du run ayant pro
 0,42649 du témoin multi-sauts n'ont pas été archivées comme un corpus figé, donc ce run précis
 n'est pas rejouable à l'identique bit-à-bit ; cela ne remet pas en cause l'existence du
 mécanisme, seulement la traçabilité exacte de cette exécution particulière.
+
+## 12. Diagnostic de transfert contextuel (2026-09-22) — la piste « corpus plus riche » de la Sec. 11 était mal posée, un signal réel mais fragile existe sur un domaine
+
+Demandé explicitement en suite du rééquilibrage d'effort P8→E20-D/M6
+(voir `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec.
+6octies) : la Sec. 11 laissait ouverte l'idée qu'« un corpus futur
+significativement plus riche pourrait un jour permettre... d'exercer
+réellement `EXACT_BUCKET`/`RULE_ONLY` ». **Cette piste est
+mécaniquement fausse, pas seulement optimiste** : `split_by_rule()`
+garantit qu'une règle de holdout n'apparaît **jamais** dans
+`_bucket_counts`/`_rule_counts` de la politique entraînée, quel que
+soit le volume de données ajouté sous la MÊME politique de split —
+ajouter des règles supplémentaires ne fait qu'ajouter des règles qui,
+elles aussi, seront entièrement en train ou entièrement en holdout,
+jamais partagées. Aucun volume de corpus ne peut changer cette
+propriété logique.
+
+La question qui reste réellement ouverte, formulée précisément pour la
+première fois ici : **en ignorant délibérément l'identité de la règle
+(la seule dimension garantie inatteignable), le CONTEXTE seul
+(bandes de nouveauté/redondance, profondeur, provenance) porte-t-il un
+signal prédictif qui transfère à une règle jamais vue ?** Si oui,
+c'est une forme de généralisation structurelle jamais mesurée par ce
+projet jusqu'ici. Si non, cela confirme — par la donnée réelle, pas
+seulement par construction — que les corpus actuels ne portent aucune
+régularité exploitable au-delà de la fréquence de classe brute, une
+fois l'identité de règle retirée.
+
+**Protocole** (`m6_context_transfer_diagnosis_v0_1.py`, adaptateur
+parallèle, `StructuralLearningPolicy` non modifié) : `ContextOnlyPolicy`,
+compatible en signature avec `StructuralLearningPolicy` (même
+`predict(rule, novelty, redundancy, depth, provenance)`), construit
+ses buckets sur `(bande_nouveauté, bande_redondance, profondeur,
+provenance)` **sans** la signature de règle, réutilisant directement
+`_band()` (jamais réimplémentée) pour éviter tout risque de dérive
+entre les deux bandings. Les DEUX politiques (globale et contextuelle)
+sont entraînées sur le MÊME split `split_by_rule()` et évaluées sur le
+MÊME holdout — seule la présence ou l'absence de la signature de règle
+dans la clé diffère. Réutilise sans modification
+`brier_score_multiclass()`/`expected_calibration_error_top_label()`
+(compatibilité de signature, pas de réimplémentation parallèle des
+métriques, contrairement à certains modules P8 où c'était nécessaire
+pour une incompatibilité de modèle de données réelle). 7 tests
+déterministes (`tests/test_m6_context_transfer_diagnosis_v0_1.py`) :
+**un vrai bug trouvé avant tout run réel** — le premier essai de
+construction d'un `Node` synthétique de test utilisait le kind
+`PATTERN`, que `structural_signature()` dirige vers
+`_pattern_unified_signature()` (qui attend une vraie structure à base
+de `PatternSlot` et renvoie silencieusement `None` pour un nœud de
+test simplifié) — toutes les règles synthétiques s'effondraient sur la
+même signature `None`, rendant le test inutile ; corrigé en utilisant
+le kind générique `OBSERVATION`, qui emprunte la branche générique de
+`structural_signature()` et donne bien une signature distincte par
+règle.
+
+**Résultat réel** (`validation/m6_context_transfer_diagnosis_v0_1_results_2026-09-22.json`,
+10 seeds × 5 configurations = 50 comparaisons réelles, sur les 4
+corpus de domaine déjà validés + leur union) :
+
+| Domaine | N | Δ Brier moyen (contexte − global) | σ | Contexte gagne | Contexte perd | Égalité |
+|---|---:|---:|---:|---:|---:|---:|
+| family | 26 | +0,032 | 0,062 | 2/10 | 7/10 | 1/10 |
+| **organization** | 24 | **−0,096** | 0,085 | **9/10** | 1/10 | 0/10 |
+| supply_chain | 24 | +0,006 | 0,068 | 4/10 | 5/10 | 1/10 |
+| library | 20 | **+0,205** | 0,324 | 1/10 | 6/10 | 3/10 |
+| combined (4 domaines) | 94 | +0,002 | 0,006 | 5/10 | 5/10 | 0/10 |
+
+(Δ négatif = le contexte seul bat le prior global ; positif = il fait
+pire. `holdout` fait toujours 4 enregistrements par seed pour
+organization/supply_chain/library, 4-7 pour family, ~19 pour la
+combinaison — cf. le fichier JSON pour le détail par seed.)
+
+**Lecture honnête, non lissée, en quatre points :**
+
+1. **Aucun signal universel** : la moyenne combinée (4 domaines) est
+   quasi nulle (+0,002, σ=0,006) et exactement partagée 5 gagnant/5
+   perdant — le contexte seul n'apporte, en moyenne sur l'ensemble des
+   corpus actuels, rien de mesurable au-delà du prior global. Ceci
+   confirme, par la donnée et pas seulement par construction, que
+   `BASIS_GLOBAL_PRIOR` n'occultait pas un signal structurel fort et
+   universel qu'une base plus fine aurait facilement capturé.
+2. **Mais le résultat n'est PAS uniformément négatif — un signal réel,
+   quoique fragile, existe sur le domaine `organization`** : 9 seeds
+   sur 10 où le contexte bat le prior global, avec une amélioration
+   moyenne substantielle (Δ=−0,096) et cohérente en direction (une
+   seule exception, seed 6). Ce n'est pas un artefact à sens unique
+   trouvé une fois par hasard.
+3. **Mais ce signal repose sur un échantillon minuscule** : seulement
+   4 enregistrements de holdout et 1 à 2 clés de contexte partagées
+   entre train et holdout à chaque seed pour ce domaine — assez pour
+   qu'une coïncidence de petit échantillon (ex. « la plupart des
+   preuves à provenance directe et faible nouveauté sont `SUPPORTED`
+   dans ce corpus précis ») explique tout aussi bien le résultat qu'une
+   véritable régularité structurelle transférable. **Ni confirmé ni
+   réfuté par ce seul test** — nécessite un corpus `organization`
+   sensiblement plus grand pour trancher, pas un changement de
+   mécanisme.
+4. **Le domaine `library` montre l'inverse : le contexte peut activement
+   nuire**, parfois fortement (Δ jusqu'à +1,035 sur un seed isolé,
+   σ=0,324 la plus grande variance des cinq configurations) — regrouper
+   des enregistrements de règles différentes sous la même bande de
+   contexte grossière peut mélanger des situations dissemblables et
+   dégrader la calibration, pas seulement échouer à l'améliorer.
+
+**Conséquence pour la piste « corpus plus riche » de la Sec. 11** :
+reformulée correctement, un corpus plus riche n'aidera jamais à
+atteindre `EXACT_BUCKET`/`RULE_ONLY` en holdout (impossible par
+construction, confirmé Sec. 11 et ici) — mais **pourrait** aider à
+déterminer si le signal `organization` (point 2) est réel ou un
+artefact de petit échantillon, en donnant plus de règles et plus
+d'enregistrements par bande de contexte à ce domaine spécifiquement.
+Ce n'est pas une piste vague : c'est maintenant une question testable,
+avec un protocole prêt à être rejoué dès qu'un corpus `organization`
+plus grand existera.
+
+**Ce que cela ne remet pas en cause** : la clôture `VALIDATED` de M6
+(Sec. 6/10) et la reclassification `CONFIRMED_MECHANICAL_ARTIFACT` de
+la Sec. 11 restent valides — ce diagnostic est un adaptateur parallèle
+qui n'a jamais modifié `StructuralLearningPolicy`, et ne prétend
+fermer aucun gate.
+
+667 tests collectés (0 régression). Voir
+`scripts/run_m6_context_transfer_diagnosis_v0_1.py` pour reproduire
+l'expérience complète.
