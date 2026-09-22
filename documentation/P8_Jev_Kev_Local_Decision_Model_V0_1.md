@@ -718,19 +718,144 @@ zéro évitée). **Deux bugs réels trouvés avant tout run réseau** :
 l'entrelacement alphabétique ne séparait pas réellement `MERE_DE` de
 `PERE_DE` (corrigé, voir plus haut).
 
+## 6sexies. P8.3a — Ablation d'ordre des critères LABELED (2026-09-22) : la confusion EPOUX_DE/EPOUSE_DE résiste à la réorganisation, la robustesse « conjoint » non
+
+Demandé explicitement en réponse à P8.2 : avant de traiter le résultat
+LABELED de P8.1 (74,4 % global, Brier 0,377, ECE 0,137 — candidat par
+défaut pour `m7_corpus_from_jev_v0_1.py`) comme acquis, poser la même
+question de sensibilité à l'ordre, mais sur le seul axe dont LABELED
+dépend réellement : **l'ordre des clés de `criteria`**, construit
+directement à partir de `all_relations`
+(`criteria = {r: None for r in all_relations}`, vérifié dans le code).
+LABELED ne reçoit jamais de démonstrations (P8.2 n'a donc rien à en
+dire) — P8.3a est un axe distinct, nécessitant sa propre ablation. Fait
+motivant, vérifié directement : `relation_vocabulary` du corpus place
+`EPOUX_DE` et `EPOUSE_DE` — la seule paire que P8.1 a mesurée comme
+réellement confondue par LABELED (4/4, sens inverse de STRICT) —
+**adjacents**.
+
+Protocole (`m7_jev_label_order_ablation_v0_1.py`) : 3 ordres conçus,
+délibérément non confondus entre eux — `separated` (paires confondables
+jamais adjacentes, `AUCUNE` reste en dernière position comme dans
+l'original — isole la variable « adjacence ») ; `aucune_first`
+(`AUCUNE` en première position, `EPOUX_DE`/`EPOUSE_DE` gardent leur
+adjacence d'origine — isole la variable « position de l'option de
+rejet ») ; `reversed` (ordre original inversé) — plus 10 permutations
+aléatoires déterministes (seeds 1 à 10, même convention que P8.2).
+L'ordre original (baseline P8.1) n'est pas rejoué. **9 tests
+déterministes** (`tests/test_m7_jev_label_order_ablation_v0_1.py`) :
+aucun bug trouvé cette fois (contrairement à P8.2) — à signaler
+honnêtement, pas tous les modules ne révèlent un bug avant le run réel.
+
+**Résultat réel** (`validation/jev_label_order_ablation_v0_1_results_2026-09-22.json`,
+507 appels HTTP réels, ~268 s / ~4,5 min — LABELED est nettement plus
+rapide que STRICT, aucun few-shot à traiter) :
+
+| Ordre | Global | Positifs | Adversariaux | « conjoint » résiste ? | Brier | ECE |
+|---|---:|---:|---:|---:|---:|---:|
+| Original (P8.1, référence, non rejoué) | 74,4 % | 75,0 % | 73,7 % | Oui (4/4) | 0,377 | 0,137 |
+| **Separated (conçu)** | 74,4 % | 75,0 % | 73,7 % | **Oui (4/4)** | 0,373 | **0,084** |
+| Aucune_first (conçu) | 74,4 % | 75,0 % | 68,4 % | **Non** | 0,373 | 0,132 |
+| Reversed (conçu) | **61,5 %** | 75,0 % | **47,4 %** | Non | 0,464 | 0,147 |
+| 10 seeds aléatoires — moyenne | 72,6 % (σ=7,6) | 79,4 % (σ=7,8, min 75,0, max 93,8) | 64,7 % (σ=11,1, min 47,4, max 73,7) | 4/10 |  |  |
+
+**Lecture honnête, en cinq points, aucun lissé :**
+
+1. **LABELED est globalement moins fragile à l'ordre que STRICT, mais
+   pas insensible.** Écart-type global sur les 10 seeds : 7,6 points
+   (LABELED) contre 10,8 points (STRICT, P8.2) — LABELED ne s'effondre
+   jamais à 0 % comme STRICT (positive_accuracy min = 75,0 %, jamais
+   pire que le baseline lui-même), mais l'écart global reste de plus de
+   20 points selon l'ordre (61,5 % à 82,1 %).
+2. **La confusion `EPOUX_DE`→`EPOUSE_DE` n'est PAS résolue par
+   `separated`, contrairement à l'hypothèse motivant ce test** : elle
+   reste à 100 % (5/5) dans les 3 ordres conçus (`separated`,
+   `aucune_first`, `reversed`), qu'ils séparent ou non la paire. Elle
+   varie en revanche fortement selon les seeds aléatoires (`EPOUX_DE→
+   EPOUSE_DE` moyenne 0,62, σ=0,45, de 0 à 1 ; `EPOUSE_DE→EPOUX_DE`
+   moyenne 0,18, σ=0,33). **Régularité nouvelle et non triviale** :
+   dans chaque ordre pris individuellement, la confusion n'est jamais
+   bidirectionnelle — soit `EPOUX_DE` est absorbé par `EPOUSE_DE`, soit
+   l'inverse, jamais les deux à la fois. Mais la position relative ou
+   absolue des deux labels dans l'ordre **ne prédit pas** quel sens
+   l'emporte (vérifié directement : ni « celui qui vient en premier
+   gagne » ni « celui qui vient en dernier gagne » ne tient sur les 10
+   seeds) — un phénomène réel mais dont le mécanisme précis reste
+   ouvert, pas fabriqué de fausse règle ici.
+3. **`MERE_DE`/`PERE_DE` n'est JAMAIS confondu par LABELED, dans aucun
+   des 13 ordres testés** (taux = 0,0 exactement, écart-type 0,0 sur
+   les 10 seeds) — confirmation nette que le nom réel (lisible,
+   porteur de genre) élimine cette confusion, contrairement à STRICT où
+   elle apparaissait sous plusieurs ordres (P8.2).
+4. **La position de `AUCUNE` a un effet réel et mesurable, mais pas
+   énorme** : la déplacer en première position (`aucune_first`, tout le
+   reste inchangé) fait passer la robustesse « conjoint » de 4/4 à un
+   échec (au moins 1/4 coercé) et l'adversarial de 73,7 % à 68,4 % —
+   inverser tout l'ordre (`reversed`, qui déplace aussi `AUCUNE` en
+   première position mais change tout le reste) dégrade beaucoup plus
+   (adversarial 47,4 %, seulement 9/19 cas `AUCUNE` corrects contre
+   ~14/19 au baseline).
+5. **La robustesse « conjoint » à 4/4 mesurée en P8.1 n'est PAS une
+   propriété invariante de LABELED** — elle tient pour l'ordre précis
+   testé en P8.1 et pour `separated`, mais échoue dans 6/10 ordres
+   aléatoires et dans 2/3 ordres conçus (`aucune_first`, `reversed`).
+   `near_synonym_resistance_rate` sur l'ensemble des 13 ordres testés :
+   seulement 6/13 (4/10 seeds + `separated`, pas `aucune_first` ni
+   `reversed`).
+
+**Corrélation positifs/adversarial à travers les 10 seeds : Pearson
+r = +0,37 (calculé directement)** — signe **opposé** à celui mesuré
+pour STRICT en P8.2 (r = −0,66). LABELED ne présente donc pas le même
+axe de biais « s'engager sur une relation vs se rabattre sur `AUCUNE`
+» que STRICT — les deux mécanismes répondent différemment, pas
+seulement en amplitude, à une perturbation d'ordre.
+
+**Point positif inattendu** : l'ordre `separated` obtient la
+**meilleure calibration (ECE) de tous les ordres testés, y compris le
+baseline** (0,084 contre 0,137), à précision strictement identique
+(74,4 % / 75,0 % / 73,7 %, chiffre pour chiffre) — séparer les paires
+confondables dans l'ordre des critères n'élimine pas la confusion
+`EPOUX_DE`/`EPOUSE_DE` elle-même, mais améliore la calibration de la
+confiance du modèle sur l'ensemble du corpus. À creuser si LABELED est
+retenu comme candidat final.
+
+**Conséquence pour la décision** : les chiffres phares de P8.1 (74,4 %,
+Brier 0,377, ECE 0,137, « conjoint » 4/4) sont réels mais **ne sont pas
+pleinement invariants à l'ordre des critères** — ils représentent un
+point dans une distribution qui va, sur ce seul axe, de 61,5 % à 82,1 %
+en précision globale, et dont l'affirmation la plus vendable
+(robustesse totale sur « conjoint ») ne survit pas à la majorité des
+réordonnancements testés. Ceci renforce, avec des données réelles, la
+prudence déjà demandée avant d'en faire la référence verrouillée de
+`m7_corpus_from_jev_v0_1.py` — sans pour autant renverser LABELED comme
+candidat par défaut (aucun ordre testé ne fait mieux que `separated`
+sur l'ensemble précision+calibration, et LABELED reste strictement plus
+stable que STRICT sur cet axe).
+
+Couvert par 9 tests déterministes
+(`tests/test_m7_jev_label_order_ablation_v0_1.py`) : génération d'ordre
+(les trois ordres conçus isolent bien chacun leur variable ; l'ordre
+aléatoire est déterministe par seed et diffère entre seeds), l'ordre
+fourni atteint bien le client (ordre exact des clés de `criteria`
+vérifié), LABELED n'envoie jamais de description (`None` partout),
+réutilisation sans modification de `summarize_order_ablation`
+(P8.2) sur des rapports LABELED — la fonction d'agrégation est
+générique sur ce qui varie entre rapports, pas spécifique à STRICT.
+
 ## 6. Décision
 
-**P8 = `THREE_EXPERIMENTS_COMPLETE, STRICT_ORDER_SENSITIVITY_CONFIRMED` (2026-09-22).**
+**P8 = `FOUR_EXPERIMENTS_COMPLETE, ORDER_SENSITIVITY_CONFIRMED_ON_BOTH_MECHANISMS` (2026-09-22).**
 `m7_jev_relation_choice_v0_1.py` implémente le vrai contrat
 `POST /v1/systemone` (Sec. 3bis/5), désormais avec distribution de
-probabilité complète (nécessaire au Brier/ECE de Sec. 6quater). 59 tests
+probabilité complète (nécessaire au Brier/ECE de Sec. 6quater). 68 tests
 au total (24 relation-choice + 3 live demo + 8 benchmark v0.1 + 15
-benchmark v0.2/P8.1 + 9 order-ablation/P8.2) — **tous exécutés, dont
-22 cas × 3 conditions (v0.1, Sec. 6ter), 39 cas × 3 conditions (v0.2/P8.1,
-Sec. 6quater), puis 11 ordres × 39 cas en STRICT seul (P8.2, Sec.
-6quinquies) en conditions réelles contre le serveur Kev-0.8B de
-l'utilisateur — 612 appels HTTP réels au total sur l'ensemble de P8
-(66 + 117 + 429)**.
+benchmark v0.2/P8.1 + 9 order-ablation/P8.2 + 9 label-order-ablation/P8.3a) —
+**tous exécutés, dont 22 cas × 3 conditions (v0.1, Sec. 6ter), 39 cas ×
+3 conditions (v0.2/P8.1, Sec. 6quater), 11 ordres × 39 cas en STRICT
+seul (P8.2, Sec. 6quinquies), puis 13 ordres × 39 cas en LABELED seul
+(P8.3a, Sec. 6sexies) en conditions réelles contre le serveur Kev-0.8B
+de l'utilisateur — 1119 appels HTTP réels au total sur l'ensemble de P8
+(66 + 117 + 429 + 507)**.
 
 **Réponse au cadre A/B/C posé pour P8.1, complétée par P8.2** : Cas A
 confirmé sur l'axe adversarial (STRICT 16,7 % → 63,2 % avec le few-shot
@@ -757,13 +882,21 @@ JEV/KEV STRICT   = test scientifique d'abstraction — mécanisme validé
                     résolue (P8.2 : σ=10,8 pts sur 10 ordres aléatoires,
                     positifs de 0 % à 62,5 %) -- PAS un candidat
                     opérationnel en l'état, quel que soit son plafond
-JEV/KEV LABELED  = candidat opérationnel M7 — meilleur compromis
-                    ET meilleure calibration mesurée (Brier 0,377,
-                    ECE 0,137) ; résiste à « conjoint » sur 4/4
-                    paraphrases ; reste à corriger : confusion
-                    EPOUX_DE/EPOUSE_DE (biais inverse de STRICT) --
-                    non concerné par P8.2 (aucune dépendance à un
-                    ordre de démonstration, il n'en reçoit aucune)
+JEV/KEV LABELED  = candidat opérationnel M7, mais résultat P8.1 PAS
+                    pleinement invariant à l'ordre des critères (P8.3a) --
+                    global 61,5 % à 82,1 % selon l'ordre (σ=7,6 pts,
+                    moins fragile que STRICT mais pas insensible) ;
+                    meilleure calibration mesurée avec un ordre séparant
+                    les paires confondables (ECE 0,084, mieux que le
+                    baseline 0,137, à précision identique) ; la
+                    robustesse « conjoint » 4/4 mesurée en P8.1 échoue
+                    dans 8/13 ordres testés (pas une propriété
+                    invariante) ; confusion EPOUX_DE/EPOUSE_DE présente
+                    à 100 % dans les 3 ordres conçus, JAMAIS résolue par
+                    la séparation positionnelle -- contrairement à
+                    l'hypothèse motivant ce test ; MERE_DE/PERE_DE en
+                    revanche JAMAIS confondu, dans aucun des 13 ordres
+                    (contraste net avec STRICT)
 JEV/KEV GLOSSED  = condition maximale d'assistance sémantique —
                     précision positive parfaite (100 %, deux fois),
                     mais pire ECE (0,222) : confiant à tort précisément
@@ -780,15 +913,28 @@ du même phénomène. **Nuance apportée par P8.2** : en STRICT, l'intensité
 de cette confusion varie fortement avec l'ordre (0 % à 100 % selon le
 seed) — la confusion elle-même est réelle mais son intensité mesurée en
 P8.1 dépendait aussi de l'ordre précis testé, pas seulement du contenu.
+**Nuance complémentaire apportée par P8.3a** : en LABELED, la confusion
+est, à l'inverse de STRICT, **robuste aux 3 ordres conçus** (toujours
+100 %, jamais réduite en séparant la paire) mais variable selon les
+seeds aléatoires (0 à 100 %), et toujours strictement unidirectionnelle
+au sein d'un même ordre (jamais les deux sens à la fois) sans qu'une
+règle de position simple (premier/dernier, avant/après) explique quel
+sens l'emporte — un phénomène réel, non expliqué par ce test, pas
+inventé ici.
 
 Décision d'adoption pour `m7_corpus_from_jev_v0_1.py` (Sec. 5, toujours
 pas écrit) : **LABELED reste le candidat par défaut le mieux justifié
-par les données, et P8.2 ne change rien à cette décision** (LABELED ne
-dépend d'aucun ordre de démonstration) — mais le corriger sur la
-confusion EPOUX_DE/EPOUSE_DE avant adoption définitive reste ouvert, pas
-encore fait. Piste ouverte pour un P8.3 explicitement scoping-out de ce
-chantier JEV/Kev (hors périmètre immédiat, non commencée) : appliquer à
-LABELED/GLOSSED le même type de contrôle de robustesse que P8.2 a
-appliqué à STRICT, mais sur un autre axe que l'ordre puisqu'ils n'en
-reçoivent aucun -- par exemple la sensibilité à la formulation exacte de
-`instructions`/`state`, jamais testée à ce jour.
+par les données** (aucun ordre testé, sur 13, ne fait mieux que
+`separated` sur l'ensemble précision + calibration ; LABELED reste
+strictement plus stable que STRICT face à une perturbation d'ordre) —
+mais P8.3a confirme, avec des données réelles, que les chiffres phares
+de P8.1 ne sont qu'un point dans une distribution et que l'affirmation
+la plus vendable (« conjoint » 4/4) ne survit pas à la majorité des
+réordonnancements testés. **Adoption définitive toujours pas
+prononcée** ; corriger EPOUX_DE/EPOUSE_DE reste ouvert. Prochaine étape
+demandée explicitement, P8.3b (non commencée) : même type de contrôle
+de robustesse sur LABELED, mais sur l'axe de la formulation exacte de
+`instructions` (paraphrases de « Which relation applies to this
+sentence? »), puis sur des paraphrases supplémentaires des phrases
+d'entrée elles-mêmes -- avant de considérer le résultat LABELED
+suffisamment robuste pour verrouiller `m7_corpus_from_jev_v0_1.py`.

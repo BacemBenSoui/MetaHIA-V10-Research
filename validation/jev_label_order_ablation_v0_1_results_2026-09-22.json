@@ -1,0 +1,4820 @@
+{
+  "experiment": "P8.3a -- LABELED criteria-order ablation",
+  "date_utc": "2026-09-22",
+  "kev_base_url": "http://192.168.1.11:8009",
+  "n_orders": 13,
+  "n_cases_per_order": 39,
+  "n_calls": 507,
+  "elapsed_seconds": 268.1867106000427,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "baseline_reference": {
+    "note": "The original (unpermuted, ['EPOUX_DE','EPOUSE_DE','MERE_DE','PERE_DE','AUCUNE']) P8.1 LABELED order is not re-run here -- see validation/jev_benchmark_v0_2_results_2026-09-22.json for its already-saved real result (overall=0.744, positive=0.750, adversarial=0.737, brier=0.377, ece=0.137; 4/4 EPOUX_DE predicted EPOUSE_DE)."
+  },
+  "designed_reports": [
+    {
+      "semantic_condition": "LABELED_separated",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7435897435897436,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.7368421052631579,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": true,
+      "mean_confidence": 0.6597435897435897,
+      "brier_score_multiclass": 0.3734589743589744,
+      "expected_calibration_error_top_label": 0.08384615384615385,
+      "confusion_matrix": {
+        "EPOUX_DE": {
+          "EPOUX_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "PERE_DE": 0,
+          "AUCUNE": 0
+        },
+        "MERE_DE": {
+          "EPOUX_DE": 0,
+          "MERE_DE": 5,
+          "EPOUSE_DE": 0,
+          "PERE_DE": 0,
+          "AUCUNE": 0
+        },
+        "EPOUSE_DE": {
+          "EPOUX_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "PERE_DE": 0,
+          "AUCUNE": 0
+        },
+        "PERE_DE": {
+          "EPOUX_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "PERE_DE": 5,
+          "AUCUNE": 0
+        },
+        "AUCUNE": {
+          "EPOUX_DE": 3,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "PERE_DE": 2,
+          "AUCUNE": 14
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.88,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.82,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.87,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.86,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.6,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.51,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.55,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.6,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.78,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.64,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.44,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.63,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.64,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.68,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.71,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.73,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.43,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.68,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.6,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.63,
+          "correct": false
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_aucune_first",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7435897435897436,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.6842105263157895,
+      "structural_paraphrase_accuracy": 1.0,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6415384615384615,
+      "brier_score_multiclass": 0.37325897435897437,
+      "expected_calibration_error_top_label": 0.13230769230769232,
+      "confusion_matrix": {
+        "AUCUNE": {
+          "AUCUNE": 13,
+          "EPOUX_DE": 3,
+          "EPOUSE_DE": 1,
+          "MERE_DE": 0,
+          "PERE_DE": 2
+        },
+        "EPOUX_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 1,
+          "EPOUSE_DE": 4,
+          "MERE_DE": 0,
+          "PERE_DE": 0
+        },
+        "EPOUSE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 5,
+          "MERE_DE": 0,
+          "PERE_DE": 0
+        },
+        "MERE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 5,
+          "PERE_DE": 0
+        },
+        "PERE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "PERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.96,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.51,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.46,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.44,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.41,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.65,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.57,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_reversed",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.6153846153846154,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.47368421052631576,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6546153846153846,
+      "brier_score_multiclass": 0.46397179487179496,
+      "expected_calibration_error_top_label": 0.14743589743589747,
+      "confusion_matrix": {
+        "AUCUNE": {
+          "AUCUNE": 9,
+          "PERE_DE": 4,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 3,
+          "EPOUX_DE": 3
+        },
+        "PERE_DE": {
+          "AUCUNE": 0,
+          "PERE_DE": 5,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0
+        },
+        "MERE_DE": {
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 5,
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0
+        },
+        "EPOUSE_DE": {
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "EPOUX_DE": 0
+        },
+        "EPOUX_DE": {
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "EPOUX_DE": 0
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.7,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.75,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.68,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.76,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.96,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.95,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.84,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.93,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.6,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.76,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.76,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.77,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.84,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.76,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.89,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.65,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.71,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.42,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.44,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.55,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": false
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.43,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.69,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.79,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.69,
+          "correct": true
+        }
+      ]
+    }
+  ],
+  "seed_reports": [
+    {
+      "semantic_condition": "LABELED_seed1",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7948717948717948,
+      "positive_accuracy": 0.9375,
+      "adversarial_accuracy": 0.6842105263157895,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6038461538461538,
+      "brier_score_multiclass": 0.4208666666666666,
+      "expected_calibration_error_top_label": 0.20794871794871797,
+      "confusion_matrix": {
+        "EPOUSE_DE": {
+          "EPOUSE_DE": 3,
+          "EPOUX_DE": 2,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 0
+        },
+        "EPOUX_DE": {
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 5,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 0
+        },
+        "AUCUNE": {
+          "EPOUSE_DE": 1,
+          "EPOUX_DE": 3,
+          "AUCUNE": 13,
+          "PERE_DE": 2,
+          "MERE_DE": 0
+        },
+        "PERE_DE": {
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 5,
+          "MERE_DE": 0
+        },
+        "MERE_DE": {
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.93,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.77,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.95,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.89,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.54,
+          "correct": true
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.71,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.64,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.45,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.44,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.47,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.7,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.42,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.34,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.45,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.86,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.69,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.41,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed2",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7435897435897436,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.7368421052631579,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": true,
+      "mean_confidence": 0.6415384615384615,
+      "brier_score_multiclass": 0.42057948717948707,
+      "expected_calibration_error_top_label": 0.15846153846153851,
+      "confusion_matrix": {
+        "EPOUX_DE": {
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "MERE_DE": 0
+        },
+        "AUCUNE": {
+          "EPOUX_DE": 2,
+          "AUCUNE": 14,
+          "PERE_DE": 2,
+          "EPOUSE_DE": 1,
+          "MERE_DE": 0
+        },
+        "PERE_DE": {
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 5,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0
+        },
+        "EPOUSE_DE": {
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "MERE_DE": 0
+        },
+        "MERE_DE": {
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.7,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.93,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.84,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.65,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.76,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.6,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.56,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.43,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.5,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.69,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.71,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.4,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.33,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.71,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.64,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed3",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.8205128205128205,
+      "positive_accuracy": 0.9375,
+      "adversarial_accuracy": 0.7368421052631579,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": true,
+      "mean_confidence": 0.6194871794871795,
+      "brier_score_multiclass": 0.3973846153846154,
+      "expected_calibration_error_top_label": 0.2543589743589743,
+      "confusion_matrix": {
+        "EPOUSE_DE": {
+          "EPOUSE_DE": 3,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUX_DE": 2
+        },
+        "AUCUNE": {
+          "EPOUSE_DE": 1,
+          "AUCUNE": 14,
+          "PERE_DE": 2,
+          "MERE_DE": 0,
+          "EPOUX_DE": 2
+        },
+        "PERE_DE": {
+          "EPOUSE_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 5,
+          "MERE_DE": 0,
+          "EPOUX_DE": 0
+        },
+        "MERE_DE": {
+          "EPOUSE_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 5,
+          "EPOUX_DE": 0
+        },
+        "EPOUX_DE": {
+          "EPOUSE_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUX_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.73,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.87,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.77,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.86,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.96,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.95,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.93,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.54,
+          "correct": true
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.55,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.54,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.68,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.42,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.39,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.61,
+          "correct": true
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.64,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.7,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.53,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.3,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.75,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.51,
+          "correct": false
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed4",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7948717948717948,
+      "positive_accuracy": 0.8125,
+      "adversarial_accuracy": 0.7368421052631579,
+      "structural_paraphrase_accuracy": 1.0,
+      "near_synonym_all_paraphrases_correct": true,
+      "mean_confidence": 0.632051282051282,
+      "brier_score_multiclass": 0.3859589743589743,
+      "expected_calibration_error_top_label": 0.1628205128205128,
+      "confusion_matrix": {
+        "EPOUSE_DE": {
+          "EPOUSE_DE": 5,
+          "MERE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0
+        },
+        "MERE_DE": {
+          "EPOUSE_DE": 0,
+          "MERE_DE": 5,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 0
+        },
+        "EPOUX_DE": {
+          "EPOUSE_DE": 3,
+          "MERE_DE": 0,
+          "EPOUX_DE": 2,
+          "AUCUNE": 0,
+          "PERE_DE": 0
+        },
+        "AUCUNE": {
+          "EPOUSE_DE": 1,
+          "MERE_DE": 0,
+          "EPOUX_DE": 2,
+          "AUCUNE": 14,
+          "PERE_DE": 2
+        },
+        "PERE_DE": {
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0,
+          "PERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.5,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.55,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.78,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.59,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.74,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.53,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.68,
+          "correct": true
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.71,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.4,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.59,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.61,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed5",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.6410256410256411,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.5263157894736842,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6651282051282051,
+      "brier_score_multiclass": 0.4344333333333333,
+      "expected_calibration_error_top_label": 0.20615384615384616,
+      "confusion_matrix": {
+        "AUCUNE": {
+          "AUCUNE": 10,
+          "MERE_DE": 1,
+          "PERE_DE": 2,
+          "EPOUSE_DE": 4,
+          "EPOUX_DE": 2
+        },
+        "MERE_DE": {
+          "AUCUNE": 0,
+          "MERE_DE": 5,
+          "PERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0
+        },
+        "PERE_DE": {
+          "AUCUNE": 0,
+          "MERE_DE": 0,
+          "PERE_DE": 5,
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0
+        },
+        "EPOUSE_DE": {
+          "AUCUNE": 0,
+          "MERE_DE": 0,
+          "PERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "EPOUX_DE": 0
+        },
+        "EPOUX_DE": {
+          "AUCUNE": 0,
+          "MERE_DE": 0,
+          "PERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "EPOUX_DE": 0
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.96,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.95,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.73,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.64,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.8,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.58,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.6,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.63,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.82,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.82,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.8,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.89,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.64,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.71,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.5,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.5,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.42,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.51,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.41,
+          "correct": false
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.41,
+          "correct": false
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.35,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.62,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.75,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.6,
+          "correct": false
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.73,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed6",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7435897435897436,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.6842105263157895,
+      "structural_paraphrase_accuracy": 1.0,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6415384615384615,
+      "brier_score_multiclass": 0.37325897435897437,
+      "expected_calibration_error_top_label": 0.13230769230769232,
+      "confusion_matrix": {
+        "AUCUNE": {
+          "AUCUNE": 13,
+          "EPOUX_DE": 3,
+          "EPOUSE_DE": 1,
+          "MERE_DE": 0,
+          "PERE_DE": 2
+        },
+        "EPOUX_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 1,
+          "EPOUSE_DE": 4,
+          "MERE_DE": 0,
+          "PERE_DE": 0
+        },
+        "EPOUSE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 5,
+          "MERE_DE": 0,
+          "PERE_DE": 0
+        },
+        "MERE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 5,
+          "PERE_DE": 0
+        },
+        "PERE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "PERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.96,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.51,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.46,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.44,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.41,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.65,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.57,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed7",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.6153846153846154,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.47368421052631576,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6176923076923077,
+      "brier_score_multiclass": 0.5278358974358974,
+      "expected_calibration_error_top_label": 0.13000000000000006,
+      "confusion_matrix": {
+        "MERE_DE": {
+          "MERE_DE": 5,
+          "EPOUSE_DE": 0,
+          "PERE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "EPOUSE_DE": {
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "PERE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "PERE_DE": {
+          "MERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "PERE_DE": 5,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "EPOUX_DE": {
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "PERE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "AUCUNE": {
+          "MERE_DE": 2,
+          "EPOUSE_DE": 4,
+          "PERE_DE": 2,
+          "EPOUX_DE": 2,
+          "AUCUNE": 9
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.89,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.77,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.7,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.57,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.64,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.67,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.76,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.73,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.77,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.78,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.69,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.47,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.45,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.51,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.44,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.33,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.76,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.7,
+          "correct": false
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.32,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": false
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.41,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.79,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.66,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.66,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed8",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7435897435897436,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.7368421052631579,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": true,
+      "mean_confidence": 0.6174358974358974,
+      "brier_score_multiclass": 0.41365384615384615,
+      "expected_calibration_error_top_label": 0.13846153846153852,
+      "confusion_matrix": {
+        "EPOUSE_DE": {
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "AUCUNE": 0,
+          "EPOUX_DE": 5,
+          "PERE_DE": 0
+        },
+        "MERE_DE": {
+          "EPOUSE_DE": 0,
+          "MERE_DE": 5,
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "PERE_DE": 0
+        },
+        "AUCUNE": {
+          "EPOUSE_DE": 3,
+          "MERE_DE": 0,
+          "AUCUNE": 14,
+          "EPOUX_DE": 0,
+          "PERE_DE": 2
+        },
+        "EPOUX_DE": {
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "AUCUNE": 0,
+          "EPOUX_DE": 5,
+          "PERE_DE": 0
+        },
+        "PERE_DE": {
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "PERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.78,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.86,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": true
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.54,
+          "correct": true
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.69,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.75,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.56,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.71,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.45,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.45,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.45,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.48,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.59,
+          "correct": true
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.59,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.69,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.35,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.55,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.42,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.55,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.53,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed9",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.6153846153846154,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.47368421052631576,
+      "structural_paraphrase_accuracy": 0.75,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6205128205128205,
+      "brier_score_multiclass": 0.4475615384615384,
+      "expected_calibration_error_top_label": 0.1907692307692308,
+      "confusion_matrix": {
+        "PERE_DE": {
+          "PERE_DE": 5,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "MERE_DE": {
+          "PERE_DE": 0,
+          "MERE_DE": 5,
+          "EPOUSE_DE": 0,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "EPOUSE_DE": {
+          "PERE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "EPOUX_DE": {
+          "PERE_DE": 0,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 5,
+          "EPOUX_DE": 0,
+          "AUCUNE": 0
+        },
+        "AUCUNE": {
+          "PERE_DE": 4,
+          "MERE_DE": 0,
+          "EPOUSE_DE": 3,
+          "EPOUX_DE": 3,
+          "AUCUNE": 9
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.67,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.77,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.64,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.71,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.93,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.67,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.87,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.53,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.68,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.67,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.87,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.63,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.68,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.5,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.56,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.43,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.58,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.38,
+          "correct": false
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.45,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.4,
+          "correct": false
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.4,
+          "correct": false
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.62,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.8,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.6,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.66,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "semantic_condition": "LABELED_seed10",
+      "n_cases": 39,
+      "no_answer_count": 0,
+      "overall_accuracy": 0.7435897435897436,
+      "positive_accuracy": 0.75,
+      "adversarial_accuracy": 0.6842105263157895,
+      "structural_paraphrase_accuracy": 1.0,
+      "near_synonym_all_paraphrases_correct": false,
+      "mean_confidence": 0.6415384615384615,
+      "brier_score_multiclass": 0.37325897435897437,
+      "expected_calibration_error_top_label": 0.13230769230769232,
+      "confusion_matrix": {
+        "AUCUNE": {
+          "AUCUNE": 13,
+          "EPOUX_DE": 3,
+          "EPOUSE_DE": 1,
+          "MERE_DE": 0,
+          "PERE_DE": 2
+        },
+        "EPOUX_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 1,
+          "EPOUSE_DE": 4,
+          "MERE_DE": 0,
+          "PERE_DE": 0
+        },
+        "EPOUSE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 5,
+          "MERE_DE": 0,
+          "PERE_DE": 0
+        },
+        "MERE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 5,
+          "PERE_DE": 0
+        },
+        "PERE_DE": {
+          "AUCUNE": 0,
+          "EPOUX_DE": 0,
+          "EPOUSE_DE": 0,
+          "MERE_DE": 0,
+          "PERE_DE": 5
+        }
+      },
+      "cases": [
+        {
+          "case_id": "T01",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T02",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.96,
+          "correct": true
+        },
+        {
+          "case_id": "T03",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.91,
+          "correct": true
+        },
+        {
+          "case_id": "T04",
+          "category": "positive",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.94,
+          "correct": true
+        },
+        {
+          "case_id": "T05",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "T06",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.83,
+          "correct": true
+        },
+        {
+          "case_id": "T07",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.9,
+          "correct": true
+        },
+        {
+          "case_id": "T08",
+          "category": "positive",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.74,
+          "correct": true
+        },
+        {
+          "case_id": "T09",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.52,
+          "correct": false
+        },
+        {
+          "case_id": "T10",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T11",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.51,
+          "correct": false
+        },
+        {
+          "case_id": "T12",
+          "category": "positive",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.54,
+          "correct": false
+        },
+        {
+          "case_id": "T13",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "T14",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.59,
+          "correct": true
+        },
+        {
+          "case_id": "T15",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.61,
+          "correct": true
+        },
+        {
+          "case_id": "T16",
+          "category": "positive",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A01a",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.81,
+          "correct": true
+        },
+        {
+          "case_id": "A01b",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A01c",
+          "category": "adversarial_negation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.85,
+          "correct": true
+        },
+        {
+          "case_id": "A02a",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.46,
+          "correct": false
+        },
+        {
+          "case_id": "A02b",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.55,
+          "correct": false
+        },
+        {
+          "case_id": "A02c",
+          "category": "adversarial_question",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.47,
+          "correct": true
+        },
+        {
+          "case_id": "A03a",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.57,
+          "correct": false
+        },
+        {
+          "case_id": "A03b",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.49,
+          "correct": false
+        },
+        {
+          "case_id": "A03c",
+          "category": "adversarial_conditional",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.48,
+          "correct": false
+        },
+        {
+          "case_id": "A04a",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.46,
+          "correct": true
+        },
+        {
+          "case_id": "A04b",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.56,
+          "correct": true
+        },
+        {
+          "case_id": "A04c",
+          "category": "adversarial_out_of_vocabulary_relation",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.49,
+          "correct": true
+        },
+        {
+          "case_id": "A05a",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.43,
+          "correct": false
+        },
+        {
+          "case_id": "A05b",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "A05c",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.72,
+          "correct": true
+        },
+        {
+          "case_id": "A05d",
+          "category": "adversarial_near_synonym_coercion_risk",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.44,
+          "correct": true
+        },
+        {
+          "case_id": "A06a",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.41,
+          "correct": true
+        },
+        {
+          "case_id": "A06b",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.65,
+          "correct": true
+        },
+        {
+          "case_id": "A06c",
+          "category": "adversarial_no_claim",
+          "expected_relation": "AUCUNE",
+          "predicted_relation": "AUCUNE",
+          "positive_prob": 0.57,
+          "correct": true
+        },
+        {
+          "case_id": "P01",
+          "category": "positive_paraphrase",
+          "expected_relation": "MERE_DE",
+          "predicted_relation": "MERE_DE",
+          "positive_prob": 0.92,
+          "correct": true
+        },
+        {
+          "case_id": "P02",
+          "category": "positive_paraphrase",
+          "expected_relation": "PERE_DE",
+          "predicted_relation": "PERE_DE",
+          "positive_prob": 0.63,
+          "correct": true
+        },
+        {
+          "case_id": "P03",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUX_DE",
+          "predicted_relation": "EPOUX_DE",
+          "positive_prob": 0.52,
+          "correct": true
+        },
+        {
+          "case_id": "P04",
+          "category": "positive_paraphrase",
+          "expected_relation": "EPOUSE_DE",
+          "predicted_relation": "EPOUSE_DE",
+          "positive_prob": 0.62,
+          "correct": true
+        }
+      ]
+    }
+  ],
+  "seed_summary": {
+    "labels": [
+      "LABELED_seed1",
+      "LABELED_seed2",
+      "LABELED_seed3",
+      "LABELED_seed4",
+      "LABELED_seed5",
+      "LABELED_seed6",
+      "LABELED_seed7",
+      "LABELED_seed8",
+      "LABELED_seed9",
+      "LABELED_seed10"
+    ],
+    "n_reports": 10,
+    "overall_accuracy_stats": {
+      "mean": 0.7256410256410256,
+      "stdev": 0.07553350801807074,
+      "min": 0.6153846153846154,
+      "max": 0.8205128205128205
+    },
+    "positive_accuracy_stats": {
+      "mean": 0.79375,
+      "stdev": 0.07822909731466078,
+      "min": 0.75,
+      "max": 0.9375
+    },
+    "adversarial_accuracy_stats": {
+      "mean": 0.6473684210526316,
+      "stdev": 0.11109572069464957,
+      "min": 0.47368421052631576,
+      "max": 0.7368421052631579
+    },
+    "confusion_rate_stats": {
+      "PERE_DE_to_MERE_DE": {
+        "mean": 0.0,
+        "stdev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "MERE_DE_to_PERE_DE": {
+        "mean": 0.0,
+        "stdev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "EPOUX_DE_to_EPOUSE_DE": {
+        "mean": 0.62,
+        "stdev": 0.44671641514002547,
+        "min": 0.0,
+        "max": 1.0
+      },
+      "EPOUSE_DE_to_EPOUX_DE": {
+        "mean": 0.18,
+        "stdev": 0.33266599866332397,
+        "min": 0.0,
+        "max": 1.0
+      }
+    },
+    "near_synonym_resistance_rate": 0.4
+  }
+}
