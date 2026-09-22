@@ -58,9 +58,18 @@ de **pré-filtre bon marché** pour les cas clairement non positifs.
 
 **Choix recommandé : Kev**, pour deux raisons vérifiées, pas supposées :
 
-1. Compatible fil-à-fil avec `jev_client_v0_1.py` déjà présent dans ce
-   dépôt (`POST /v1/systemone`, mêmes types `noul`/`choice`/`score`) — zéro
-   changement de code, seul `TYPESAFE_BASE_URL` change.
+1. Compatible fil-à-fil avec `jev_client_v0_1.py`, utilisé pour produire
+   le benchmark Sec. 2 (`POST /v1/systemone`, mêmes types
+   `noul`/`choice`/`score`) — zéro changement de code, seul
+   `TYPESAFE_BASE_URL` change. **Correction (2026-09-22)** : cette phrase
+   affirmait à tort que `jev_client_v0_1.py` était « déjà présent dans ce
+   dépôt » — vérifié par recherche directe, **il ne l'est pas** ; il
+   n'existait que dans le zip externe
+   `MetaHIA-V10-Jev-Parsing-Benchmark-v0.1.zip` exécuté en isolation pour
+   produire ce benchmark, jamais committé ici. Le squelette
+   `m7_jev_relation_choice_v0_1.py` (Sec. 5bis, `documentation/SEMANTIC_ABSTRACTION_GOVERNANCE_V0_1.md`
+   Sec. 8ter) définit sa propre interface `client.decide(...)` injectable,
+   sans dépendre de ce fichier absent.
 2. Probabilités **réellement calibrées par lecture de logits**, pas
    auto-rapportées — c'est la même distinction que ce projet applique déjà
    ailleurs entre confiance structurellement fondée et confiance déclarée
@@ -167,9 +176,14 @@ pas `JEV-STRICT` — voir le document de gouvernance pour la nomenclature à
 trois niveaux (`STRICT` / `LABELED` / `GLOSSED`) qui remplace le clivage
 binaire initialement proposé par la revue.
 
-**Amendement au plan Sec. 5 ci-dessus**, à appliquer au moment de
-l'implémentation (toujours bloquée sur l'infrastructure LAN/Ollama — ceci
-ne lève pas ce blocage) :
+**Amendement au plan Sec. 5 ci-dessus.** L'utilisateur ayant confirmé
+préparer l'infrastructure sur `192.168.1.11`, un **squelette de code**
+(pas une implémentation réseau réelle) a été écrit par anticipation :
+`m7_jev_relation_choice_v0_1.py` + `tests/test_m7_jev_relation_choice_v0_1.py`,
+détail complet dans `documentation/SEMANTIC_ABSTRACTION_GOVERNANCE_V0_1.md`
+Sec. 8ter. Toujours **aucun appel réseau réel** — le squelette attend un
+`client` injecté (`client.decide(...)`), jamais câblé à une adresse en
+dur. Ce qu'il contient déjà, testé sans réseau :
 
 - `propose_relation_jev()` gagne un paramètre `relation_vocabulary_mode`
   (`"STRICT"` : vocabulaire présenté sous forme de symboles opaques

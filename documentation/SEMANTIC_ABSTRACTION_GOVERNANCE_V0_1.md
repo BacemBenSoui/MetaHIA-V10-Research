@@ -174,21 +174,160 @@ la même dépendance d'infrastructure que le plan P8 original.
 | E20-D / P4-T | 🟢 principe respecté (positions/motifs, jamais de noms de relation lus) |
 | Ancienne P4 inter-domaines | 🔴 rejetée (2026-09-19) |
 | P4-R | 🟠 abandonnée comme voie principale |
-| M7 — parseur de texte (`m7_text_claim_parser_v0_1.py`) | 🟢 vocabulaire fermé respecté, LLM testé sur sa compétence linguistique, jamais injecté dans M1-M6/E20-D |
-| M7 — proposeur LLM (`m7_llm_fact_proposer_v0_1.py`) | 🟠 **LABELED** de facto (vocabulaire fermé lisible, jamais glosé) — jamais formellement étiqueté comme tel jusqu'à ce document |
-| JEV-STRICT | ⏸ non encore mesuré (bloqué infra) — seule condition validant réellement l'hypothèse d'abstraction pour un LLM |
+| M7 — parseur de texte (`m7_text_claim_parser_v0_1.py`) | 🟠 **LABELED, hors-axe** (Sec. 8bis) — vocabulaire fermé respecté et jamais injecté dans M1-M6/E20-D, mais la tâche elle-même est linguistique par construction, pas comparable à STRICT/LABELED/GLOSSED |
+| M7 — proposeur LLM (`m7_llm_fact_proposer_v0_1.py`) | 🟠 **LABELED** confirmé par audit direct du code (Sec. 8bis) — vocabulaire fermé lisible, jamais glosé, jamais formellement étiqueté comme tel avant ce document |
+| JEV-STRICT | ⏸ non encore mesuré (bloqué infra) — seule condition validant réellement l'hypothèse d'abstraction pour un LLM ; squelette de code prêt (Sec. 8ter) |
 | JEV-LABELED | 🟢 mesuré (22/22 cas, `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 2) — **reclassé** depuis « strict » implicite vers LABELED par ce document |
 | JEV-GLOSSED | ⏸ non encore mesuré (bloqué infra) |
 | Dictionnaire de synonymes manuel dans M1-M6/E20-D/P4-T | 🔴 interdit, absent, vérifié par lecture directe |
 | Ontologie cachée dans M1-M6/E20-D/P4-T | 🔴 interdit, absent |
+
+## 8bis. Audit rétroactif, par lecture directe du code (2026-09-22)
+
+Demandé explicitement par l'utilisateur : appliquer la même grille
+STRICT/LABELED/GLOSSED aux deux mécanismes M7 existants, en lisant leur
+code réel — pas en supposant leur conformité par leur seule description.
+
+### `m7_llm_fact_proposer_v0_1.py` → **LABELED**
+
+`_build_prompt()` construit littéralement :
+
+```python
+facts_block = "\n".join(f"{rel}({subj}, {obj})" for rel, subj, obj in known_facts)
+...
+f'the object in {relation}("{subject}", ?)'
+```
+
+Le nom de relation (`rel`/`relation`, ex. `MERE_DE`) est inséré **tel
+quel**, lisible, dans le prompt — aucune définition MetaHIA-fournie
+(`MERE_DE = "X est la mère de Y"`) n'accompagne jamais ce nom. C'est
+exactement `LABELED` : le vocabulaire fermé est lisible, jamais glosé.
+
+Nuance par rapport à JEV-LABELED : la tâche n'est pas « choisir une
+relation parmi un ensemble » (où le nom lisible de CHAQUE option peut
+fuiter), mais « prédire une valeur d'objet, la relation étant déjà fixée
+par l'appelant » — la surface de fuite sémantique porte sur un seul nom
+de relation par appel, pas sur un choix parmi plusieurs noms lisibles
+simultanément. Le risque reste réel mais plus étroit. Point favorable
+déjà mesuré empiriquement (et déjà documenté ailleurs dans ce dépôt,
+indépendamment de cet audit) : ce mécanisme produit un résultat dégénéré
+(16/16 `CONTRADICTED`) sur le corpus family-tree — signe indirect que la
+connaissance linguistique du nom de relation, même disponible, **n'aide
+pas concrètement** le petit modèle local sur ce corpus synthétique
+(entités fictives sans ancrage dans le monde réel). Cela ne change pas la
+classification (`LABELED` reste `LABELED`, indépendamment du résultat
+mesuré), mais nuance le risque pratique.
+
+**Action** : aucune modification de code. Reclassification déclarative
+uniquement — `m7_llm_fact_proposer_v0_1.py` reste un mécanisme M7
+existant, déjà cantonné à `GROUNDED_ANALOGY`, jamais dans M1-M6/E20-D. Si
+une version STRICT de ce mécanisme est un jour souhaitée (relation
+présentée comme symbole opaque plutôt que `MERE_DE`), elle suivrait le
+même patron que `m7_jev_relation_choice_v0_1.py` (Sec. 8ter) — non
+demandé pour l'instant, non implémenté ici.
+
+### `m7_text_claim_parser_v0_1.py` → **LABELED, mais hors de l'axe STRICT/LABELED/GLOSSED**
+
+`_build_extraction_prompt()` liste aussi les relations sous forme lisible
+(`relations_block`), sans glose — donc `LABELED` au sens strict de la
+présentation du vocabulaire.
+
+Mais ce mécanisme a une propriété que ni le proposeur ni JEV n'ont : sa
+**tâche elle-même** est l'extraction d'une relation depuis une **phrase
+française libre**. Le docstring du fichier le déclare explicitement,
+avant même cet audit : *« instead of asking a closed question... the
+model is given an independently-authored sentence and must extract the
+FULL triple itself »*. Reconnaître que « Alice est la mère de Bob »
+exprime `MERE_DE` exige la compétence linguistique française du modèle
+sur le mot « mère » lui-même, dans le TEXTE, indépendamment de ce que
+l'étiquette de sortie a l'air de vouloir dire. Passer ce mécanisme en
+mode STRICT (étiquettes de sortie opaques) ne changerait donc **rien** à
+la fuite réelle, qui a lieu dans la phrase d'entrée, pas dans le nom de
+l'étiquette — contrairement à JEV/au proposeur, où la fuite mesurée
+(cas A05) provient précisément du nom de l'étiquette de sortie.
+
+**Conclusion** : ce mécanisme n'est **pas comparable** à l'axe
+STRICT/LABELED/GLOSSED tel que défini Sec. 3 — cet axe mesure la fuite
+sémantique par le **vocabulaire de sortie**, pas la compétence
+linguistique sur un **texte d'entrée**, que ce mécanisme teste
+délibérément et explicitement, par conception, depuis son origine
+(2026-09-18). C'est déjà honnêtement disclosed dans
+`documentation/MetaHIA_M7_TextClaimParser_V0_1.md` (fidélité de parsing
+mesurée à 50 %, présentée comme un test de compétence linguistique, pas
+de découverte structurelle). Aucune reclassification de fond n'est
+nécessaire ; seule la nomenclature de ce document s'applique
+partiellement (le sous-critère « vocabulaire lisible, jamais glosé » est
+vrai, mais insuffisant pour classer ce mécanisme dans le même panier que
+JEV/le proposeur).
+
+**Action** : aucune modification de code. Note de gouvernance
+uniquement, pour que ce mécanisme ne soit jamais comparé mécaniquement à
+JEV-STRICT/LABELED/GLOSSED sans cette réserve.
+
+## 8ter. Squelette de code JEV-STRICT, préparé avant implémentation
+
+Voir `m7_jev_relation_choice_v0_1.py` (nouveau fichier, squelette
+uniquement — aucun appel réseau réel, préparé pendant que l'utilisateur
+provisionne l'infrastructure Kev sur `192.168.1.11`, conformément à
+`documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 4, toujours
+en vigueur).
+
+**Correction factuelle trouvée en préparant ce squelette** : le plan P8
+(Sec. 5, écrit 2026-09-21) affirmait que `jev_client_v0_1.py` était
+« déjà présent dans ce dépôt ». Vérifié par recherche directe (`find`) :
+**ce fichier n'existe pas** dans ce dépôt — il existait seulement dans le
+zip externe `MetaHIA-V10-Jev-Parsing-Benchmark-v0.1.zip` exécuté en
+isolation pour produire le résultat Sec. 2 du doc P8, jamais committé ici.
+Corrigé dans `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md`.
+
+Contenu du squelette :
+
+- `RelationVocabularyMode` (`"STRICT"` / `"LABELED"` / `"GLOSSED"`) et
+  `JevProposal` (avec le champ `semantic_condition` prévu Sec. 5).
+- `build_strict_symbol_map(vocabulary)` : bijection déterministe
+  vocabulaire réel → symboles opaques (`R1`...`Rn`, ordre alphabétique du
+  vocabulaire réel, jamais un ordre qui fuiterait une information) —
+  testée indépendamment de tout réseau.
+- Trois constructeurs de requête (`_build_choice_payload_strict/labeled/glossed`) :
+  seul le mode `STRICT` exige des exemples travaillés
+  (`worked_examples`, des couples texte+symbole déjà résolus) en plus du
+  texte à classer, car un symbole opaque seul, sans aucun exemple, ne
+  porte structurellement aucune information exploitable — ceci est
+  documenté comme une exigence du mode, pas une option.
+- `propose_relation_jev(...)` : signature complète, garde-fous déjà
+  actifs et testés (sujet == objet rejeté — bug A05/T05/T08/T09 déjà
+  mesuré ; réponse hors du vocabulaire fermé rejetée ; réponse non-JSON
+  rejetée) ; le point d'appel réseau réel est un `client.decide(...)`
+  injecté (mock testable dès maintenant, jamais un appel réel tant que
+  Kev n'est pas hébergé).
+- `jev_evidence_for_prediction(...)` : miroir exact de
+  `llm_evidence_for_prediction` (toujours `GROUNDED_ANALOGY`, jamais
+  `GROUNDED_DIRECT`).
+
+`tests/test_m7_jev_relation_choice_v0_1.py` (réseau-free, comme tous les
+tests M7 obligatoires de ce dépôt) : bijection STRICT correcte et
+inversible, garde-fou sujet==objet, rejet hors-vocabulaire, mode STRICT
+refuse de construire une requête sans `worked_examples` (jamais une
+requête silencieusement dégradée), `semantic_condition` correctement
+posé sur `JevProposal` selon le mode appelé.
+
+**Ce squelette ne lève PAS le blocage d'infrastructure** — aucun appel
+réseau réel n'est fait ni possible avec ce code seul ; il attend un
+`client` réel (`Kev`/Ollama sur `192.168.1.11`) fourni par l'appelant une
+fois l'infrastructure prête.
 
 ## 9. Décision
 
 **Règle adoptée.** S'applique à toute future extension de M7 (JEV/Kev, et
 tout mécanisme LLM ultérieur) : condition sémantique déclarée
 explicitement (STRICT/LABELED/GLOSSED), jamais fusionnée sans
-distinction. Ne modifie aucun code existant — reclassifie a posteriori le
-benchmark Jev déjà mesuré, et amende le plan d'implémentation P8 déjà
-écrit, avant même que ce plan ne soit exécuté (toujours bloqué sur
-l'infrastructure LAN/Ollama). E20-D reste `OPEN`, inchangé par ce
-document de gouvernance.
+distinction. Ne modifie aucun code M7 existant — reclassifie a posteriori
+le benchmark Jev déjà mesuré et les deux mécanismes M7 audités
+(Sec. 8bis : proposeur LLM = `LABELED` confirmé, parseur de texte =
+`LABELED` mais hors-axe par conception), et amende le plan
+d'implémentation P8 déjà écrit. Un squelette de code JEV-STRICT est
+maintenant prêt (Sec. 8ter, `m7_jev_relation_choice_v0_1.py`), sans appel
+réseau réel — l'implémentation reste bloquée sur l'infrastructure
+LAN/Ollama, en cours de provisionnement par l'utilisateur sur
+`192.168.1.11`. E20-D reste `OPEN`, inchangé par ce document de
+gouvernance.
