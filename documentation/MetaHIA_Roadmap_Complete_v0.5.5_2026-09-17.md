@@ -453,10 +453,36 @@ explicitement** : protocole auto-administré (structurellement verrouillé), PAS
 clôture de gate par un tiers externe — même distinction déjà posée pour M4-M7 dans ce
 projet. Détail complet : `documentation/P4T2_Locked_Benchmark_V0_1.md`.
 
-**Prochaine étape : non encore décidée explicitement** — options restantes, par ordre de
-la séquence proposée par la dernière revue externe : (a) P4-T.4 — nouvelles familles de
-transformation au-delà de permutation/récursif/projection/duplication/composition ; (b)
-P4-T.6 — brancher la Porte G sur le modèle ROI d'E20-D.19 ; (c) P8 — dès que
-l'infrastructure Ollama/LAN promise par l'utilisateur est disponible ; (d) cinquième
-domaine M6. Aucune de ces quatre n'est urgente ; à décider explicitement avant de
-commencer, comme pour chaque étape précédente de ce chantier.
+~~P4-T.4 — nouvelles familles de transformation au-delà de
+permutation/récursif/projection/duplication/composition.~~ **FAIT (2026-09-21).**
+Sélection multi-source (`discover_multi_source()`/`discover_multi_source_selection_mapping()`) :
+assemble une cible à partir de **plusieurs** structures source nommées indépendamment
+(combinaison qu'aucune famille précédente — mono-source ou récursive — ne pouvait
+exprimer), même discipline de non-devinette (`sigma[j]` devient `(indice_source,
+indice_enfant)`, ambiguïté/rejet jamais devinés). Vérifié par exécution réelle : cible
+assemblée depuis deux sources indépendantes correctement découverte et rejouée sur des
+entités totalement fraîches, aucune fuite de provenance d'entraînement dans l'objet gelé.
+Classée rang 4 (la plus complexe) dans `FAMILY_COMPLEXITY_RANK` de P4-T.3 — le rasoir
+d'Occam continue de préférer une famille mono-source quand elle suffit. 5 nouveaux tests.
+
+~~P4-T.6 — brancher la Porte G sur le modèle ROI d'E20-D.19.~~ **FAIT (2026-09-21).**
+`score_hypothesis_roi()` : adaptateur **parallèle**, pas un appel direct à
+`score_candidate()` (qui exige un véritable `kernel2.PathRecord` — un chemin de graphe,
+pas une hypothèse de transformation ; fabriquer un faux `PathRecord` aurait été la même
+comparaison forcée déjà refusée ailleurs dans ce projet). Réutilise la formule ROI et les
+constantes de décision d'E20-D.19 (`DECISION_EXPLORE`/`DEFER`/`STOP`, importées telles
+quelles, jamais redéfinies) ; `e20d_cognitive_control_v0_1.py` non modifié. `nouveauté`
+réutilise le crochet de rationalisation de P4-T.3 (0,0 si correspondance historique
+`SUPPORTED_HISTORICAL`, 1,0 sinon) ; `coût` est réel et mesuré (Porte G), jamais estimé ;
+`gain_attendu` reste fourni par l'appelant, comme dans E20-D.19 lui-même. Vérifié par
+exécution : une correspondance historique fait chuter le ROI à exactement 0,0. 5 nouveaux
+tests. Matrice de clôture E20-D mise à jour : le coût/ROI passe de 🟠 mesure seule à 🟢
+mesure + adaptateur.
+
+**Prochaine étape : non encore décidée explicitement** — options restantes : (a) P4-T.5 —
+structure émergente (opération figée appliquée à de nouveaux opérandes, recouvre
+partiellement E20-D.17) ; (b) P8 — dès que l'infrastructure Ollama/LAN promise par
+l'utilisateur est disponible ; (c) cinquième domaine M6 ; (d) P4-T.7 — validation
+indépendante (suppose un tiers réellement disponible, non le cas dans cette session).
+Aucune de ces quatre n'est urgente ; à décider explicitement avant de commencer, comme
+pour chaque étape précédente de ce chantier.

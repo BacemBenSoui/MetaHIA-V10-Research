@@ -68,6 +68,18 @@ limite du test lui-même, trouvée par échec réel d'un test
 a échoué à la première écriture, pas en théorie) et corrigée en purgeant
 `sys.modules` avant l'assertion.
 
+**Conséquence pratique, pas un défaut** : `validation/p4t_locked_benchmark_predictions_v0_1.json`
+lui-même engagé dans ce dépôt reflète l'état réel du processus qui l'a
+généré — son champ `witness_module_imported_yet` peut légitimement valoir
+`true` quand ce fichier est régénéré au sein d'une suite complète (où
+d'autres tests ont déjà importé le témoin avant celui-ci), et `false` lors
+d'une exécution isolée de `python p4t_locked_benchmark_runner_v0_1.py`
+sur un processus frais. Les deux sont des enregistrements honnêtes de
+l'exécution réelle qui les a produits — seule la vérification dédiée
+(`test_witness_module_is_absent_from_sys_modules_at_the_moment_predictions_are_committed`,
+qui purge explicitement le cache d'abord) fait foi de la propriété
+structurelle elle-même, pas ce fichier ponctuel.
+
 ## 4. Sept cas, toutes les familles P4-T + les deux issues fermées
 
 | Cas | Famille attendue | Résultat réel |

@@ -68,6 +68,34 @@ Ce mécanisme unifie, sans code dupliqué :
 | Projection | injective, arité cible < arité source |
 | Duplication | non injective (une position source réutilisée) |
 
+### 3.1 P4-T.4 — nouvelle famille : sélection multi-source (2026-09-21, FAIT)
+
+`discover_selection_mapping()` assemble une cible à partir d'**une seule**
+structure source. `discover_multi_source_selection_mapping()`/
+`discover_multi_source()` généralisent ce mécanisme à **plusieurs**
+structures source nommées indépendamment — une cible qui combine une
+partie de la source A avec une partie de la source B, quelque chose
+qu'aucun mécanisme existant (ni `kernel2.compare()`, ni la sélection
+mono-source) ne peut exprimer.
+
+Même discipline de non-devinette : `sigma[j]` devient un couple
+`(indice_source, indice_enfant)` plutôt qu'un simple entier ; une position
+cible non résolue de façon unique reste `AMBIGUOUS`/`REJECTED`, jamais
+devinée. Vérifié par exécution directe : cible assemblée depuis deux
+sources indépendantes correctement découverte et rejouée sur des entités
+totalement fraîches ; ambiguïté et rejet fonctionnent identiquement à la
+version mono-source ; aucune fuite de provenance d'entraînement dans
+l'objet gelé (`multi_sigma` ne contient que des entiers).
+
+`FAMILY_COMPLEXITY_RANK` place cette famille au rang 4 (la plus complexe)
+puisqu'elle combine au moins deux sources indépendantes — le rasoir
+d'Occam de P4-T.3 continuera donc à préférer une famille mono-source
+quand elle suffit à expliquer les données.
+
+5 nouveaux tests : découverte + replay aveugle, ambiguïté, cible
+constante rejetée, absence de fuite, refus explicite si moins de deux
+sources sont fournies (« utilisez `discover()` pour une seule source »).
+
 ## 4. Portes A-D : pipeline complet, vérifié par exécution
 
 ```text
@@ -161,14 +189,50 @@ découverte, nombre de lignes d'entraînement, nombre de paires de positions
 essayées, temps de replay, nombre de lignes de holdout, temps de
 vérification — voir `P4TCostReport`.
 
-**Ce que cette porte ne fait PAS encore, déclaré explicitement** : ces
-chiffres ne sont pas encore branchés sur `e20d_cognitive_control_v0_1.py`
-(E20-D.19, `score_candidate`/ROI). Cette fonction est couplée à
-`PathCandidate`/`PathRecord` (issus de l'exploration de chemins), pas à un
-candidat de transformation — les y connecter exigerait un adaptateur
-supplémentaire, non construit ici. La revue elle-même présentait ceci comme
-un objectif final (« pour pouvoir finalement connecter »), pas comme déjà
-fait ; ce document ne le revendique pas non plus.
+### 7.1 P4-T.6 — adaptateur vers le ROI d'E20-D.19 (2026-09-21, FAIT)
+
+`score_candidate()` (E20-D.19) exige un `PathCandidate.path` qui doit être
+un véritable `kernel2.PathRecord` — un chemin de graphe avec un
+`start`/`end` (`NodeRef`) et une séquence de `PathStep`. Une hypothèse de
+transformation P4-T **n'est pas un chemin de graphe** : fabriquer un faux
+`PathRecord` pour satisfaire le type aurait été exactement le genre de
+comparaison forcée que ce projet refuse déjà ailleurs (voir la frontière
+de portée explicite de `rationalize_retained_hypothesis` pour
+`SELECTION_MAPPING`).
+
+`score_hypothesis_roi()` est donc un **adaptateur parallèle**, pas un
+appel à `score_candidate()` : il réutilise la formule ROI d'E20-D.19
+(`gain_attendu × nouveauté × (1 − redondance) / coût`) et ses constantes
+de décision (`DECISION_EXPLORE`/`DECISION_DEFER`/`DECISION_STOP`,
+**importées telles quelles, jamais redéfinies**) — appliquées à un coût de
+découverte de transformation plutôt qu'un coût d'exploration de chemin.
+`e20d_cognitive_control_v0_1.py` lui-même n'est pas modifié.
+
+- **`nouveauté`** réutilise le crochet de rationalisation de P4-T.3 plutôt
+  que d'inventer une nouvelle notion : `0.0` si le motif gelé de
+  l'hypothèse correspond à une transformation déjà connue
+  (`SUPPORTED_HISTORICAL`), `1.0` sinon (genuinement nouveau, ou famille
+  hors de la portée de `rationalize_retained_hypothesis` — voir sa propre
+  frontière documentée pour `SELECTION_MAPPING`). Vérifié par exécution :
+  une correspondance historique fait chuter le ROI à exactement `0.0`,
+  quel que soit le gain attendu fourni.
+- **`coût`** est réel et mesuré (Porte G), jamais estimé : nombre de
+  paires de positions essayées + nombre de lignes de holdout réellement
+  rejouées — un compte d'effort de recherche/replay, dans le même esprit
+  que `structural_cost()` d'E20-D.19 (le coût croît avec la taille de
+  l'espace exploré) mais pas revendiqué identique (cette formule a besoin
+  de champs `PathProperties` — nombre de nœuds/opérateurs distincts,
+  branchement — qui ne s'appliquent pas à une hypothèse de transformation).
+- **`gain_attendu` doit être fourni par l'appelant** — exactement comme
+  `PathCandidate.expected_gain` dans E20-D.19 lui-même, dont le propre
+  docstring le qualifie d'« externally/empirically supplied » : ce module
+  n'a aucun moyen de savoir, par lui-même, la valeur d'une transformation
+  pour l'usage aval de l'appelant.
+
+5 nouveaux tests : réutilisation vérifiée des constantes de décision
+(importées, pas redéfinies), coût toujours réel et non nul, nouveauté à
+`1.0` sans correspondance historique, nouveauté et ROI à `0.0` avec une
+correspondance historique exacte, décision `STOP` à gain nul.
 
 ## 8. Ce qui N'EST PAS démontré — lecture honnête, pas optimiste
 
@@ -268,7 +332,7 @@ vit dans les objets structurels dérivés »).
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
 | Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré (P4-T.2, `documentation/P4T2_Locked_Benchmark_V0_1.md`) | verrouillage par un tiers externe (aucun disponible dans cette session) |
 | Relation → opération → structure | 🟢 fort pour transformations structurelles | généralisation au-delà du langage actuel (projection/duplication/composition) |
-| Coût/ROI | 🟠 mesure réelle (Porte G) | intégration à `e20d_cognitive_control_v0_1.py` (E20-D.19) |
+| Coût/ROI | 🟢 mesure réelle (Porte G) + adaptateur ROI vers E20-D.19 (P4-T.6, Sec. 7.1) | `gain_attendu` reste fourni par l'appelant (comme dans E20-D.19 lui-même), jamais calculé automatiquement |
 | Non-circularité | 🟢 forte | validation tierce formelle |
 | Provenance (gel) | 🟢 maintenant réellement vérifié (Sec. 6.1) | — |
 | Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
@@ -294,31 +358,43 @@ explicite :
    `discover_all_hypotheses()`/`select_hypothesis()` (rasoir d'Occam,
    ambiguïté exposée sur égalité de rang) + corroboration optionnelle via
    E20-D.6 réutilisé sans modification. 8 tests de régression.
-4. **P4-T.4 — nouvelles familles de transformation** au-delà de
-   permutation/récursif/projection/duplication/composition — pas encore
-   fait.
+4. **P4-T.4 — nouvelle famille de transformation.** **FAIT (2026-09-21,
+   Sec. 3.1)** : sélection multi-source (`discover_multi_source()`),
+   assemble une cible à partir de plusieurs structures source
+   indépendantes — combinaison qu'aucune famille précédente ne pouvait
+   exprimer. 5 tests de régression.
 5. **P4-T.5 — structure émergente** (opération figée appliquée à de
    nouveaux opérandes, structure absente du graphe, vérification
    indépendante) — recouvre partiellement E20-D.17, à relier explicitement.
-6. **P4-T.6 — ROI** (adaptateur vers `e20d_cognitive_control_v0_1.py`,
-   E20-D.19) — pas encore fait.
+   Pas encore fait.
+6. **P4-T.6 — ROI.** **FAIT (2026-09-21, Sec. 7.1)** :
+   `score_hypothesis_roi()`, adaptateur parallèle honnêtement borné vers
+   `e20d_cognitive_control_v0_1.py` (E20-D.19) — mêmes constantes de
+   décision réutilisées telles quelles, pas de `PathRecord` fabriqué, pas
+   de `gain_attendu` inventé. 5 tests de régression.
 7. **P4-T.7 — validation indépendante** (paquet tiers, comme M4-M7) — pas
    encore fait.
 
-Aucune étape au-delà de P4-T.1 n'est urgente ; à décider explicitement
-avant de commencer, comme pour chaque étape précédente de ce chantier.
-P6/P7 (diversité de corpus M6) et JEV/Kev (M7) restent **explicitement
-séparés** de cette trajectoire — ni preuve de clôture E20-D, ni substitut
-à P4-T.2-P4-T.7.
+Reste une seule étape non commencée dans la séquence originale (P4-T.5,
+structure émergente) plus P4-T.7 (validation tierce, qui suppose un
+tiers réellement disponible — non le cas dans cette session). Aucune
+n'est urgente ; à décider explicitement avant de commencer, comme pour
+chaque étape précédente de ce chantier. P6/P7 (diversité de corpus M6) et
+JEV/Kev (M7) restent **explicitement séparés** de cette trajectoire — ni
+preuve de clôture E20-D, ni substitut à P4-T.2-P4-T.7.
 
 ## 10. Tests
 
-`tests/test_p4t_structural_transformation_induction_v0_1.py` (23 tests,
-après P4-T.1 et P4-T.3) : 2 réutilisation (permutation, récursif + replay
-aveugle), 3 nouvelles familles (projection, duplication, composition)
-chacune avec replay aveugle et vérification, 4 anti-triche, 4 gel (fuite
-SELECTION_MAPPING, fuite RECURSIVE, digest canonique, refus sur
-non-candidat), 2 coût, 1 énumération/symétrie, 4 sélection d'hypothèses
-(ambiguïté, unicité, priorité de rang, aucune hypothèse), 3 rationalisation
-E20-D.6 (correspondance exacte, frontière SELECTION_MAPPING, absence
-d'historique). Tous exécutés réellement, aucun résultat inventé.
+`tests/test_p4t_structural_transformation_induction_v0_1.py` (33 tests,
+après P4-T.1, P4-T.3, P4-T.4 et P4-T.6) : 2 réutilisation (permutation,
+récursif + replay aveugle), 3 familles à source unique (projection,
+duplication, composition) chacune avec replay aveugle et vérification, 4
+anti-triche, 4 gel (fuite SELECTION_MAPPING, fuite RECURSIVE, digest
+canonique, refus sur non-candidat), 2 coût, 1 énumération/symétrie, 4
+sélection d'hypothèses (ambiguïté, unicité, priorité de rang, aucune
+hypothèse), 3 rationalisation E20-D.6 (correspondance exacte, frontière
+SELECTION_MAPPING, absence d'historique), 5 sélection multi-source
+(découverte + replay, ambiguïté, rejet, absence de fuite, refus sous deux
+sources), 5 adaptateur ROI E20-D.19 (constantes réutilisées, coût réel,
+nouveauté sans historique, nouveauté/ROI nuls avec historique, décision
+STOP à gain nul). Tous exécutés réellement, aucun résultat inventé.

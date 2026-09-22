@@ -73,11 +73,13 @@ from e20d_protocol import (
     discover_cross_slot_candidates,
 )
 from e20d_rationalization_v0_1 import RationalizationResult, rationalize
+from e20d_cognitive_control_v0_1 import DECISION_DEFER, DECISION_EXPLORE, DECISION_STOP
 
 FAMILY_REFERENCE_EQUALITY = "REFERENCE_EQUALITY"
 FAMILY_PERMUTATION = "COMPARE_PERMUTATION"
 FAMILY_RECURSIVE_PERMUTATION = "COMPARE_RECURSIVE"
 FAMILY_SELECTION_MAPPING = "SELECTION_MAPPING"
+FAMILY_MULTI_SOURCE_SELECTION_MAPPING = "MULTI_SOURCE_SELECTION_MAPPING"
 
 OUTCOME_CANDIDATE = "CANDIDATE"
 OUTCOME_AMBIGUOUS = "AMBIGUOUS"
@@ -184,6 +186,94 @@ def classify_selection_mapping(result: SelectionMappingResult) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Gate F (P4-T.4): a genuinely new family -- multi-source selection mapping
+#
+# `discover_selection_mapping` above assembles a target from ONE source
+# structure. This section generalizes it to assemble a target from
+# MULTIPLE, independently-named source structures -- e.g. a target that
+# combines a part of source A with a part of source B, which neither
+# `kernel2.compare()` (single pairwise comparison, equal arity) nor
+# `discover_selection_mapping` (single source) can express. Same
+# never-guess discipline: an unresolved position is exposed as ambiguous
+# or rejected, never picked arbitrarily.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class MultiSourceSelectionResult:
+    """Per-target-position resolution of a MULTI-source selection mapping.
+
+    `sigma[j]` is `(source_slot_index, child_index)`: which of the named
+    source structures, and which of ITS children, every row's target
+    position j is reference-equal to. `source_slot_index` indexes into the
+    `source_positions` sequence the caller supplied, not into the row
+    itself.
+    """
+
+    sigma: Tuple[Optional[Tuple[int, int]], ...]
+    ambiguous_positions: Tuple[int, ...]
+    rejected_positions: Tuple[int, ...]
+    source_arities: Tuple[int, ...]
+    target_arity: int
+
+    @property
+    def is_fully_resolved(self) -> bool:
+        return not self.ambiguous_positions and not self.rejected_positions
+
+
+def discover_multi_source_selection_mapping(
+    rows: Sequence[Tuple[Tuple[Node, ...], Node]],
+) -> MultiSourceSelectionResult:
+    """Discover sigma: target_position -> (source_slot_index, child_index)
+    from rows of (sources, target), where `sources` is a fixed-length tuple
+    of independently-named source observations per row.
+
+    sigma[j] is resolved only when EXACTLY ONE (source_slot_index,
+    child_index) pair satisfies reference_equal(target.children[j],
+    sources[source_slot_index].children[child_index]) for EVERY row. Zero
+    such pairs -> rejected. More than one -> ambiguous -- the data does not
+    distinguish them, never picked arbitrarily.
+    """
+    if not rows:
+        raise ValueError("discover_multi_source_selection_mapping requires at least one row")
+    n_sources = len(rows[0][0])
+    if n_sources < 2:
+        raise ValueError("multi-source discovery requires at least 2 named source structures")
+    source_arities = tuple(len(s.children) for s in rows[0][0])
+    target_arity = len(rows[0][1].children)
+    for sources, target in rows:
+        if len(sources) != n_sources or tuple(len(s.children) for s in sources) != source_arities:
+            raise ValueError("source count/arity must be constant across rows")
+        if len(target.children) != target_arity:
+            raise ValueError("target arity must be constant across rows")
+
+    sigma: list[Optional[Tuple[int, int]]] = [None] * target_arity
+    ambiguous: list[int] = []
+    rejected: list[int] = []
+
+    for j in range(target_arity):
+        matches: list[Tuple[int, int]] = []
+        for s in range(n_sources):
+            for i in range(source_arities[s]):
+                if all(reference_equal(target.children[j], sources[s].children[i]) for sources, target in rows):
+                    matches.append((s, i))
+        if len(matches) == 1:
+            sigma[j] = matches[0]
+        elif len(matches) == 0:
+            rejected.append(j)
+        else:
+            ambiguous.append(j)
+
+    return MultiSourceSelectionResult(
+        sigma=tuple(sigma),
+        ambiguous_positions=tuple(ambiguous),
+        rejected_positions=tuple(rejected),
+        source_arities=source_arities,
+        target_arity=target_arity,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Gate A: unified discovery entry point
 # ---------------------------------------------------------------------------
 
@@ -194,6 +284,7 @@ class TransformationCandidate:
     outcome: str
     cross_slot: Optional[CrossSlotCandidate] = None
     selection: Optional[SelectionMappingResult] = None
+    multi_selection: Optional[MultiSourceSelectionResult] = None
     discovery_row_ids: Tuple[str, ...] = field(default_factory=tuple)
 
 
@@ -241,6 +332,54 @@ def discover(
     return TransformationCandidate(family=FAMILY_SELECTION_MAPPING, outcome=OUTCOME_REJECTED, discovery_row_ids=row_ids)
 
 
+def discover_multi_source(
+    observations: Sequence[Node],
+    *,
+    source_positions: Sequence[int],
+    target_position: int,
+    min_evidence: int = 3,
+) -> TransformationCandidate:
+    """Gate A, multi-source variant (P4-T.4). Train data only: each row's
+    children at `source_positions` are the independently-named source
+    structures; `target_position` is the structure to explain. Unlike
+    `discover()`, this never falls back to the single-source mechanism --
+    callers who only have one source structure should use `discover()`
+    instead, since a length-1 `source_positions` would just be a more
+    awkward way to say the same thing.
+    """
+    if len(source_positions) < 2:
+        raise ValueError("discover_multi_source requires at least 2 source_positions; use discover() for one")
+    if len(observations) < min_evidence:
+        raise ValueError(f"P4-T requires at least {min_evidence} observations")
+    row_ids = tuple(obs.node_id for obs in observations)
+
+    rows: list[Tuple[Tuple[Node, ...], Node]] = []
+    for obs in observations:
+        sources = tuple(obs.children[sp] for sp in source_positions)
+        target = obs.children[target_position]
+        if not all(isinstance(s, Node) for s in sources) or not isinstance(target, Node):
+            return TransformationCandidate(
+                family=FAMILY_MULTI_SOURCE_SELECTION_MAPPING, outcome=OUTCOME_REJECTED, discovery_row_ids=row_ids
+            )
+        rows.append((sources, target))
+
+    multi_selection = discover_multi_source_selection_mapping(rows)
+    if multi_selection.is_fully_resolved:
+        return TransformationCandidate(
+            family=FAMILY_MULTI_SOURCE_SELECTION_MAPPING,
+            outcome=OUTCOME_CANDIDATE,
+            multi_selection=multi_selection,
+            discovery_row_ids=row_ids,
+        )
+    if multi_selection.ambiguous_positions:
+        return TransformationCandidate(
+            family=FAMILY_MULTI_SOURCE_SELECTION_MAPPING, outcome=OUTCOME_AMBIGUOUS, discovery_row_ids=row_ids
+        )
+    return TransformationCandidate(
+        family=FAMILY_MULTI_SOURCE_SELECTION_MAPPING, outcome=OUTCOME_REJECTED, discovery_row_ids=row_ids
+    )
+
+
 # ---------------------------------------------------------------------------
 # Gate A.3 (P4-T.3): hypothesis selection among multiple candidates
 #
@@ -261,6 +400,7 @@ FAMILY_COMPLEXITY_RANK = {
     FAMILY_PERMUTATION: 1,
     FAMILY_SELECTION_MAPPING: 2,
     FAMILY_RECURSIVE_PERMUTATION: 3,
+    FAMILY_MULTI_SOURCE_SELECTION_MAPPING: 4,  # combines >=2 independent sources -- ranked most complex
 }
 
 OUTCOME_RETAINED = "RETAINED"
@@ -389,6 +529,8 @@ class FrozenTransformation:
     structural_digest: str
     pattern_ref: Optional[object] = None  # anonymized RefObject, for PERMUTATION/RECURSIVE only
     source_position: Optional[int] = None  # slot position to replay from, for PERMUTATION/RECURSIVE only
+    multi_sigma: Optional[Tuple[Optional[Tuple[int, int]], ...]] = None  # for MULTI_SOURCE_SELECTION_MAPPING only
+    source_arities: Optional[Tuple[int, ...]] = None  # for MULTI_SOURCE_SELECTION_MAPPING only
 
 
 def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTransformation:
@@ -411,6 +553,19 @@ def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTrans
             source_arity=candidate.selection.source_arity,
             target_arity=candidate.selection.target_arity,
             structural_digest=digest,
+        )
+    if candidate.multi_selection is not None:
+        multi_sigma = candidate.multi_selection.sigma
+        digest = sha256(repr((candidate.family, multi_sigma)).encode("utf-8")).hexdigest()
+        return FrozenTransformation(
+            frozen_id=frozen_id,
+            family=candidate.family,
+            sigma=(),
+            source_arity=-1,
+            target_arity=candidate.multi_selection.target_arity,
+            structural_digest=digest,
+            multi_sigma=multi_sigma,
+            source_arities=candidate.multi_selection.source_arities,
         )
     cs = candidate.cross_slot
     assert cs is not None
@@ -513,6 +668,53 @@ def blind_replay(frozen: FrozenTransformation, source_observations: Sequence[Nod
             return tuple(None for _ in source_observations)
         return tuple(out.children)
     return tuple(None for _ in source_observations)
+
+
+def blind_replay_multi_source(
+    frozen: FrozenTransformation, source_observations_per_slot: Sequence[Sequence[Node]]
+) -> Tuple[Optional[Node], ...]:
+    """Gate C, multi-source variant (P4-T.4). `source_observations_per_slot[s]`
+    is the batch of fresh source observations for named source slot `s`
+    (same order as the `source_positions` originally passed to
+    `discover_multi_source`); all slots must supply the same number of
+    rows. Never receives, and never needs, any target/ground-truth value.
+    """
+    if frozen.multi_sigma is None or frozen.source_arities is None:
+        return ()
+    n_sources = len(frozen.source_arities)
+    if len(source_observations_per_slot) != n_sources:
+        raise ValueError(f"expected {n_sources} source slots, got {len(source_observations_per_slot)}")
+    row_counts = {len(batch) for batch in source_observations_per_slot}
+    if len(row_counts) != 1:
+        raise ValueError("every source slot must supply the same number of rows")
+    n_rows = row_counts.pop()
+
+    predictions: list[Optional[Node]] = []
+    for row_i in range(n_rows):
+        sources = tuple(batch[row_i] for batch in source_observations_per_slot)
+        if any(len(sources[s].children) != frozen.source_arities[s] for s in range(n_sources)):
+            predictions.append(None)
+            continue
+        predicted_children = []
+        ok = True
+        for pair in frozen.multi_sigma:
+            if pair is None:
+                ok = False
+                break
+            slot_idx, child_idx = pair
+            predicted_children.append(sources[slot_idx].children[child_idx])
+        if not ok:
+            predictions.append(None)
+            continue
+        predictions.append(
+            Node(
+                node_id=f"predicted::{frozen.frozen_id}::row{row_i}",
+                kind=OBSERVATION,
+                children=tuple(predicted_children),
+                provenance=(frozen.frozen_id,),
+            )
+        )
+    return tuple(predictions)
 
 
 def compose_frozen(outer: FrozenTransformation, inner: FrozenTransformation, *, frozen_id: str) -> FrozenTransformation:
@@ -626,8 +828,107 @@ def run_costed_pipeline(
     return candidate, frozen, verifications, report
 
 
+# ---------------------------------------------------------------------------
+# Gate G -> E20-D.19 ROI adapter (P4-T.6)
+#
+# `documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 7
+# stated plainly: Gate G measures real cost but was NOT wired into
+# E20-D.19's ROI model (`e20d_cognitive_control_v0_1.py`), because that
+# module's `score_candidate()` takes a `PathCandidate`, whose `path` field
+# requires a genuine `kernel2.PathRecord` -- a graph path with a `start`/
+# `end` NodeRef and a sequence of `PathStep`s. A transformation hypothesis
+# is not a graph path, and fabricating a fake PathRecord to satisfy the
+# type would be exactly the kind of ill-fitting forced comparison this
+# project already refuses elsewhere (see `rationalize_retained_hypothesis`'s
+# explicit SELECTION_MAPPING scope boundary above).
+#
+# This is therefore a PARALLEL, honestly-scoped adapter, not a call to
+# `score_candidate()`: it reuses E20-D.19's own ROI formula and decision
+# vocabulary (`DECISION_EXPLORE`/`DECISION_DEFER`/`DECISION_STOP`,
+# imported unchanged, not redefined) applied to a transformation-discovery
+# cost instead of a path-exploration cost. `e20d_cognitive_control_v0_1.py`
+# itself is not modified.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class TransformationROIScore:
+    hypothesis_id: str
+    novelty: float
+    expected_gain: float
+    redundancy: float
+    cost: float
+    roi: float
+    decision: str
+
+
+def score_hypothesis_roi(
+    retained: Hypothesis,
+    frozen: FrozenTransformation,
+    cost_report: P4TCostReport,
+    *,
+    expected_gain: float,
+    historical_frozen: Sequence[FrozenTransformation] = (),
+    redundancy: float = 0.0,
+    explore_threshold: float = 0.5,
+    defer_threshold: float = 0.2,
+) -> TransformationROIScore:
+    """Scores a RETAINED hypothesis (Gate A.3) using E20-D.19's own
+    ROI formula: `roi = expected_gain * novelty * (1 - redundancy) / cost`.
+
+    `novelty` reuses P4-T.3's own rationalization hook rather than
+    inventing a separate notion: 0.0 if the hypothesis's frozen pattern
+    matches a historical transformation (`SUPPORTED_HISTORICAL` -- already
+    known, not novel), 1.0 otherwise (genuinely new, or the family is out
+    of `rationalize_retained_hypothesis`'s scope -- see that function's own
+    documented boundary for SELECTION_MAPPING).
+
+    `cost` is real and measured (Gate G), never estimated: the number of
+    structural position-pairs the discovery search tried plus the holdout
+    row count actually replayed -- an integer search-and-replay effort
+    count, analogous in spirit to E20-D.19's own `structural_cost()` (cost
+    grows with the size of the space explored) but not claimed identical
+    to it, since `structural_cost()`'s specific formula needs
+    `PathProperties` fields (distinct node/operator counts, branching) that
+    do not apply to a transformation hypothesis.
+
+    `expected_gain` MUST be supplied by the caller -- exactly like
+    `PathCandidate.expected_gain` in E20-D.19 itself, whose own docstring
+    calls it "externally/empirically supplied": this module has no way to
+    know, on its own, how valuable a given transformation is to the
+    caller's downstream use, and inventing a number here would be the kind
+    of fabricated precision this project's own ROI history
+    (`roadmap/ROADMAP_ROI_REFERENCE.md`) already warned against.
+    """
+    rationalization = rationalize_retained_hypothesis(frozen, historical_frozen)
+    novelty = 0.0 if rationalization is not None and rationalization.status == "SUPPORTED_HISTORICAL" else 1.0
+
+    cost = max(1.0, float(cost_report.discovery_position_pairs_tried + cost_report.replay_row_count))
+    gain = max(0.0, float(expected_gain))
+    red = max(0.0, min(1.0, float(redundancy)))
+    roi = gain * novelty * (1.0 - red) / cost
+
+    if roi >= explore_threshold:
+        decision = DECISION_EXPLORE
+    elif roi >= defer_threshold:
+        decision = DECISION_DEFER
+    else:
+        decision = DECISION_STOP
+
+    return TransformationROIScore(
+        hypothesis_id=f"{retained.source_position}->{retained.target_position}",
+        novelty=novelty,
+        expected_gain=gain,
+        redundancy=red,
+        cost=cost,
+        roi=roi,
+        decision=decision,
+    )
+
+
 __all__ = [
     "FAMILY_COMPLEXITY_RANK",
+    "FAMILY_MULTI_SOURCE_SELECTION_MAPPING",
     "FAMILY_PERMUTATION",
     "FAMILY_RECURSIVE_PERMUTATION",
     "FAMILY_REFERENCE_EQUALITY",
@@ -641,19 +942,25 @@ __all__ = [
     "FrozenTransformation",
     "Hypothesis",
     "HypothesisSelectionResult",
+    "MultiSourceSelectionResult",
     "P4TCostReport",
     "SelectionMappingResult",
     "TransformationCandidate",
+    "TransformationROIScore",
     "VerificationResult",
     "blind_replay",
+    "blind_replay_multi_source",
     "classify_selection_mapping",
     "compose_frozen",
     "discover",
     "discover_all_hypotheses",
+    "discover_multi_source",
+    "discover_multi_source_selection_mapping",
     "discover_selection_mapping",
     "freeze",
     "rationalize_retained_hypothesis",
     "run_costed_pipeline",
+    "score_hypothesis_roi",
     "select_hypothesis",
     "verify",
 ]

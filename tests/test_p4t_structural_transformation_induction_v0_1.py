@@ -451,3 +451,163 @@ def test_rationalize_retained_hypothesis_returns_none_for_selection_mapping_fami
 def test_rationalize_retained_hypothesis_returns_none_without_historical_candidates():
     frozen_a = p4t.freeze(_recursive_candidate("a"), frozen_id="NO_HIST")
     assert p4t.rationalize_retained_hypothesis(frozen_a, []) is None
+
+
+# ---------------------------------------------------------------------------
+# Gate F (P4-T.4): a genuinely new family -- multi-source selection mapping
+# ---------------------------------------------------------------------------
+
+
+def _multi_source_rows():
+    rows = []
+    for i in range(1, 4):
+        a = Node(f"a{i}", OBSERVATION, (NodeRef(f"{i}a0"), NodeRef(f"{i}a1")))
+        b = Node(f"b{i}", OBSERVATION, (NodeRef(f"{i}b0"), NodeRef(f"{i}b1")))
+        t = Node(f"t{i}", OBSERVATION, (NodeRef(f"{i}a1"), NodeRef(f"{i}b0")))
+        rows.append(Node(f"row{i}", OBSERVATION, (a, b, t)))
+    return rows
+
+
+def test_multi_source_selection_mapping_is_discovered_and_replays_blind_on_fresh_entities():
+    """Target assembled from parts of TWO independent source structures --
+    neither kernel2.compare() (single pairwise, equal arity) nor
+    discover_selection_mapping (single source) can express this."""
+    rows = _multi_source_rows()
+    candidate = p4t.discover_multi_source(rows, source_positions=(0, 1), target_position=2)
+    assert candidate.family == p4t.FAMILY_MULTI_SOURCE_SELECTION_MAPPING
+    assert candidate.outcome == p4t.OUTCOME_CANDIDATE
+    assert candidate.multi_selection.sigma == ((0, 1), (1, 0))
+
+    frozen = p4t.freeze(candidate, frozen_id="MULTI_FROZEN")
+    fresh_a = [Node(f"fa{i}", OBSERVATION, (NodeRef(f"fa0_{i}"), NodeRef(f"fa1_{i}"))) for i in range(3)]
+    fresh_b = [Node(f"fb{i}", OBSERVATION, (NodeRef(f"fb0_{i}"), NodeRef(f"fb1_{i}"))) for i in range(3)]
+    predictions = p4t.blind_replay_multi_source(frozen, [fresh_a, fresh_b])
+    assert len(predictions) == 3
+    for i, predicted in enumerate(predictions):
+        assert predicted.children == (NodeRef(f"fa1_{i}"), NodeRef(f"fb0_{i}"))
+
+
+def test_multi_source_selection_mapping_exposes_ambiguity_instead_of_guessing():
+    rows = []
+    for i in range(1, 4):
+        shared = NodeRef(f"{i}s")
+        a = Node(f"a{i}", OBSERVATION, (shared, NodeRef(f"{i}a1")))
+        b = Node(f"b{i}", OBSERVATION, (shared, NodeRef(f"{i}b1")))
+        t = Node(f"t{i}", OBSERVATION, (shared,))
+        rows.append(Node(f"row{i}", OBSERVATION, (a, b, t)))
+    candidate = p4t.discover_multi_source(rows, source_positions=(0, 1), target_position=2)
+    assert candidate.outcome == p4t.OUTCOME_AMBIGUOUS
+
+
+def test_multi_source_selection_mapping_rejects_a_constant_target():
+    rows = []
+    for i in range(1, 4):
+        a = Node(f"a{i}", OBSERVATION, (NodeRef(f"{i}a0"),))
+        b = Node(f"b{i}", OBSERVATION, (NodeRef(f"{i}b0"),))
+        t = Node(f"t{i}", OBSERVATION, (NodeRef("CONST"),))
+        rows.append(Node(f"row{i}", OBSERVATION, (a, b, t)))
+    candidate = p4t.discover_multi_source(rows, source_positions=(0, 1), target_position=2)
+    assert candidate.outcome == p4t.OUTCOME_REJECTED
+
+
+def test_multi_source_frozen_transformation_does_not_leak_training_identities():
+    rows = _multi_source_rows()
+    candidate = p4t.discover_multi_source(rows, source_positions=(0, 1), target_position=2)
+    frozen = p4t.freeze(candidate, frozen_id="MULTI_LEAK_CHECK")
+    non_digest_fields = {f.name: getattr(frozen, f.name) for f in dataclasses.fields(frozen) if f.name != "structural_digest"}
+    non_digest_repr = repr(non_digest_fields)
+    for training_id in ("1a0", "1a1", "1b0", "1b1", "2a0", "2a1", "2b0", "2b1", "3a0", "3a1", "3b0", "3b1"):
+        assert training_id not in non_digest_repr
+    # multi_sigma is (slot_index, child_index) integer pairs only.
+    assert all(isinstance(s, int) and isinstance(c, int) for s, c in frozen.multi_sigma)
+
+
+def test_discover_multi_source_requires_at_least_two_sources():
+    rows = _multi_source_rows()
+    try:
+        p4t.discover_multi_source(rows, source_positions=(0,), target_position=2)
+        assert False, "must reject a single source_position -- use discover() instead"
+    except ValueError:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# Gate G -> E20-D.19 ROI adapter (P4-T.6)
+# ---------------------------------------------------------------------------
+
+
+def _projection_hypothesis_and_frozen():
+    rows = []
+    for i in range(1, 4):
+        src = Node(f"src{i}", OBSERVATION, (NodeRef(f"{i}a"), NodeRef(f"{i}b"), NodeRef(f"{i}c")))
+        tgt = Node(f"tgt{i}", OBSERVATION, (NodeRef(f"{i}a"),))
+        rows.append(_row(f"row{i}", f"op{i}", src, tgt))
+    hyps = p4t.discover_all_hypotheses(rows)
+    selection = p4t.select_hypothesis(hyps)
+    assert selection.outcome == p4t.OUTCOME_RETAINED
+    frozen = p4t.freeze(selection.retained.candidate, frozen_id="ROI_FROZEN")
+    return selection.retained, frozen
+
+
+def test_score_hypothesis_roi_reuses_e20d19_decision_constants_unchanged():
+    from e20d_cognitive_control_v0_1 import DECISION_EXPLORE, DECISION_DEFER, DECISION_STOP
+
+    retained, frozen = _projection_hypothesis_and_frozen()
+    cost_report = p4t.P4TCostReport(
+        discovery_seconds=0.0, discovery_row_count=3, discovery_position_pairs_tried=6,
+        replay_seconds=0.0, replay_row_count=1, verify_seconds=0.0,
+    )
+    score = p4t.score_hypothesis_roi(retained, frozen, cost_report, expected_gain=10.0)
+    assert score.decision in (DECISION_EXPLORE, DECISION_DEFER, DECISION_STOP)
+    assert p4t.DECISION_EXPLORE == DECISION_EXPLORE  # imported unchanged, not redefined
+
+
+def test_score_hypothesis_roi_cost_is_real_and_never_zero():
+    retained, frozen = _projection_hypothesis_and_frozen()
+    cost_report = p4t.P4TCostReport(
+        discovery_seconds=0.0, discovery_row_count=3, discovery_position_pairs_tried=6,
+        replay_seconds=0.0, replay_row_count=1, verify_seconds=0.0,
+    )
+    score = p4t.score_hypothesis_roi(retained, frozen, cost_report, expected_gain=1.0)
+    assert score.cost == 7.0  # 6 position pairs tried + 1 holdout row, exactly as measured
+    assert score.cost > 0.0
+
+
+def test_score_hypothesis_roi_is_novel_without_a_historical_match():
+    retained, frozen = _projection_hypothesis_and_frozen()
+    cost_report = p4t.P4TCostReport(
+        discovery_seconds=0.0, discovery_row_count=3, discovery_position_pairs_tried=6,
+        replay_seconds=0.0, replay_row_count=1, verify_seconds=0.0,
+    )
+    score = p4t.score_hypothesis_roi(retained, frozen, cost_report, expected_gain=10.0, historical_frozen=[])
+    assert score.novelty == 1.0
+    assert score.roi > 0.0
+
+
+def test_score_hypothesis_roi_drops_to_zero_for_a_genuine_historical_match():
+    """Reuses P4-T.3's own rationalization hook: a hypothesis whose frozen
+    pattern exactly matches a previously-frozen transformation is treated
+    as not novel, collapsing its ROI to zero regardless of expected_gain."""
+    frozen_hist = p4t.freeze(_recursive_candidate("h"), frozen_id="ROI_HIST")
+    candidate_new = _recursive_candidate("n")
+    frozen_new = p4t.freeze(candidate_new, frozen_id="ROI_NEW")
+    hyp = p4t.Hypothesis(source_position=1, target_position=2, candidate=candidate_new, complexity_rank=3)
+    cost_report = p4t.P4TCostReport(
+        discovery_seconds=0.0, discovery_row_count=3, discovery_position_pairs_tried=6,
+        replay_seconds=0.0, replay_row_count=1, verify_seconds=0.0,
+    )
+    score = p4t.score_hypothesis_roi(hyp, frozen_new, cost_report, expected_gain=10.0, historical_frozen=[frozen_hist])
+    assert score.novelty == 0.0
+    assert score.roi == 0.0
+    assert score.decision == p4t.DECISION_STOP
+
+
+def test_score_hypothesis_roi_zero_gain_yields_stop():
+    retained, frozen = _projection_hypothesis_and_frozen()
+    cost_report = p4t.P4TCostReport(
+        discovery_seconds=0.0, discovery_row_count=3, discovery_position_pairs_tried=6,
+        replay_seconds=0.0, replay_row_count=1, verify_seconds=0.0,
+    )
+    score = p4t.score_hypothesis_roi(retained, frozen, cost_report, expected_gain=0.0)
+    assert score.roi == 0.0
+    assert score.decision == p4t.DECISION_STOP
