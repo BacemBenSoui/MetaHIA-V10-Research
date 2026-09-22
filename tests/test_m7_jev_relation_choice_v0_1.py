@@ -18,6 +18,7 @@ from m4_cold_start_evidence_v0_1 import CHALLENGE, GROUNDED_ANALOGY, SUPPORT
 import pytest
 
 from m7_jev_relation_choice_v0_1 import (
+    DEFAULT_LABELED_GLOSSED_INSTRUCTIONS,
     RELATION_VOCABULARY_MODE_GLOSSED,
     RELATION_VOCABULARY_MODE_LABELED,
     RELATION_VOCABULARY_MODE_STRICT,
@@ -189,6 +190,39 @@ def test_labeled_mode_exposes_the_real_relation_names_as_criteria_keys():
     assert all(description is None for description in client.last_criteria.values())
     assert proposal.relation == "MERE_DE"
     assert proposal.semantic_condition == RELATION_VOCABULARY_MODE_LABELED
+
+
+def test_instructions_override_replaces_the_default_text_leaving_state_and_criteria_untouched():
+    """P8.3b: the one remaining LABELED input not yet order/content-
+    tested. `None` (the default, every other test in this file) must
+    keep the exact built-in text; a non-`None` override must replace it
+    exactly, without touching `state` or `criteria`."""
+    client_default = _FakeClient(("MERE_DE", 0.95, _dist("MERE_DE", 0.95, ALL_RELATIONS)))
+    propose_relation_jev(
+        text="Alice est la mère de Bob.",
+        subject="Alice",
+        obj="Bob",
+        all_relations=ALL_RELATIONS,
+        semantic_condition=RELATION_VOCABULARY_MODE_LABELED,
+        client=client_default,
+    )
+    assert client_default.last_instructions == DEFAULT_LABELED_GLOSSED_INSTRUCTIONS
+
+    client_override = _FakeClient(("MERE_DE", 0.95, _dist("MERE_DE", 0.95, ALL_RELATIONS)))
+    custom_instructions = "What relationship does this sentence express?"
+    propose_relation_jev(
+        text="Alice est la mère de Bob.",
+        subject="Alice",
+        obj="Bob",
+        all_relations=ALL_RELATIONS,
+        semantic_condition=RELATION_VOCABULARY_MODE_LABELED,
+        client=client_override,
+        instructions_override=custom_instructions,
+    )
+    assert client_override.last_instructions == custom_instructions
+    assert client_override.last_instructions != DEFAULT_LABELED_GLOSSED_INSTRUCTIONS
+    assert client_override.last_state == client_default.last_state
+    assert client_override.last_criteria == client_default.last_criteria
 
 
 # ---------------------------------------------------------------------------

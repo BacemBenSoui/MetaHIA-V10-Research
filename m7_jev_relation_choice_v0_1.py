@@ -208,6 +208,9 @@ def build_strict_symbol_map(vocabulary: Sequence[str]) -> Dict[str, str]:
     return {real: f"R{i + 1}" for i, real in enumerate(ordered)}
 
 
+DEFAULT_LABELED_GLOSSED_INSTRUCTIONS = "Which relation applies to this sentence?"
+
+
 def propose_relation_jev(
     *,
     text: str,
@@ -219,11 +222,21 @@ def propose_relation_jev(
     model_name: str = "jev",
     worked_examples: Sequence[WorkedExample] = (),
     glosses: Mapping[str, str] = {},
+    instructions_override: Optional[str] = None,
 ) -> Optional[JevProposal]:
     """Calls the injected `client.decide(...)` -- never a hardcoded
     endpoint. Fails closed exactly like every other M7 mechanism in this
     repo: an unreachable/unusable/out-of-vocabulary/self-referential
     response is `None`, never fabricated into a proposal.
+
+    `instructions_override` (added 2026-09-22, P8.3b): when given,
+    replaces whichever `instructions` string the semantic condition
+    would otherwise build, leaving `state`/`criteria` untouched --
+    needed to test LABELED's sensitivity to the exact wording of
+    `instructions`, the one remaining LABELED input P8.3a's criteria-
+    order ablation said nothing about. `None` (the default) preserves
+    every existing caller's behavior exactly, including every test
+    already written against this function.
     """
     if semantic_condition not in _VALID_MODES:
         raise ValueError(f"semantic_condition must be one of {_VALID_MODES}, got {semantic_condition!r}")
@@ -249,7 +262,7 @@ def propose_relation_jev(
     elif semantic_condition == RELATION_VOCABULARY_MODE_LABELED:
         inverse_map = {r: r for r in all_relations}
         state = f'"{text}"'
-        instructions = "Which relation applies to this sentence?"
+        instructions = DEFAULT_LABELED_GLOSSED_INSTRUCTIONS
         criteria = {r: None for r in all_relations}
     else:
         missing = set(all_relations) - set(glosses)
@@ -257,8 +270,11 @@ def propose_relation_jev(
             raise ValueError(f"GLOSSED mode requires a gloss for every relation, missing: {sorted(missing)}")
         inverse_map = {r: r for r in all_relations}
         state = f'"{text}"'
-        instructions = "Which relation applies to this sentence?"
+        instructions = DEFAULT_LABELED_GLOSSED_INSTRUCTIONS
         criteria = dict(glosses)
+
+    if instructions_override is not None:
+        instructions = instructions_override
 
     result = client.decide(state=state, instructions=instructions, criteria=criteria)
     if result is None:
@@ -343,6 +359,7 @@ __all__ = [
     "RELATION_VOCABULARY_MODE_STRICT",
     "RELATION_VOCABULARY_MODE_LABELED",
     "RELATION_VOCABULARY_MODE_GLOSSED",
+    "DEFAULT_LABELED_GLOSSED_INSTRUCTIONS",
     "JevDecideClient",
     "JevKevSystemOneClient",
     "JevProposal",
