@@ -1,0 +1,29 @@
+{
+  "corpus_id": "JEV-BENCHMARK-CASES-V0.1",
+  "purpose": "Multi-case benchmark for m7_jev_benchmark_v0_1.py, run against a real Kev/Jev-compatible /v1/systemone server across all three semantic conditions (STRICT/LABELED/GLOSSED). NOT the original 22-case Jev benchmark documented in documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md Sec. 2 -- that benchmark's raw cases were never committed to this repo (only its summary statistics were; verified absent by direct search before writing this corpus, not assumed). Built fresh here at the same scale (16 positive + 6 adversarial = 22) and with matching adversarial categories, so its own results are comparable in shape, never claimed to be a literal re-run of the original. Every subject/object name in 'cases' is disjoint from every name in WORKED_EXAMPLES (m7_jev_benchmark_v0_1.py) -- STRICT mode's opaque-symbol mapping is only meaningful if no test case's entities ever appeared in a worked example.",
+  "relation_vocabulary": ["EPOUX_DE", "EPOUSE_DE", "MERE_DE", "PERE_DE", "AUCUNE"],
+  "cases": [
+    {"case_id": "T01", "category": "positive", "expected_relation": "MERE_DE", "subject": "Alice", "object": "Bob", "text": "Alice est la mère de Bob."},
+    {"case_id": "T02", "category": "positive", "expected_relation": "MERE_DE", "subject": "Claire", "object": "Denis", "text": "Claire est la mère de Denis."},
+    {"case_id": "T03", "category": "positive", "expected_relation": "MERE_DE", "subject": "Eve", "object": "Frank", "text": "Eve est la mère de Frank."},
+    {"case_id": "T04", "category": "positive", "expected_relation": "MERE_DE", "subject": "Iris", "object": "Jules", "text": "Iris est la mère de Jules."},
+    {"case_id": "T05", "category": "positive", "expected_relation": "PERE_DE", "subject": "Guy", "object": "Henri", "text": "Guy est le père de Henri."},
+    {"case_id": "T06", "category": "positive", "expected_relation": "PERE_DE", "subject": "Karim", "object": "Lea", "text": "Karim est le père de Lea."},
+    {"case_id": "T07", "category": "positive", "expected_relation": "PERE_DE", "subject": "Marc", "object": "Nina", "text": "Marc est le père de Nina."},
+    {"case_id": "T08", "category": "positive", "expected_relation": "PERE_DE", "subject": "Omar", "object": "Paul", "text": "Omar est le père de Paul."},
+    {"case_id": "T09", "category": "positive", "expected_relation": "EPOUX_DE", "subject": "Quentin", "object": "Rosa", "text": "Quentin est l'époux de Rosa."},
+    {"case_id": "T10", "category": "positive", "expected_relation": "EPOUX_DE", "subject": "Sami", "object": "Tara", "text": "Sami est l'époux de Tara."},
+    {"case_id": "T11", "category": "positive", "expected_relation": "EPOUX_DE", "subject": "Adrien", "object": "Bianca", "text": "Adrien est l'époux de Bianca."},
+    {"case_id": "T12", "category": "positive", "expected_relation": "EPOUX_DE", "subject": "Cedric", "object": "Diane", "text": "Cedric est l'époux de Diane."},
+    {"case_id": "T13", "category": "positive", "expected_relation": "EPOUSE_DE", "subject": "Elise", "object": "Fabien", "text": "Elise est l'épouse de Fabien."},
+    {"case_id": "T14", "category": "positive", "expected_relation": "EPOUSE_DE", "subject": "Gaelle", "object": "Hugo", "text": "Gaelle est l'épouse de Hugo."},
+    {"case_id": "T15", "category": "positive", "expected_relation": "EPOUSE_DE", "subject": "Ines", "object": "Julien", "text": "Ines est l'épouse de Julien."},
+    {"case_id": "T16", "category": "positive", "expected_relation": "EPOUSE_DE", "subject": "Karen", "object": "Louis", "text": "Karen est l'épouse de Louis."},
+    {"case_id": "A01", "category": "adversarial_negation", "expected_relation": "AUCUNE", "subject": "Manon", "object": "Noe", "text": "Manon n'est pas la mère de Noe."},
+    {"case_id": "A02", "category": "adversarial_question", "expected_relation": "AUCUNE", "subject": "Oscar", "object": "Pia", "text": "Oscar est-il le père de Pia ?"},
+    {"case_id": "A03", "category": "adversarial_conditional", "expected_relation": "AUCUNE", "subject": "Quincy", "object": "Ruth", "text": "Si Quincy était l'époux de Ruth, il serait heureux."},
+    {"case_id": "A04", "category": "adversarial_out_of_vocabulary_relation", "expected_relation": "AUCUNE", "subject": "Salim", "object": "Tessa", "text": "Salim travaille avec Tessa."},
+    {"case_id": "A05", "category": "adversarial_near_synonym_coercion_risk", "expected_relation": "AUCUNE", "subject": "Ugo", "object": "Vicky", "text": "Ugo est le conjoint de Vicky."},
+    {"case_id": "A06", "category": "adversarial_no_claim", "expected_relation": "AUCUNE", "subject": "Wade", "object": "Xena", "text": "Le café était délicieux ce matin."}
+  ]
+}

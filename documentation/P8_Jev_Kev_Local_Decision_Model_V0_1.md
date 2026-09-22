@@ -1,16 +1,21 @@
 # MetaHIA V10 — P8 : modèle de décision typée local (Jev/Kev) pour M7 v0.1
 
-Date : 2026-09-21 (implémentation réelle + premier appel réel réussi
-2026-09-22, voir Sec. 3bis/5/6bis)
-Statut : **LIVE_CONNECTIVITY_CONFIRMED, FIRST_REAL_CALL_SUCCESSFUL.**
-Le code (`m7_jev_relation_choice_v0_1.py`) est écrit, testé (25 tests) et
-**vérifié contre le vrai serveur Kev-0.8B de l'utilisateur**, exposé sur
-`192.168.1.11:8009` (**Kev n'est PAS hébergé via Ollama**, correction
-d'une hypothèse fausse de ce document initial, voir Sec. 3bis). Premier
-résultat réel, les trois conditions sémantiques, un seul cas (Sec. 6bis) :
-STRICT/LABELED/GLOSSED trouvent tous la bonne relation, confiance
-0,69/0,85/0,92 — dans l'ordre attendu. Reste : un vrai benchmark
-multi-cas (Sec. 6bis) avant toute décision d'adoption.
+Date : 2026-09-21 (implémentation réelle + connectivité confirmée +
+benchmark multi-cas complet 2026-09-22, voir Sec. 3bis/5/6bis/6ter)
+Statut : **MULTI_CASE_BENCHMARK_COMPLETE, MIXED_RESULT_HONESTLY_REPORTED.**
+Le code (`m7_jev_relation_choice_v0_1.py` + `m7_jev_benchmark_v0_1.py`)
+est écrit, testé (33 tests) et **vérifié contre le vrai serveur Kev-0.8B
+de l'utilisateur**, exposé sur `192.168.1.11:8009` (**Kev n'est PAS
+hébergé via Ollama**, correction d'une hypothèse fausse de ce document
+initial, voir Sec. 3bis). Résultat réel sur 22 cas × 3 conditions
+(Sec. 6ter, reproductible à l'identique sur deux exécutions) : le
+gradient STRICT < LABELED < GLOSSED tient sur les cas positifs (62,5 % /
+75 % / 100 %) mais **s'inverse partiellement** sur la robustesse
+adversariale (16,7 % / 66,7 % / 50 %) — GLOSSED reproduit, avec un second
+modèle indépendant, l'échec de coercition « conjoint → EPOUX_DE » déjà
+mesuré sur Jev officiel (Sec. 2). Reste : construire
+`m7_corpus_from_jev_v0_1.py` en choisissant explicitement entre LABELED
+et GLOSSED selon ce compromis mesuré, pas supposé.
 
 ## 1. Origine et périmètre
 
@@ -347,26 +352,126 @@ contre le serveur réel — pas de valeur figée, seulement les propriétés
 structurelles garanties, puisqu'un modèle externe réel n'est jamais
 déterministe d'une exécution à l'autre).
 
-**Prochaine étape logique, pas encore faite** : un vrai benchmark
-multi-cas (au moins les 22 cas du benchmark Jev officiel Sec. 2, réutilisés
-tels quels pour permettre une comparaison directe) sur les trois
-conditions, pour remplacer ce test de fumée à un cas par une mesure
-statistiquement significative — et pour enfin construire
-`m7_corpus_from_jev_v0_1.py` (Sec. 5) sur des données réelles plutôt que
-supposées.
+## 6ter. Benchmark multi-cas réel (2026-09-22) — 22 cas × 3 conditions contre Kev-0.8B
+
+**Précision méthodologique préalable, à ne pas passer sous silence** :
+les 22 cas originaux du benchmark Jev officiel (Sec. 2) n'ont **jamais
+été committés dans ce dépôt** — vérifié par recherche directe avant
+d'écrire quoi que ce soit, pas supposé. Ce chantier construit donc un
+**nouveau corpus**, de même échelle et des mêmes catégories
+adversariales que l'original (16 cas positifs + 6 adversariaux), mais ce
+n'est **pas** une rejouée littérale de l'original — voir
+`corpus/jev_benchmark_cases_v0_1.json` pour le détail et cette réserve
+explicite dans son propre `purpose`.
+
+**Extension nécessaire du vocabulaire** : sans option « aucune relation
+», l'appel `choice` de Kev force un choix parmi les 4 relations réelles
+même pour une phrase qui n'en exprime aucune — exactement le risque de
+coercition que les cas A04/A05 originaux mesuraient déjà. Une cinquième
+option `AUCUNE` a donc été ajoutée au vocabulaire fermé pour ce
+benchmark spécifiquement (`m7_jev_benchmark_v0_1.py`), sans modifier
+`propose_relation_jev()` — elle est simplement passée comme n'importe
+quel autre membre de `all_relations`.
+
+**Résultat réel** (`validation/jev_benchmark_v0_1_results_2026-09-22.json`,
+66 appels HTTP réels contre `192.168.1.11:8009`, ~57s, **reproduit à
+l'identique sur deux exécutions successives** — Kev-0.8B est déterministe
+ici, pas seulement calibré) :
+
+| Condition | Précision globale | Précision (16 positifs) | Précision (6 adversariaux) | Confiance moyenne |
+|---|---:|---:|---:|---:|
+| STRICT | 50,0 % | 62,5 % | **16,7 %** | 0,51 |
+| LABELED | 72,7 % | 75,0 % | **66,7 %** | 0,68 |
+| GLOSSED | 86,4 % | **100,0 %** | 50,0 % | 0,84 |
+
+**Sur les cas positifs, le gradient attendu se confirme nettement** :
+STRICT (62,5 %) < LABELED (75 %) < GLOSSED (100 %) — GLOSSED résout
+**tous** les 16 cas positifs correctement.
+
+**Sur les cas adversariaux, le résultat est différent — et plus
+instructif — que ne le suggérait le test de fumée à un cas de la
+Sec. 6bis. Rapporté tel quel, pas lissé** :
+
+| Cas | Catégorie | STRICT | LABELED | GLOSSED |
+|---|---|---|---|---|
+| A01 | Négation | ❌ (PERE_DE) | ✅ | ✅ |
+| A02 | Question | ❌ (PERE_DE) | ❌ (PERE_DE) | ❌ (PERE_DE) |
+| A03 | Conditionnel | ❌ (EPOUX_DE) | ❌ (EPOUSE_DE) | ❌ (EPOUX_DE) |
+| A04 | Relation hors-vocabulaire | ❌ (MERE_DE) | ✅ | ✅ |
+| A05 | Quasi-synonyme (« conjoint ») | ❌ (EPOUX_DE) | ✅ | ❌ (EPOUX_DE, confiance 0,94) |
+| A06 | Aucune affirmation | ✅ | ✅ | ✅ |
+
+Deux constats réels, non anticipés, à ne pas arrondir :
+
+1. **STRICT échoue sur presque tous les cas adversariaux nuancés**
+   (négation, question, conditionnel, hors-vocabulaire, quasi-synonyme) —
+   ne réussit que le cas sans aucun contenu relationnel du tout (A06). Les
+   5 exemples travaillés (1 par classe, dont 1 pour `AUCUNE`) ne
+   suffisent visiblement pas à faire apprendre à Kev la frontière fine de
+   `AUCUNE` face à des marqueurs grammaticaux (négation, interrogation,
+   conditionnel) à partir d'un seul exemple structurel par classe — ce
+   n'est pas une réfutation de l'hypothèse d'abstraction en soi (rien
+   n'indique que plus d'exemples ne résoudrait pas ceci ; non testé ici),
+   mais une limite réelle et mesurée du protocole minimal actuel.
+2. **GLOSSED fait moins bien que LABELED sur les cas adversariaux
+   (50 % contre 66,7 %), contrairement au gradient attendu** — et la
+   raison est précise, pas un bruit statistique : le cas A05 (« Ugo est
+   le conjoint de Vicky ») est correctement rejeté en LABELED
+   (`AUCUNE`, confiance 0,56) mais **coercé en `EPOUX_DE` avec une
+   confiance de 0,94 en GLOSSED** — une reproduction quasi exacte de
+   l'échec A05 déjà mesuré sur Jev officiel (Sec. 2 : « conjoint » coercé
+   en `EPOUX_DE`, confiance 0,98). La définition explicite fournie
+   (« X est l'époux de Y ») semble avoir **augmenté** la propension de
+   Kev à généraliser sémantiquement au-delà du vocabulaire fermé plutôt
+   que de l'en empêcher — l'effet inverse de ce que GLOSSED était censé
+   apporter. Ceci confirme, avec un second modèle indépendant
+   (Kev-0.8B, pas seulement Jev hébergé), que le risque A05 identifié
+   dès le premier benchmark est réel et robuste, pas un artefact d'un
+   seul modèle.
+
+**Lecture honnête d'ensemble** : le gradient STRICT < LABELED < GLOSSED
+n'est **pas** une loi générale — il tient pour les cas positifs
+(signal clair), mais pas pour la robustesse adversariale, où LABELED >
+GLOSSED > STRICT. Ce sont deux axes de mesure différents, qui ne doivent
+plus être supposés covarier dans le même sens sans le vérifier à chaque
+fois.
+
+Couvert par 8 tests déterministes
+(`tests/test_m7_jev_benchmark_v0_1.py`, client factice) : forme du
+corpus (22 cas, 16 positifs + 6 adversariaux, vocabulaire à 5 relations),
+**disjonction vérifiée programmatiquement** entre les entités des
+exemples travaillés et celles du corpus de test (pas seulement affirmée
+en commentaire), couverture des glosses/exemples travaillés pour les 5
+relations y compris `AUCUNE`, exactitude de l'agrégation
+(précision/confiance moyenne/comptage honnête des « pas de réponse »),
+STRICT reçoit bien les exemples travaillés et LABELED/GLOSSED non,
+sérialisation JSON du rapport.
+
+**Prochaine étape, pas encore faite** : construire
+`m7_corpus_from_jev_v0_1.py` (Sec. 5) en s'appuyant sur ce résultat réel
+— décision d'adoption à prendre en tenant compte du compromis mesuré
+(GLOSSED maximise la précision positive mais dégrade la robustesse
+adversariale ; LABELED est le meilleur compromis global sur ce corpus).
+Envisager aussi d'enrichir `WORKED_EXAMPLES` en mode STRICT (plusieurs
+exemples par classe, y compris des exemples de négation/question pour
+`AUCUNE`) pour vérifier si l'échec adversarial de STRICT est un
+artefact du few-shot minimal ou une limite plus profonde.
 
 ## 6. Décision
 
-**P8 = `LIVE_CONNECTIVITY_CONFIRMED, FIRST_REAL_CALL_SUCCESSFUL`
+**P8 = `MULTI_CASE_BENCHMARK_COMPLETE, MIXED_RESULT_HONESTLY_REPORTED`
 (2026-09-22).** `m7_jev_relation_choice_v0_1.py` implémente le vrai
-contrat `POST /v1/systemone` (Sec. 3bis/5), 25 tests dont 22 réseau-free
-et 3 « live demo » — **tous exécutés avec succès contre le vrai serveur
-Kev-0.8B de l'utilisateur** (Sec. 6bis), y compris un premier appel
-`STRICT` réel qui a résolu correctement la relation depuis un symbole
-opaque et des exemples structurels seuls. Prochaine étape, pas encore
-faite : un vrai benchmark multi-cas sur les trois conditions (Sec. 6bis),
-pour remplacer ce test de fumée à un cas par une mesure statistiquement
-significative comparable au benchmark officiel Jev (Sec. 2), puis
-construire `m7_corpus_from_jev_v0_1.py` (Sec. 5, pas encore écrit) sur des
-données réelles avant de décider de l'adoption dans le pipeline
-d'évidence M7.
+contrat `POST /v1/systemone` (Sec. 3bis/5), 33 tests au total (22 +
+3 « live demo » + 8 sur le benchmark) — **tous exécutés, dont 22 cas ×
+3 conditions en conditions réelles contre le serveur Kev-0.8B de
+l'utilisateur** (Sec. 6bis/6ter). Résultat central, non lissé (Sec. 6ter) :
+le gradient STRICT < LABELED < GLOSSED se confirme sur les cas positifs
+(62,5 % / 75 % / 100 %) mais **s'inverse partiellement** sur la
+robustesse adversariale (STRICT 16,7 % < GLOSSED 50 % < LABELED 66,7 %)
+— GLOSSED reproduit, avec un second modèle indépendant, l'échec de
+coercition « conjoint → EPOUX_DE » déjà observé sur Jev officiel
+(Sec. 2). Décision d'adoption reportée à la construction de
+`m7_corpus_from_jev_v0_1.py` (Sec. 5, pas encore écrit), qui devra
+choisir explicitement entre LABELED (meilleur compromis global mesuré
+ici) et GLOSSED (meilleure précision positive, pire robustesse) plutôt
+que de supposer l'un strictement supérieur à l'autre.

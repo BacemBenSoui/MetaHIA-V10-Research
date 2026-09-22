@@ -1,0 +1,15 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 46%]
+........................................................................ [ 58%]
+........................................................................ [ 70%]
+........................................................................ [ 82%]
+........................................................................ [ 93%]
+.....................................                                    [100%]
+613 passed, 10 deselected in 40.85s
+---
+10 live-network demo tests deselected under the standard -k "not live" convention. Separately: the real 22-case x 3-condition JEV/Kev benchmark was executed against the live server at 192.168.1.11:8009 (66 real HTTP calls, ~57s, reproduced identically on two successive runs). Full results saved at validation/jev_benchmark_v0_1_results_2026-09-22.json. Summary:
+STRICT:  overall=0.500 positive=0.625 adversarial=0.167 mean_confidence=0.510
+LABELED: overall=0.727 positive=0.750 adversarial=0.667 mean_confidence=0.678
+GLOSSED: overall=0.864 positive=1.000 adversarial=0.500 mean_confidence=0.837
