@@ -1,0 +1,64 @@
+{
+  "committed_at_utc": "2026-09-22T09:16:07Z",
+  "witness_module_imported_yet": true,
+  "predictions": [
+    {
+      "case_id": "V2C01_PROJECTION",
+      "family_expected": "SELECTION_MAPPING",
+      "selection_outcome": "RETAINED",
+      "retained_family": "SELECTION_MAPPING",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKEDV2::V2C01_PROJECTION::v2c01_hsrc1', kind='OBSERVATION', children=(*v2c01_h1a,), provenance=('LOCKEDV2::V2C01_PROJECTION', 'v2c01_hsrc1'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C01_PROJECTION::v2c01_hsrc2', kind='OBSERVATION', children=(*v2c01_h2a,), provenance=('LOCKEDV2::V2C01_PROJECTION', 'v2c01_hsrc2'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C01_PROJECTION::v2c01_hsrc3', kind='OBSERVATION', children=(*v2c01_h3a,), provenance=('LOCKEDV2::V2C01_PROJECTION', 'v2c01_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "V2C02_DUPLICATION",
+      "family_expected": "SELECTION_MAPPING",
+      "selection_outcome": "RETAINED",
+      "retained_family": "SELECTION_MAPPING",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKEDV2::V2C02_DUPLICATION::v2c02_hsrc1', kind='OBSERVATION', children=(*v2c02_h1a, *v2c02_h1a, *v2c02_h1b), provenance=('LOCKEDV2::V2C02_DUPLICATION', 'v2c02_hsrc1'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C02_DUPLICATION::v2c02_hsrc2', kind='OBSERVATION', children=(*v2c02_h2a, *v2c02_h2a, *v2c02_h2b), provenance=('LOCKEDV2::V2C02_DUPLICATION', 'v2c02_hsrc2'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C02_DUPLICATION::v2c02_hsrc3', kind='OBSERVATION', children=(*v2c02_h3a, *v2c02_h3a, *v2c02_h3b), provenance=('LOCKEDV2::V2C02_DUPLICATION', 'v2c02_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "V2C03_TWO_HYPOTHESES_UNIQUE_WINNER",
+      "family_expected": "SELECTION_MAPPING",
+      "selection_outcome": "RETAINED",
+      "retained_family": "SELECTION_MAPPING",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKEDV2::V2C03_TWO_HYPOTHESES_UNIQUE_WINNER::v2c03_hsrc1', kind='OBSERVATION', children=(*v2c03_h1a,), provenance=('LOCKEDV2::V2C03_TWO_HYPOTHESES_UNIQUE_WINNER', 'v2c03_hsrc1'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C03_TWO_HYPOTHESES_UNIQUE_WINNER::v2c03_hsrc2', kind='OBSERVATION', children=(*v2c03_h2a,), provenance=('LOCKEDV2::V2C03_TWO_HYPOTHESES_UNIQUE_WINNER', 'v2c03_hsrc2'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C03_TWO_HYPOTHESES_UNIQUE_WINNER::v2c03_hsrc3', kind='OBSERVATION', children=(*v2c03_h3a,), provenance=('LOCKEDV2::V2C03_TWO_HYPOTHESES_UNIQUE_WINNER', 'v2c03_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "V2C04_AMBIGUOUS_SELECTION",
+      "family_expected": null,
+      "selection_outcome": "AMBIGUOUS_SELECTION",
+      "retained_family": null,
+      "predicted_repr": []
+    },
+    {
+      "case_id": "V2C05_COMPOSED",
+      "family_expected": "COMPOSED",
+      "selection_outcome": "RETAINED",
+      "retained_family": "COMPOSED",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKEDV2::V2C05_COMPOSED::v2c05_hsrc1', kind='OBSERVATION', children=(*v2c05_h1a,), provenance=('LOCKEDV2::V2C05_COMPOSED', 'v2c05_hsrc1'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C05_COMPOSED::v2c05_hsrc2', kind='OBSERVATION', children=(*v2c05_h2a,), provenance=('LOCKEDV2::V2C05_COMPOSED', 'v2c05_hsrc2'))",
+        "Node(node_id='predicted::LOCKEDV2::V2C05_COMPOSED::v2c05_hsrc3', kind='OBSERVATION', children=(*v2c05_h3a,), provenance=('LOCKEDV2::V2C05_COMPOSED', 'v2c05_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "V2C06_NO_HYPOTHESES",
+      "family_expected": null,
+      "selection_outcome": "NO_HYPOTHESES",
+      "retained_family": null,
+      "predicted_repr": []
+    }
+  ]
+}

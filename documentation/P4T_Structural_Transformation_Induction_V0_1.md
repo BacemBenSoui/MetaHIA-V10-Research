@@ -377,6 +377,18 @@ de rang 3 (elle-même symétrique) → la rang 2 gagne, la symétrie du rang 3
 n'entre jamais en jeu puisque seul le meilleur rang est comparé ; aucune
 hypothèse découvrable → `NO_HYPOTHESES`.
 
+**Mise à jour (2026-09-22)** : ce mécanisme, décrit ci-dessus comme testé
+« isolément », est désormais aussi démontré **à l'intérieur** du protocole
+verrouillé train/holdout/témoin lui-même (P4-T.2 v0.2,
+`documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) — le point que la
+revue externe des Sections 10-11 avait identifié comme manquant. Trouvé
+au passage, par la même exécution directe qui a construit les nouveaux
+cas verrouillés : `COMPARE_PERMUTATION` (déjà documenté comme non orienté
+ci-dessus pour `REFERENCE_EQUALITY`) est également concerné, tout comme
+`COMPARE_RECURSIVE` — une ligne à deux positions porteuses de `Node`
+strictement égales à la paire source/cible ne suffit pas à lever
+l'ambiguïté de direction pour une opération auto-inverse.
+
 **Corroboration optionnelle via E20-D.6** (`rationalize_retained_hypothesis`) :
 réutilise `e20d_rationalization_v0_1.rationalize()` **sans aucune
 modification**, en comparant le `pattern_ref` (déjà anonymisé par le
@@ -415,12 +427,12 @@ vit dans les objets structurels dérivés »).
 | Critère E20-D | Ce que P4-T apporte | Ce qui manque |
 |---|---|---|
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
-| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré (P4-T.2, `documentation/P4T2_Locked_Benchmark_V0_1.md`) | verrouillage par un tiers externe (aucun disponible dans cette session) |
+| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un tiers externe (aucun disponible dans cette session) |
 | Relation → opération → structure | 🟢 fort pour transformations structurelles | généralisation au-delà du langage actuel (projection/duplication/composition) |
 | Coût/ROI | 🟢 mesure réelle (Porte G) + adaptateur ROI vers E20-D.19 (P4-T.6, Sec. 7.1) | `gain_attendu` reste fourni par l'appelant (comme dans E20-D.19 lui-même), jamais calculé automatiquement |
 | Non-circularité | 🟢 forte | validation tierce formelle |
-| Provenance (gel) | 🟢 maintenant réellement vérifié (Sec. 6.1) | — |
-| Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
+| Provenance (gel) | 🟢 maintenant réellement vérifié, deux passes (Sec. 6.1, Sec. 6.2) | — |
+| Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle, **et démontrée de bout en bout dans le benchmark verrouillé (P4-T.2 v0.2)** | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
 
 ### 9.2 Séquence de suite proposée (P4-T.1 → P4-T.7)
 
@@ -439,10 +451,24 @@ explicite :
    `structural_equal`, `frozen_id` non déterministe). Protocole
    **auto-administré**, pas verrouillé par un tiers — voir
    `documentation/P4T2_Locked_Benchmark_V0_1.md` pour la portée exacte.
+   **v0.2 FAIT (2026-09-22)** : le runner appelle désormais
+   `discover_all_hypotheses()`/`select_hypothesis()` au lieu de recevoir
+   une paire de positions du cas de test — voir point 3 ci-dessous, même
+   chantier.
 3. **P4-T.3 — sélection d'hypothèses.** **FAIT (2026-09-21, Sec. 8.1)** :
    `discover_all_hypotheses()`/`select_hypothesis()` (rasoir d'Occam,
    ambiguïté exposée sur égalité de rang) + corroboration optionnelle via
    E20-D.6 réutilisé sans modification. 8 tests de régression.
+   **Intégration réelle dans le benchmark verrouillé FAIT (2026-09-22,
+   P4-T.2 v0.2)** : 6 nouveaux cas verrouillés
+   (`p4t_locked_benchmark_cases_v0_2.py`), dont un à ≥2 hypothèses valides
+   avec sélection unique et un à ≥2 hypothèses de même complexité
+   (`AMBIGUOUS_SELECTION`), demandés explicitement par la revue externe.
+   Résultat honnête trouvé au passage : les familles auto-inverses
+   (`COMPARE_PERMUTATION`, `COMPARE_RECURSIVE`) sont directionnellement
+   ambiguës sous sélection réelle dès qu'une ligne ne porte que la paire
+   source/cible elle-même — voir `documentation/P4T2_Locked_Benchmark_V0_1.md`
+   Sec. 6bis. 12 nouveaux tests de régression.
 4. **P4-T.4 — nouvelle famille de transformation.** **FAIT (2026-09-21,
    Sec. 3.1)** : sélection multi-source (`discover_multi_source()`),
    assemble une cible à partir de plusieurs structures source

@@ -174,9 +174,90 @@ vérification statique (texte + AST) de l'ordre d'import, vérification
 dynamique via `sys.modules`, correspondance complète au témoin,
 déterminisme du fichier de prédictions engagées entre deux exécutions.
 
+## 6bis. P4-T.2 v0.2 : intégration réelle de P4-T.3 dans le protocole verrouillé (2026-09-22)
+
+Une revue externe (Sections 10-11, explicitement posées comme une étape
+*ultérieure*, distincte du correctif P4-T.1 bis — voir
+`documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 6.2)
+avait relevé que le runner v0.1 appelle `discover()` **directement** avec
+`source_position`/`target_position` fournis par chaque `LockedCase` — le
+benchmark lui-même indique au mécanisme quelles colonnes comparer.
+P4-T.3 (`discover_all_hypotheses()`/`select_hypothesis()`, Sec. 8.1 du
+doc P4T) existait comme mécanisme unitaire mais n'avait jamais été
+exercé **à l'intérieur** du protocole verrouillé. La revue demandait
+aussi explicitement un cas à ≥2 hypothèses valides avec sélection
+unique, et un cas à ≥2 hypothèses de même complexité (`AMBIGUOUS_SELECTION`).
+
+Trois nouveaux fichiers, v0.1 laissé strictement inchangé (même
+discipline que P5→P6→P7 : nouvelle capacité = nouveau fichier, jamais de
+mutation silencieuse d'un fichier déjà verrouillé/haché) :
+`p4t_locked_benchmark_cases_v0_2.py`, `p4t_locked_benchmark_witness_v0_2.py`,
+`p4t_locked_benchmark_runner_v0_2.py`. Changement d'API délibéré :
+`LockedCaseV2` ne porte **aucun** champ de position — trouver la bonne
+paire est désormais le travail du mécanisme
+(`_discover_and_freeze_v2()` du runner v0.2 appelle
+`discover_all_hypotheses()` puis `select_hypothesis()` et ne gèle que
+l'hypothèse réellement retenue), jamais une donnée fournie par le cas de
+test lui-même.
+
+**Un vrai résultat, honnête, trouvé par exécution directe avant toute
+conception de cas, pas supposé** : une ligne à seulement deux positions
+porteuses de `Node` (source et cible, rien d'autre) est **directionnellement
+ambiguë** sous sélection réelle pour une famille auto-inverse
+(`COMPARE_PERMUTATION`, `COMPARE_RECURSIVE`) — permuter deux fois annule
+la permutation, donc les deux directions sont des hypothèses valides à
+égalité, et `select_hypothesis()` rapporte correctement une égalité au
+lieu d'en choisir une arbitrairement. C'est exactement la même propriété
+« relation non orientée » déjà documentée pour `REFERENCE_EQUALITY`
+(docstring de `discover_all_hypotheses()`), désormais confirmée pour les
+familles de permutation aussi — jamais exercée de bout en bout
+auparavant. Les familles `SELECTION_MAPPING` à arité changeante
+(projection, duplication) ne sont PAS auto-inverses en général et
+retiennent bien une hypothèse unique dans les mêmes conditions,
+confirmé par la même exécution directe (voir le docstring de
+`p4t_locked_benchmark_cases_v0_2.py` pour le détail complet des
+vérifications, chacune exécutée avant d'être verrouillée en cas figé).
+
+Six cas :
+
+| Cas | Résultat de sélection | Détail vérifié par exécution directe |
+|---|---|---|
+| V2C01_PROJECTION | `RETAINED` (unique) | 1 seule hypothèse existe, `SELECTION_MAPPING` |
+| V2C02_DUPLICATION | `RETAINED` (unique) | 1 seule hypothèse existe, `SELECTION_MAPPING` |
+| V2C03_TWO_HYPOTHESES_UNIQUE_WINNER | `RETAINED` | 3 hypothèses au total : 2 `COMPARE_RECURSIVE` à égalité (rang 3, auto-inverses entre elles) + 1 `SELECTION_MAPPING` unique (rang 2) — retenue sans même comparer les deux premières, puisque seul le meilleur rang présent est comparé |
+| V2C04_AMBIGUOUS_SELECTION | `AMBIGUOUS_SELECTION` | 4 hypothèses `REFERENCE_EQUALITY` à égalité, toutes rang 0 |
+| V2C05_COMPOSED | `RETAINED` (inner et outer, indépendamment) | `discover_all_hypotheses()`/`select_hypothesis()` appelés séparément sur les lignes inner et outer, chacune retient une hypothèse unique, puis `compose_frozen()` inchangé |
+| V2C06_NO_HYPOTHESES | `NO_HYPOTHESES` | Zéro hypothèse trouvée sur aucune paire de positions (cible constante, Porte E) — issue fermée à la couche de sélection, distincte du `REJECTED` de la Porte A utilisé par C07/v0.1 mais de même esprit fail-closed |
+
+**6/6 cas correspondent au témoin**, vérifié par exécution réelle
+(`validation/local_regression_2026-09-22_p4t2v2.txt`). Même triple
+verrouillage mécanique que v0.1 (contrôle statique par texte, contrôle
+statique par AST, contrôle dynamique via `sys.modules`), réappliqué à
+`p4t_locked_benchmark_runner_v0_2.py`. Un nouveau test permanent
+(`test_no_holdout_entity_is_reused_from_training_within_any_case`) garde
+explicitement contre la réintroduction du défaut corrigé par P4-T.1 bis
+(fuite d'identité holdout↔train), en comparant les `ref_id` réellement
+extraits de chaque structure plutôt que la présence de la chaîne
+complète — 12 tests au total
+(`tests/test_p4t_locked_benchmark_v0_2.py`).
+
+**Portée déclarée explicitement, comme pour v0.1** : protocole
+auto-administré, pas une clôture de gate par un tiers. Ce que ce chantier
+ajoute concrètement à la matrice de clôture E20-D (Sec. 9.1 du doc P4T) :
+la sélection d'hypothèses (P4-T.3) passe de « mécanisme testé isolément »
+à « mécanisme testé isolément + démontré à l'intérieur du protocole
+verrouillé de bout en bout » — toujours pas une garantie de découverte
+non supervisée générale, et toujours pas un verrouillage par un tiers.
+
 ## 7. Décision
 
 **P4-T.2 = `SELF_ADMINISTERED_LOCKED_BENCHMARK, PASS`.** Améliore
 concrètement la matrice de clôture E20-D sur l'axe « holdout aveugle »
 (Sec. 9.1) sans revendiquer une clôture de gate par un tiers. E20-D reste
 `OPEN`.
+
+**P4-T.2 v0.2 (2026-09-22) = `REAL_HYPOTHESIS_SELECTION_INTEGRATED,
+PASS`.** Ferme le point que Sections 10-11 de la revue externe avaient
+identifié comme non démontré (P4-T.3 existait comme mécanisme unitaire
+mais jamais exercé dans le protocole verrouillé lui-même) — toujours
+sans revendiquer une clôture de gate par un tiers. E20-D reste `OPEN`.

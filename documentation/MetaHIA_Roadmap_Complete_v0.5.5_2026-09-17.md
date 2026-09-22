@@ -504,14 +504,39 @@ recalculé par exécution directe. 2 nouveaux tests de régression permanents (3
 P4-T). Détail complet : `documentation/P4T_Structural_Transformation_Induction_V0_1.md`
 Sec.6.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec.5bis.
 
+~~P4-T.2 v0.2 + intégration réelle de P4-T.3 dans le benchmark verrouillé.~~ **FAIT
+(2026-09-22).** Trois nouveaux fichiers (`p4t_locked_benchmark_cases_v0_2.py`,
+`_witness_v0_2.py`, `_runner_v0_2.py`), v0.1 laissé strictement inchangé. Le runner
+appelle désormais `discover_all_hypotheses()` → `select_hypothesis()` → `freeze()` de
+l'hypothèse réellement retenue, au lieu de recevoir une paire de positions du cas de
+test — `LockedCaseV2` ne porte d'ailleurs plus aucun champ de position, vérifié par un
+test dédié. 6 cas, dont les deux demandés explicitement par la revue : un à ≥2
+hypothèses valides avec sélection unique (`V2C03_TWO_HYPOTHESES_UNIQUE_WINNER`, 3
+hypothèses au total : 2 `COMPARE_RECURSIVE` à égalité + 1 `SELECTION_MAPPING` gagnante)
+et un à ≥2 hypothèses de même complexité (`V2C04_AMBIGUOUS_SELECTION`, 4 hypothèses
+`REFERENCE_EQUALITY` à égalité). **Résultat honnête trouvé par exécution directe avant
+toute conception de cas** : une ligne à seulement deux positions porteuses de `Node`
+(source et cible, rien d'autre) est directionnellement ambiguë sous sélection réelle
+pour une famille auto-inverse (`COMPARE_PERMUTATION`, `COMPARE_RECURSIVE`) — vérifié
+concrètement, pas supposé. 6/6 cas correspondent au témoin, même triple verrouillage
+mécanique que v0.1 (texte, AST, `sys.modules`) réappliqué. Un nouveau test permanent
+garde explicitement contre la réintroduction du défaut corrigé par P4-T.1 bis (fuite
+d'identité holdout↔train), via une comparaison de `ref_id` réellement extraits, pas de
+chaîne complète. 12 nouveaux tests (582 total dans la suite, 575 passés + 7 démos
+réseau optionnelles non exécutables dans ce bac à sable). **Portée non couverte, à
+signaler honnêtement** : la demande précise de la revue de porter le cas C02 lui-même
+avec un *troisième* `NodeRef` frais (distinct de `c02_z` et `c02_hz`) n'a pas de sens
+littéral ici — le nouveau schéma de cas v0.2 ne fixe plus aucune position, donc il n'y a
+plus de case nommé « C02 » à porter ; l'inquiétude sous-jacente (aucune identité
+partagée entre train et holdout) est néanmoins couverte, de façon plus générale, par le
+nouveau test de non-réutilisation ci-dessus, appliqué à tous les cas v0.2. Détail
+complet : `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec.6bis,
+`documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec.8.1/9.1/9.2.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes : (a) P4-T.5 —
 structure émergente (opération figée appliquée à de nouveaux opérandes, recouvre
-partiellement E20-D.17) ; (b) P4-T.2 v0.2 + intégration réelle de P4-T.3 dans le
-benchmark verrouillé (le même relecteur a signalé que le runner appelle encore
-`discover()` avec des positions fixées par le cas de test plutôt que
-`discover_all_hypotheses()` → `select_hypothesis()` → `freeze()`, et a proposé un
-troisième `NodeRef` frais pour C02 même sur la constante structurelle) ; (c) P8 — dès que
-l'infrastructure Ollama/LAN promise par l'utilisateur est disponible ; (d) cinquième
-domaine M6 ; (e) P4-T.7 — validation indépendante (suppose un tiers réellement
-disponible, non le cas dans cette session). Aucune de ces cinq n'est urgente ; à décider
-explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
+partiellement E20-D.17) ; (b) P8 — dès que l'infrastructure Ollama/LAN promise par
+l'utilisateur est disponible ; (c) cinquième domaine M6 ; (d) P4-T.7 — validation
+indépendante (suppose un tiers réellement disponible, non le cas dans cette session).
+Aucune de ces quatre n'est urgente ; à décider explicitement avant de commencer, comme
+pour chaque étape précédente de ce chantier.
