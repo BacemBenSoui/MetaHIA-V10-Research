@@ -533,10 +533,31 @@ nouveau test de non-réutilisation ci-dessus, appliqué à tous les cas v0.2. D�
 complet : `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec.6bis,
 `documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec.8.1/9.1/9.2.
 
-**Prochaine étape : non encore décidée explicitement** — options restantes : (a) P4-T.5 —
-structure émergente (opération figée appliquée à de nouveaux opérandes, recouvre
-partiellement E20-D.17) ; (b) P8 — dès que l'infrastructure Ollama/LAN promise par
-l'utilisateur est disponible ; (c) cinquième domaine M6 ; (d) P4-T.7 — validation
-indépendante (suppose un tiers réellement disponible, non le cas dans cette session).
-Aucune de ces quatre n'est urgente ; à décider explicitement avant de commencer, comme
-pour chaque étape précédente de ce chantier.
+~~P4-T.5 — structure émergente (opération figée appliquée à de nouveaux opérandes,
+recouvre partiellement E20-D.17).~~ **FAIT (2026-09-22).** Nouveau fichier
+`p4t_emergent_structure_v0_1.py`, adaptateur parallèle vers
+`e20d_emergent_structure_v0_1.py` (même discipline que P4-T.6 : pas d'appel forcé à
+`generate_emergent_structure()`, qui exige un opérateur `RefObject` incompatible avec
+une `FrozenTransformation`) — ajoute une vérification de nouveauté (`structural_equal`)
+au-dessus d'un `blind_replay()` non modifié. Démontré pour `SELECTION_MAPPING`
+(projection, duplication) : opérande jamais vu dans l'entraînement → structure neuve
+vérifiée contre un ensemble `observed` ; doublon exact déjà présent → `NOT_NEW` ; forme
+incompatible → `NO_PREDICTION` fail-closed. **Frontière de portée réelle, trouvée par
+exécution directe avant d'écrire un seul test, pas supposée** : les familles à base de
+motif (`COMPARE_PERMUTATION`, `COMPARE_RECURSIVE`) exigent un lot de fraîches
+observations de la même taille que l'entraînement pour rejouer (le `PATTERN` gelé a
+lui-même une arité de premier niveau égale au nombre de lignes d'entraînement) — un seul
+opérande renvoie donc correctement `NO_PREDICTION`, jamais une structure fabriquée à
+tort ; gardé par un test de régression permanent, pas traité comme un bug à corriger.
+8 nouveaux tests (590 total dans la suite, 583 passés + 7 démos réseau optionnelles non
+exécutables dans ce bac à sable). Le sens sémantique de la structure produite reste
+Inconnu, exactement le contrat déjà déclaré par E20-D.17 lui-même — ce chantier prouve la
+nouveauté et la traçabilité, jamais la signification. Détail complet :
+`documentation/P4T5_Emergent_Structure_V0_1.md`.
+
+**Prochaine étape : non encore décidée explicitement** — options restantes : (a) P8 —
+dès que l'infrastructure Ollama/LAN promise par l'utilisateur est disponible ;
+(b) cinquième domaine M6 ; (c) P4-T.7 — validation indépendante (suppose un tiers
+réellement disponible, non le cas dans cette session). Aucune de ces trois n'est
+urgente ; à décider explicitement avant de commencer, comme pour chaque étape précédente
+de ce chantier.

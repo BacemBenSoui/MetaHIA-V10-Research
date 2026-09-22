@@ -428,7 +428,7 @@ vit dans les objets structurels dérivés »).
 |---|---|---|
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
 | Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un tiers externe (aucun disponible dans cette session) |
-| Relation → opération → structure | 🟢 fort pour transformations structurelles | généralisation au-delà du langage actuel (projection/duplication/composition) |
+| Relation → opération → structure | 🟢 fort pour transformations structurelles, **et structure explicitement vérifiée nouvelle contre un ensemble observé (P4-T.5, `SELECTION_MAPPING`)** | généralisation au-delà du langage actuel (projection/duplication/composition) ; P4-T.5 non étendu aux familles à base de motif/multi-source |
 | Coût/ROI | 🟢 mesure réelle (Porte G) + adaptateur ROI vers E20-D.19 (P4-T.6, Sec. 7.1) | `gain_attendu` reste fourni par l'appelant (comme dans E20-D.19 lui-même), jamais calculé automatiquement |
 | Non-circularité | 🟢 forte | validation tierce formelle |
 | Provenance (gel) | 🟢 maintenant réellement vérifié, deux passes (Sec. 6.1, Sec. 6.2) | — |
@@ -476,8 +476,22 @@ explicite :
    exprimer. 5 tests de régression.
 5. **P4-T.5 — structure émergente** (opération figée appliquée à de
    nouveaux opérandes, structure absente du graphe, vérification
-   indépendante) — recouvre partiellement E20-D.17, à relier explicitement.
-   Pas encore fait.
+   indépendante) — recouvre partiellement E20-D.17. **FAIT (2026-09-22)** :
+   `p4t_emergent_structure_v0_1.py`, adaptateur parallèle (même discipline
+   que P4-T.6 vis-à-vis d'E20-D.19 : pas d'appel forcé à
+   `e20d_emergent_structure_v0_1.generate_emergent_structure()`, qui exige
+   un opérateur `RefObject` incompatible avec une `FrozenTransformation`).
+   Ajoute une vérification de nouveauté (`structural_equal`) au-dessus
+   d'un `blind_replay()` non modifié. Démontré pour `SELECTION_MAPPING`
+   (projection et duplication) : opérande jamais vu → structure neuve
+   vérifiée, doublon exact → `NOT_NEW`, forme incompatible → `NO_PREDICTION`
+   fail-closed. **Frontière de portée réelle, trouvée par exécution
+   directe avant d'écrire un test** : les familles à base de motif
+   (`COMPARE_PERMUTATION`, `COMPARE_RECURSIVE`) exigent un lot de la même
+   taille que l'entraînement pour rejouer — un seul opérande renvoie donc
+   correctement `NO_PREDICTION`, jamais une structure fabriquée à tort ;
+   gardé par un test de régression permanent, pas traité comme un bug.
+   8 tests de régression. Voir `documentation/P4T5_Emergent_Structure_V0_1.md`.
 6. **P4-T.6 — ROI.** **FAIT (2026-09-21, Sec. 7.1)** :
    `score_hypothesis_roi()`, adaptateur parallèle honnêtement borné vers
    `e20d_cognitive_control_v0_1.py` (E20-D.19) — mêmes constantes de
@@ -486,13 +500,13 @@ explicite :
 7. **P4-T.7 — validation indépendante** (paquet tiers, comme M4-M7) — pas
    encore fait.
 
-Reste une seule étape non commencée dans la séquence originale (P4-T.5,
-structure émergente) plus P4-T.7 (validation tierce, qui suppose un
-tiers réellement disponible — non le cas dans cette session). Aucune
-n'est urgente ; à décider explicitement avant de commencer, comme pour
-chaque étape précédente de ce chantier. P6/P7 (diversité de corpus M6) et
-JEV/Kev (M7) restent **explicitement séparés** de cette trajectoire — ni
-preuve de clôture E20-D, ni substitut à P4-T.2-P4-T.7.
+Reste une seule étape non commencée dans la séquence originale : P4-T.7
+(validation tierce, qui suppose un tiers réellement disponible — non le
+cas dans cette session). Pas urgente ; à décider explicitement avant de
+commencer, comme pour chaque étape précédente de ce chantier. P6/P7
+(diversité de corpus M6) et JEV/Kev (M7) restent **explicitement
+séparés** de cette trajectoire — ni preuve de clôture E20-D, ni substitut
+à P4-T.2-P4-T.7.
 
 ## 10. Tests
 
