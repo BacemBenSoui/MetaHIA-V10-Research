@@ -588,39 +588,182 @@ tests existants mis à jour en conséquence ; `JevProposal` porte
 désormais `probabilities`, et `jev_evidence_for_prediction()` la
 transmet dans `metadata["probabilities"]`.
 
+## 6quinquies. P8.2 — Ablation d'ordre des démonstrations, STRICT uniquement (2026-09-22) : effet causal réel, mais pas celui attendu
+
+Demandé explicitement en réponse à P8.1 : la baisse de précision positive
+de STRICT (62,5 % → 50,0 %) était-elle un effet d'ordre/récence des
+démonstrations (`MERE_DE` immédiatement suivi de `PERE_DE` dans
+`demonstration_set`, vérifié directement) ou une limite réelle du
+mécanisme ? **Précision de périmètre, vérifiée dans le code avant tout
+run** : seul STRICT reçoit `demonstration_set`
+(`m7_jev_benchmark_v0_2.run_benchmark` passe `worked_examples=()` à
+LABELED/GLOSSED) — P8.2 est donc une ablation STRICT-only par
+construction, pas un protocole 3-conditions réduit. Rejouer LABELED/
+GLOSSED sous des « ordres » différents aurait été une expérience nulle :
+rien dans leur requête ne peut dépendre d'un ordre qu'ils ne reçoivent
+jamais.
+
+Protocole (`m7_jev_order_ablation_v0_1.py`) : mêmes 24 démonstrations,
+mêmes 39 cas d'évaluation, même modèle, même serveur — seul l'ordre de
+présentation des démonstrations à STRICT varie, sur 11 ordres : 1 ordre
+« interleaved » conçu délibérément pour séparer `MERE_DE`/`PERE_DE` ET
+`EPOUX_DE`/`EPOUSE_DE` (jamais adjacents, dans aucun tour ni à la
+frontière entre tours), et 10 permutations aléatoires (seeds 1 à 10,
+déterministes et reproductibles). L'ordre original (baseline P8.1) n'est
+**pas** rejoué — son résultat existe déjà, réel et sauvegardé
+(`validation/jev_benchmark_v0_2_results_2026-09-22.json`). **Deux vrais
+bugs trouvés par les 9 tests déterministes
+(`tests/test_m7_jev_order_ablation_v0_1.py`) avant tout run réseau** :
+l'ordre de groupe alphabétique pour l'entrelacement reproduisait
+exactement l'adjacence `MERE_DE`→`PERE_DE` qu'il devait casser (dans
+l'alphabet, `MERE_DE` précède directement `PERE_DE`) — corrigé par un
+ordre de groupe explicite (`MERE_DE, EPOUX_DE, PERE_DE, EPOUSE_DE,
+AUCUNE`) qui sépare bien les deux paires confondables documentées.
+
+**Résultat réel** (`validation/jev_order_ablation_v0_1_results_2026-09-22.json`,
+429 appels HTTP réels, ~1568 s / ~26 min, 0 échec réseau sur les 429) :
+
+| Ordre | Global | Positifs | Adversariaux | « conjoint » résiste ? |
+|---|---:|---:|---:|---:|
+| Original (P8.1, référence, non rejoué) | 56,4 % | 50,0 % | 63,2 % | Non |
+| **Interleaved (conçu)** | **74,4 %** | 75,0 % | 73,7 % | Non |
+| 10 seeds aléatoires — moyenne | **47,2 %** (σ=10,8) | 37,5 % (σ=20,8, min 0 %, max 62,5 %) | 55,8 % (σ=29,6, min 15,8 %, max 94,7 %) | Oui pour 2/10 |
+
+**Lecture honnête, en quatre points, aucun lissé :**
+
+1. **L'ordre a un effet causal réel et large** — jusqu'à 30 points
+   d'écart sur la précision globale selon l'ordre exact, à contenu de
+   démonstration strictement identique. Ce n'est pas du bruit de mesure.
+2. **Mais ce n'est pas un simple effet de récence générique.** Un ordre
+   aléatoire quelconque est, EN MOYENNE, **pire** que l'ordre original
+   (47,2 % vs 56,4 %) — réordonner au hasard ne corrige rien en moyenne,
+   il déplace juste le problème. Seul un ordre **conçu délibérément**
+   pour séparer les paires confondables connues (interleaved, 74,4 %)
+   fait mieux que le baseline. La baisse de précision positive de P8.1
+   était donc bien, en partie, un **artefact de cet ordre précis** —
+   mais la solution n'est pas « n'importe quel autre ordre », c'est
+   « un ordre informé par les confusions déjà mesurées ».
+3. **Découverte nouvelle, plus large que la question `PERE_DE`/`MERE_DE`
+   initiale : STRICT est intrinsèquement fragile à la présentation.**
+   La précision positive individuelle varie de 0 % (seed10 : les 16 cas
+   positifs TOUS ratés) à 62,5 % (seed8) selon le seul ordre des
+   démonstrations. C'est un résultat de **robustesse**, indépendant de
+   la précision moyenne : un mécanisme dont la performance individuelle
+   peut s'effondrer à 0 % selon un facteur de présentation qui ne
+   devrait, en principe, rien changer au contenu de l'information
+   fournie, n'est pas encore un mécanisme stable.
+4. **Corrélation négative modérée-forte entre précision positive et
+   précision adversariale à travers les 10 seeds (Pearson r = −0,66,
+   calculé directement, pas estimé).** Les ordres qui rendent STRICT bon
+   pour rejeter les cas adversariaux (répondre `AUCUNE`) le rendent
+   systématiquement moins bon pour affirmer une vraie relation, et
+   vice-versa (ex. seed10 : positifs 0 %, adversarial 89,5 % ; seed8 :
+   positifs 62,5 %, adversarial 31,6 %). L'ordre ne fait donc pas
+   seulement varier la précision : il déplace un **axe de biais**
+   (tendance à s'engager sur une relation réelle vs tendance à se
+   rabattre sur `AUCUNE`) — pas un phénomène de bruit incohérent.
+
+**Sur la confusion `PERE_DE`/`MERE_DE` spécifiquement** : jamais
+reproduite à 100 % dans aucun des 10 seeds (maximum 80 %, seed2) ni en
+interleaved (80 % également — la ligne `PERE_DE` de la matrice de
+confusion interleaved montre encore 4 `MERE_DE` sur 5 cas). **Le simple
+fait de séparer positionnellement `MERE_DE` et `PERE_DE` ne suffit donc
+pas à éliminer la confusion** — elle est atténuée par un ordre bien
+conçu (74,4 % de précision globale malgré tout) mais pas résolue,
+suggérant une confusion sémantique réelle entre les deux relations
+(toutes deux « parent de », sans indice de genre explicite dans un
+symbole opaque `R_n`), modulée mais pas causée uniquement par l'ordre.
+
+**Sur `EPOUX_DE`/`EPOUSE_DE`** : taux de confusion très variable selon
+l'ordre (0 % à 100 % dans les deux sens selon le seed) — confirme (comme
+en P8.1) une confusion réelle, mais montre qu'elle est fortement
+modulée par la présentation, contrairement à ce que Sec. 6quater
+suggérait initialement (« pas un biais de position/ordre partagé ») —
+**correction à cette lecture antérieure** : l'ordre module bien
+l'intensité de cette confusion en STRICT, même s'il ne l'élimine jamais
+complètement dans cet échantillon de 11 ordres.
+
+**Sur « conjoint »** : ne résiste que dans 2/10 ordres aléatoires
+(seeds 1 et 5), et **échoue même dans l'ordre interleaved conçu
+spécifiquement pour améliorer STRICT**. Contrairement à la confusion
+`PERE_DE`/`MERE_DE`, ceci n'est donc **pas principalement un artefact
+d'ordre** — la coercition « conjoint » → `EPOUX_DE` en STRICT est
+robuste à la plupart des réordonnancements testés, ce qui la rapproche
+davantage d'une limite réelle du mécanisme (absence de vocabulaire
+sémantique = aucun moyen de reconnaître un quasi-synonyme comme
+hors-vocabulaire) que d'un effet de présentation.
+
+**Conséquence pour la classification STRICT** (révision de Sec. 6
+ci-dessous) : STRICT reste un mécanisme scientifiquement validé sur
+l'axe adversarial général (Cas A confirmé), avec un plafond de
+performance réel et élevé (74,4 % avec un ordre bien conçu, meilleur que
+le résultat v0.1 original sur presque tous les axes) — mais sa
+**sensibilité à l'ordre de présentation**, non résolue, en fait un objet
+d'étude, pas encore un candidat opérationnel, indépendamment de son
+plafond de performance. Ceci ne change rien à la décision LABELED (P8.2
+est STRICT-only par construction) ; la confusion `EPOUX_DE`/`EPOUSE_DE`
+de LABELED reste une question ouverte séparée, non testée ici.
+
+Couvert par 9 tests déterministes
+(`tests/test_m7_jev_order_ablation_v0_1.py`) : génération d'ordre
+(l'entrelacement est bien une permutation, sépare effectivement les deux
+paires confondables ; l'ordre aléatoire est déterministe par seed et
+diffère entre seeds), STRICT-only par construction (jamais un nom de
+relation réel envoyé comme clé de critère), l'ordre fourni atteint bien
+le client (texte des démonstrations dans l'ordre donné), agrégation
+(moyenne/écart-type/min/max, taux de confusion par paire, taux de
+résistance « conjoint ») vérifiée contre des valeurs calculées à la
+main, y compris le cas d'une ligne de confusion vide (division par
+zéro évitée). **Deux bugs réels trouvés avant tout run réseau** :
+l'entrelacement alphabétique ne séparait pas réellement `MERE_DE` de
+`PERE_DE` (corrigé, voir plus haut).
+
 ## 6. Décision
 
-**P8 = `TWO_BENCHMARKS_COMPLETE, CLASSIFICATION_REFINED` (2026-09-22).**
+**P8 = `THREE_EXPERIMENTS_COMPLETE, STRICT_ORDER_SENSITIVITY_CONFIRMED` (2026-09-22).**
 `m7_jev_relation_choice_v0_1.py` implémente le vrai contrat
 `POST /v1/systemone` (Sec. 3bis/5), désormais avec distribution de
-probabilité complète (nécessaire au Brier/ECE de Sec. 6quater). 50 tests
+probabilité complète (nécessaire au Brier/ECE de Sec. 6quater). 59 tests
 au total (24 relation-choice + 3 live demo + 8 benchmark v0.1 + 15
-benchmark v0.2/P8.1) — **tous exécutés, dont 22 cas × 3 conditions
-(v0.1, Sec. 6ter) puis 39 cas × 3 conditions (v0.2/P8.1, Sec. 6quater)
-en conditions réelles contre le serveur Kev-0.8B de l'utilisateur**.
+benchmark v0.2/P8.1 + 9 order-ablation/P8.2) — **tous exécutés, dont
+22 cas × 3 conditions (v0.1, Sec. 6ter), 39 cas × 3 conditions (v0.2/P8.1,
+Sec. 6quater), puis 11 ordres × 39 cas en STRICT seul (P8.2, Sec.
+6quinquies) en conditions réelles contre le serveur Kev-0.8B de
+l'utilisateur — 612 appels HTTP réels au total sur l'ensemble de P8
+(66 + 117 + 429)**.
 
-**Réponse au cadre A/B/C posé pour P8.1** : Cas A confirmé sur l'axe
-adversarial (STRICT 16,7 % → 63,2 % avec le few-shot enrichi — le
-déficit de v0.1 était bien largement un déficit d'exemples), mais avec
-un résultat inattendu non anticipé par le cadre initial : la précision
-positive de STRICT a **baissé** (62,5 % → 50,0 %), de façon systématique
-(confusion `PERE_DE`→`MERE_DE` nouvelle en v0.2), pas aléatoire —
-piste ouverte pour un P8.2 (effet d'ordre des exemples few-shot, non
-testé ici).
+**Réponse au cadre A/B/C posé pour P8.1, complétée par P8.2** : Cas A
+confirmé sur l'axe adversarial (STRICT 16,7 % → 63,2 % avec le few-shot
+enrichi). La baisse inattendue de précision positive (62,5 % → 50,0 %)
+s'est révélée, par P8.2, **partiellement un artefact de l'ordre de
+présentation précis choisi en P8.1** — un ordre délibérément conçu pour
+séparer les paires confondables porte le résultat à 74,4 % — mais **pas
+un simple effet de récence corrigible par n'importe quel réordonnancement** :
+la moyenne de 10 ordres aléatoires (47,2 %) est **pire** que l'ordre
+original (56,4 %), et la variance individuelle est énorme (précision
+positive de 0 % à 62,5 % selon le seul ordre). STRICT a donc un plafond
+de performance réel et élevé, mais une **fragilité de présentation non
+résolue** — une découverte plus large que la question initiale
+`PERE_DE`/`MERE_DE`, qui reste elle-même non totalement expliquée par
+l'ordre (jamais éliminée à 100 %, même en interleaved).
 
-**La classification provisoire proposée est adoptée, affinée par les
-données** :
+**La classification provisoire est adoptée, affinée par P8.1 ET P8.2** :
 
 ```text
 JEV/KEV STRICT   = test scientifique d'abstraction — mécanisme validé
                     pour la robustesse adversariale générale (Cas A),
-                    mais échoue encore spécifiquement sur le
-                    quasi-synonyme (« conjoint ») et sur EPOUX_DE/EPOUSE_DE
+                    plafond de performance élevé (74,4 % avec un ordre
+                    bien conçu) MAIS fragilité de présentation non
+                    résolue (P8.2 : σ=10,8 pts sur 10 ordres aléatoires,
+                    positifs de 0 % à 62,5 %) -- PAS un candidat
+                    opérationnel en l'état, quel que soit son plafond
 JEV/KEV LABELED  = candidat opérationnel M7 — meilleur compromis
                     ET meilleure calibration mesurée (Brier 0,377,
                     ECE 0,137) ; résiste à « conjoint » sur 4/4
                     paraphrases ; reste à corriger : confusion
-                    EPOUX_DE/EPOUSE_DE (biais inverse de STRICT)
+                    EPOUX_DE/EPOUSE_DE (biais inverse de STRICT) --
+                    non concerné par P8.2 (aucune dépendance à un
+                    ordre de démonstration, il n'en reçoit aucune)
 JEV/KEV GLOSSED  = condition maximale d'assistance sémantique —
                     précision positive parfaite (100 %, deux fois),
                     mais pire ECE (0,222) : confiant à tort précisément
@@ -633,11 +776,19 @@ des sens opposés), mais jamais en GLOSSED — l'information sémantique
 explicite aide précisément quand elle lève une ambiguïté que le nom seul
 ne lève pas, et nuit précisément quand elle invite à généraliser
 au-delà du vocabulaire fermé (« conjoint »). Ce ne sont pas deux facettes
-du même phénomène.
+du même phénomène. **Nuance apportée par P8.2** : en STRICT, l'intensité
+de cette confusion varie fortement avec l'ordre (0 % à 100 % selon le
+seed) — la confusion elle-même est réelle mais son intensité mesurée en
+P8.1 dépendait aussi de l'ordre précis testé, pas seulement du contenu.
 
 Décision d'adoption pour `m7_corpus_from_jev_v0_1.py` (Sec. 5, toujours
 pas écrit) : **LABELED reste le candidat par défaut le mieux justifié
-par les données** (meilleur compromis global, meilleure calibration,
-seule condition à passer le test de non-coercition sur 4/4 paraphrases)
-— mais le corriger sur la confusion EPOUX_DE/EPOUSE_DE avant adoption
-définitive reste ouvert, pas encore fait.
+par les données, et P8.2 ne change rien à cette décision** (LABELED ne
+dépend d'aucun ordre de démonstration) — mais le corriger sur la
+confusion EPOUX_DE/EPOUSE_DE avant adoption définitive reste ouvert, pas
+encore fait. Piste ouverte pour un P8.3 explicitement scoping-out de ce
+chantier JEV/Kev (hors périmètre immédiat, non commencée) : appliquer à
+LABELED/GLOSSED le même type de contrôle de robustesse que P8.2 a
+appliqué à STRICT, mais sur un autre axe que l'ordre puisqu'ils n'en
+reçoivent aucun -- par exemple la sensibilité à la formulation exacte de
+`instructions`/`state`, jamais testée à ce jour.
