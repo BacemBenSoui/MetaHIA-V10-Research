@@ -479,10 +479,39 @@ exécution : une correspondance historique fait chuter le ROI à exactement 0,0.
 tests. Matrice de clôture E20-D mise à jour : le coût/ROI passe de 🟠 mesure seule à 🟢
 mesure + adaptateur.
 
+~~P4-T.1 bis — durcissement résiduel de l'opacité de `freeze()` (fuite via
+`literal_constraint`, digest non invariant à l'identité des entités).~~ **FAIT
+(2026-09-22).** Une seconde revue externe a montré que le durcissement P4-T.1
+(2026-09-21) était incomplet : `_anonymize_pattern()` remplaçait `node_id`/`provenance`
+mais copiait `PatternSlot.literal_constraint` sans modification. Deux bugs réels
+confirmés par exécution directe avant correction : (1) une position découverte comme
+« toujours exactement cette entité d'entraînement » (créneau constant d'un motif
+récursif, cas C02 du benchmark verrouillé) gardait le vrai `NodeRef` d'entraînement
+verbatim dans le motif gelé ; (2) le digest, calculé sur la structure **brute**
+pré-anonymisation, n'était donc pas invariant à l'identité des entités — deux
+transformations de forme identique mais entraînées sur des entités différentes
+produisaient deux digests différents. Une affirmation précise du relecteur (« avec un
+holdout réellement frais, le replay récursif échoue ») a été **testée et réfutée**, pas
+acceptée sur récit : `blind_replay()` ne renvoie jamais `None` pour une différence de
+valeur littérale (confirmé par exécution directe, et par la docstring déjà figée de
+`kernel2.apply_pattern()`, qui documente ce comportement comme délibéré). Corrigé :
+nouvelle fonction `_anonymize_literal()` appelée uniformément sur chaque
+`literal_constraint` ; le digest de `freeze()` est désormais calculé sur l'objet **déjà
+anonymisé**, jamais sur la structure brute. Corollaire : le cas C02 du benchmark
+verrouillé, qui réutilisait `NodeRef("c02_z")` identique entre train et holdout (en
+contradiction avec son propre commentaire), a été corrigé (`c02_hz`) et son témoin
+recalculé par exécution directe. 2 nouveaux tests de régression permanents (35 total sur
+P4-T). Détail complet : `documentation/P4T_Structural_Transformation_Induction_V0_1.md`
+Sec.6.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec.5bis.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes : (a) P4-T.5 —
 structure émergente (opération figée appliquée à de nouveaux opérandes, recouvre
-partiellement E20-D.17) ; (b) P8 — dès que l'infrastructure Ollama/LAN promise par
-l'utilisateur est disponible ; (c) cinquième domaine M6 ; (d) P4-T.7 — validation
-indépendante (suppose un tiers réellement disponible, non le cas dans cette session).
-Aucune de ces quatre n'est urgente ; à décider explicitement avant de commencer, comme
-pour chaque étape précédente de ce chantier.
+partiellement E20-D.17) ; (b) P4-T.2 v0.2 + intégration réelle de P4-T.3 dans le
+benchmark verrouillé (le même relecteur a signalé que le runner appelle encore
+`discover()` avec des positions fixées par le cas de test plutôt que
+`discover_all_hypotheses()` → `select_hypothesis()` → `freeze()`, et a proposé un
+troisième `NodeRef` frais pour C02 même sur la constante structurelle) ; (c) P8 — dès que
+l'infrastructure Ollama/LAN promise par l'utilisateur est disponible ; (d) cinquième
+domaine M6 ; (e) P4-T.7 — validation indépendante (suppose un tiers réellement
+disponible, non le cas dans cette session). Aucune de ces cinq n'est urgente ; à décider
+explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.

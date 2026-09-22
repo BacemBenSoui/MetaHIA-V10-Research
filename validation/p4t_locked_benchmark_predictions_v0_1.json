@@ -1,5 +1,5 @@
 {
-  "committed_at_utc": "2026-09-22T07:58:23Z",
+  "committed_at_utc": "2026-09-22T08:57:22Z",
   "witness_module_imported_yet": true,
   "predictions": [
     {
@@ -17,9 +17,9 @@
       "family_expected": "COMPARE_RECURSIVE",
       "outcome": "CANDIDATE",
       "predicted_repr": [
-        "Node(node_id='predicted::anon::pattern::1::c02_hsrc1', kind='OBSERVATION', children=('O', *c02_h1q, *c02_h1p, *c02_z), provenance=('anon::pattern::1', 'c02_hsrc1'))",
-        "Node(node_id='predicted::anon::pattern::2::c02_hsrc2', kind='OBSERVATION', children=('O', *c02_h2q, *c02_h2p, *c02_z), provenance=('anon::pattern::2', 'c02_hsrc2'))",
-        "Node(node_id='predicted::anon::pattern::3::c02_hsrc3', kind='OBSERVATION', children=('O', *c02_h3q, *c02_h3p, *c02_z), provenance=('anon::pattern::3', 'c02_hsrc3'))"
+        "Node(node_id='predicted::anon::pattern::1::c02_hsrc1', kind='OBSERVATION', children=('O', *c02_h1q, *c02_h1p, *c02_hz), provenance=('anon::pattern::1', 'c02_hsrc1'))",
+        "Node(node_id='predicted::anon::pattern::2::c02_hsrc2', kind='OBSERVATION', children=('O', *c02_h2q, *c02_h2p, *c02_hz), provenance=('anon::pattern::2', 'c02_hsrc2'))",
+        "Node(node_id='predicted::anon::pattern::3::c02_hsrc3', kind='OBSERVATION', children=('O', *c02_h3q, *c02_h3p, *c02_hz), provenance=('anon::pattern::3', 'c02_hsrc3'))"
       ]
     },
     {

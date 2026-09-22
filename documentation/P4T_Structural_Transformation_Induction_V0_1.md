@@ -182,6 +182,91 @@ Deux nouveaux tests de régression permanents :
 — tous deux exécutés et vérifiés après correction (avant, ils auraient
 échoué, confirmant que le bug était réel et pas seulement théorique).
 
+### 6.2 Durcissement P4-T.1 bis (2026-09-22, revue externe, deux bugs réels confirmés + une affirmation du relecteur réfutée)
+
+Une seconde revue externe a identifié que le durcissement de la Sec. 6.1
+ci-dessus était **incomplet** : `_anonymize_pattern()` remplaçait bien
+`node_id`/`provenance`, mais copiait `PatternSlot.literal_constraint` sans
+aucune modification, dans toutes les branches. Deux défauts réels en
+découlaient, **confirmés par exécution directe avant correction** :
+
+- **Fuite d'identité via `literal_constraint`** : quand
+  `kernel2.compare()` découvre — légitimement — qu'une position est
+  toujours exactement la même entité d'entraînement (ex. le 4ᵉ créneau
+  constant d'un motif récursif, cas C02 du benchmark verrouillé), ce
+  `literal_constraint` reste un `NodeRef` d'entraînement réel. Vérifié :
+  reproduction exacte de la construction de C02, gel, puis
+  `repr(frozen.pattern_ref)` contenait littéralement `*c02_z` (le
+  `NodeRef` réel d'entraînement) avant correction.
+- **Digest non invariant à l'identité des entités** : le digest était
+  calculé via `structural_signature(cs.transformation)` — la structure
+  **brute**, pré-anonymisation. `kernel2.structural_signature()` préserve
+  délibérément l'identité des `NodeRef` (`("REF", ref_id)`), donc deux
+  transformations indépendamment découvertes, de forme strictement
+  identique mais entraînées sur des entités différentes, produisaient deux
+  digests **différents**. Vérifié par construction de deux telles
+  transformations (préfixes d'entités `A_`/`B_`) : digests
+  `1c2a503b...` vs `725c72ca...` avant correction.
+
+**Une affirmation précise du relecteur a été testée et réfutée, pas
+acceptée sur récit** : le relecteur affirmait que, avec une entité de
+holdout réellement fraîche, le replay récursif échouerait
+(`prediction = None`). Exécution directe : `blind_replay()` avec une
+entité de holdout jamais vue à l'entraînement (`NodeRef("BRAND_NEW_Z")`)
+ne renvoie **pas** `None` — la prédiction est valide et son 4ᵉ enfant
+reflète correctement `*BRAND_NEW_Z` (pas le `*c02_z` gelé). Confirmé de
+plus par la docstring de `kernel2.apply_pattern()` elle-même (code déjà
+figé, non modifié) : *"Always computes a result when the shapes match,
+regardless of whether the pattern's literal constraints are met — that is
+deliberate."* `literal_constraint` n'est donc actuellement pas contraignant
+dans le chemin de replay de P4-T (`pattern_is_applicable()`, qui le
+vérifierait, n'est jamais appelé par `blind_replay()`) — ce qui rendait
+d'autant plus important de corriger sa fuite d'identité, puisque
+l'opacité de `freeze()` ne pouvait pas compter sur cette vérification pour
+neutraliser la fuite.
+
+**Correction** : `_anonymize_pattern()` appelle désormais uniformément
+`_anonymize_literal()` sur chaque `PatternSlot.literal_constraint` — un
+`NodeRef` est remplacé par un jeton anonyme canonique (`literal_map`,
+tenant la correspondance à l'intérieur d'un seul appel, pour que deux
+créneaux partageant la même valeur d'entraînement continuent de partager
+le même jeton anonymisé — seule l'identité est effacée, pas le fait
+structurel) ; une contrainte littérale non-`NodeRef` (ex. un tag
+d'opérateur comme `"O"`) n'est pas de l'identité d'entité et reste
+inchangée. Le digest de `freeze()` est désormais calculé via
+`structural_signature(anonymized_ref)` — sur l'objet **déjà anonymisé**
+qui est stocké, jamais sur la structure brute pré-anonymisation.
+
+Vérification directe après correction (quatre propriétés simultanées,
+toutes confirmées) :
+```
+SAME shape, different entities -> digests equal: True
+SAME recursive shape, different entities (including literal Z) -> digests equal: True
+leak of P_Z in frozen repr: False
+DIFFERENT shape (rotation vs swap) -> digests differ: True
+```
+
+Deux nouveaux tests de régression permanents :
+`test_frozen_pattern_does_not_leak_a_literal_constraint_node_ref` (fuite
+de `literal_constraint`, plus un contrôle que le replay sur une entité
+fraîche reflète bien cette entité, pas le jeton anonymisé),
+`test_structural_digest_is_invariant_to_which_entities_trained_it`
+(invariance du digest entre deux entraînements indépendants de forme
+identique, ET absence de collapse vers un digest trivial — une forme
+différente, testée dans le même test, garde un digest différent).
+
+**Corollaire, cas C02 du benchmark verrouillé (P4-T.2, Sec. suivante)** :
+`p4t_locked_benchmark_cases_v0_1.py`'s C02 réutilisait
+`NodeRef("c02_z")` identique entre `_C02_TRAIN` et `_C02_HOLDOUT`, en
+contradiction avec le commentaire du fichier revendiquant des « entités
+totalement fraîches côté holdout ». Corrigé (`c02_hz` au lieu de
+`c02_z` pour le holdout) ; le témoin correspondant dans
+`p4t_locked_benchmark_witness_v0_1.py` a été recalculé par exécution
+directe (pas supposé) et mis à jour à l'identique — voir
+`documentation/P4T2_Locked_Benchmark_V0_1.md`. Ce n'était pas une fuite
+opérationnelle (la réfutation ci-dessus s'applique aussi à ce cas
+précis), mais c'était un vrai écart entre le commentaire et le code.
+
 ## 7. Porte G : mesure de coût, honnêtement bornée
 
 `run_costed_pipeline()` mesure réellement (jamais estimé) : temps de

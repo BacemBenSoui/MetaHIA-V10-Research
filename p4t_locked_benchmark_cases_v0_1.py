@@ -59,7 +59,7 @@ _C02_TRAIN = tuple(
     for i in range(1, 4)
 )
 _C02_HOLDOUT = tuple(
-    Node(f"c02_hsrc{i}", OBSERVATION, ("O", NodeRef(f"c02_h{i}p"), NodeRef(f"c02_h{i}q"), NodeRef("c02_z")))
+    Node(f"c02_hsrc{i}", OBSERVATION, ("O", NodeRef(f"c02_h{i}p"), NodeRef(f"c02_h{i}q"), NodeRef("c02_hz")))
     for i in range(1, 4)
 )
 

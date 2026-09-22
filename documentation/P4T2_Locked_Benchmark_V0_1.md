@@ -135,6 +135,37 @@ engagement, vérifié statiquement et dynamiquement).
   structurel auto-administré », toujours pas à « verrouillé par un
   tiers ».
 
+## 5bis. Correctif C02 : entité constante du holdout rendue réellement fraîche (2026-09-22)
+
+Une revue externe a relevé que `_C02_HOLDOUT` réutilisait
+`NodeRef("c02_z")` — la même identité que `_C02_TRAIN` — pour le 4ᵉ
+créneau constant, en contradiction avec le commentaire du fichier
+revendiquant des « entités totalement fraîches côté holdout ». Confirmé
+par lecture du code (`c02_z` apparaît identiquement dans les deux
+tuples), contrairement aux positions `p`/`q` qui étaient déjà
+correctement disjointes (`c02_{i}p`/`c02_{i}q` vs `c02_h{i}p`/`c02_h{i}q`).
+
+Ce même relecteur affirmait que ce partage causait un échec du replay
+avec une entité vraiment fraîche — **affirmation testée et réfutée** par
+exécution directe (voir
+`documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 6.2) :
+`blind_replay()` ne renvoie jamais `None` pour une différence de valeur
+littérale, seulement pour une différence d'arité/forme. Le partage
+n'était donc pas une fuite opérationnelle, mais restait un vrai écart
+documentation/code.
+
+**Correction** : `_C02_HOLDOUT` utilise désormais `NodeRef("c02_hz")`.
+Le témoin correspondant (`WITNESS_PREDICTIONS["C02_RECURSIVE_PERMUTATION"]`
+dans `p4t_locked_benchmark_witness_v0_1.py`) a été **recalculé par
+exécution directe** de `discover()`/`freeze()`/`blind_replay()` sur le
+cas corrigé (pas supposé par édition manuelle) — méthodologie identique
+à celle qui a produit le témoin initial (Sec. 3 ci-dessus). Résultat
+confirmé : le 4ᵉ enfant de chaque prédiction reflète correctement
+`*c02_hz`, jamais `*c02_z`. Les 8 tests de
+`tests/test_p4t_locked_benchmark_v0_1.py`, y compris
+`test_run_locked_benchmark_matches_witness_on_every_case`, passent
+après cette double mise à jour (cas + témoin).
+
 ## 6. Tests
 
 `tests/test_p4t_locked_benchmark_v0_1.py` (8 tests) : couverture des

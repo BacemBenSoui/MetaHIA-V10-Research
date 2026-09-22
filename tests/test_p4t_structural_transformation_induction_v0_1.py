@@ -267,6 +267,88 @@ def test_structural_digest_distinguishes_two_different_permutations_of_the_same_
     assert frozen_swap.structural_digest != frozen_rotate.structural_digest
 
 
+def test_frozen_pattern_does_not_leak_a_literal_constraint_node_ref():
+    """Regression guard for a real bug found 2026-09-22 (external review,
+    confirmed by direct execution before fixing): _anonymize_pattern()
+    anonymized a Node's own node_id/provenance but copied
+    PatternSlot.literal_constraint through completely unchanged in every
+    branch. A slot that kernel2.compare() validly discovers as "this
+    position is always exactly this one training entity" (a recursive
+    pattern's constant trailing slot) therefore kept the real training
+    NodeRef verbatim inside the supposedly opaque frozen pattern --
+    confirmed before the fix: repr(frozen) contained the literal training
+    NodeRef id. Fixed by anonymizing literal_constraint too, via the new
+    _anonymize_literal() helper."""
+    rows = []
+    for i in range(1, 4):
+        src = Node(f"src{i}", OBSERVATION, ("O", NodeRef(f"{i}x"), NodeRef(f"{i}y"), NodeRef("TRAIN_Z")))
+        tgt = Node(f"tgt{i}", OBSERVATION, ("O", NodeRef(f"{i}y"), NodeRef(f"{i}x"), NodeRef("TRAIN_Z")))
+        rows.append(_row(f"row{i}", f"op{i}", src, tgt, out="out"))
+    candidate = p4t.discover(rows, source_position=1, target_position=2)
+    assert candidate.family == p4t.FAMILY_RECURSIVE_PERMUTATION
+    frozen = p4t.freeze(candidate, frozen_id="LITERAL_LEAK_CHECK")
+    non_digest_fields = {f.name: getattr(frozen, f.name) for f in dataclasses.fields(frozen) if f.name != "structural_digest"}
+    non_digest_repr = repr(non_digest_fields)
+    assert "TRAIN_Z" not in non_digest_repr
+    # blind_replay on a genuinely fresh holdout entity must still reflect
+    # THAT entity, not the anonymized training literal -- the anonymization
+    # must be display-only, never a substitution that corrupts replay.
+    holdout = [
+        Node(f"hold{i}", OBSERVATION, ("O", NodeRef(f"h{i}p"), NodeRef(f"h{i}q"), NodeRef("FRESH_Z")))
+        for i in range(1, 4)
+    ]
+    predictions = p4t.blind_replay(frozen, holdout)
+    assert all(p is not None for p in predictions)
+    for prediction in predictions:
+        assert NodeRef("FRESH_Z") in prediction.children
+        assert NodeRef("TRAIN_Z") not in prediction.children
+
+
+def test_structural_digest_is_invariant_to_which_entities_trained_it():
+    """Regression guard for a real bug found 2026-09-22 (external review,
+    confirmed by direct execution before fixing): freeze() computed the
+    digest from structural_signature(cs.transformation) -- the RAW,
+    pre-anonymization pattern. kernel2.structural_signature() deliberately
+    preserves NodeRef identity, so two independently-discovered
+    transformations of the exact same shape, differing only in which
+    training entities happened to produce them, got two DIFFERENT digests
+    (confirmed by direct construction of such a pair before the fix,
+    values 1c2a503b... vs 725c72ca...). Fixed by hashing
+    structural_signature(anonymized_ref) instead -- the already-anonymized
+    object being stored, not the raw training-time structure. Covers both
+    the plain recursive-permutation case and the literal-constraint case
+    (same shape, same literal VALUE across both trainings, different
+    literal IDENTITY) since both must still collapse to one digest."""
+    rows_a = []
+    for i in range(1, 4):
+        src = Node(f"a_s{i}", OBSERVATION, ("O", NodeRef(f"A{i}x"), NodeRef(f"A{i}y"), NodeRef("A_Z")))
+        tgt = Node(f"a_t{i}", OBSERVATION, ("O", NodeRef(f"A{i}y"), NodeRef(f"A{i}x"), NodeRef("A_Z")))
+        rows_a.append(_row(f"rowA{i}", f"opA{i}", src, tgt, out="out"))
+    candidate_a = p4t.discover(rows_a, source_position=1, target_position=2)
+    frozen_a = p4t.freeze(candidate_a, frozen_id="INVARIANCE_A")
+
+    rows_b = []
+    for i in range(1, 4):
+        src = Node(f"b_s{i}", OBSERVATION, ("O", NodeRef(f"B{i}x"), NodeRef(f"B{i}y"), NodeRef("B_Z")))
+        tgt = Node(f"b_t{i}", OBSERVATION, ("O", NodeRef(f"B{i}y"), NodeRef(f"B{i}x"), NodeRef("B_Z")))
+        rows_b.append(_row(f"rowB{i}", f"opB{i}", src, tgt, out="out"))
+    candidate_b = p4t.discover(rows_b, source_position=1, target_position=2)
+    frozen_b = p4t.freeze(candidate_b, frozen_id="INVARIANCE_B")
+
+    assert frozen_a.family == frozen_b.family == p4t.FAMILY_RECURSIVE_PERMUTATION
+    assert frozen_a.structural_digest == frozen_b.structural_digest
+    # still not a trivial always-equal digest: a genuinely different shape
+    # (rotation instead of swap) must keep a different digest.
+    rows_rotate = []
+    for i in range(1, 4):
+        src = Node(f"r_s{i}", OBSERVATION, ("O", NodeRef(f"R{i}p"), NodeRef(f"R{i}q"), NodeRef(f"R{i}r")))
+        tgt = Node(f"r_t{i}", OBSERVATION, ("O", NodeRef(f"R{i}r"), NodeRef(f"R{i}p"), NodeRef(f"R{i}q")))
+        rows_rotate.append(_row(f"rowR{i}", f"opR{i}", src, tgt, out="out"))
+    candidate_rotate = p4t.discover(rows_rotate, source_position=1, target_position=2)
+    frozen_rotate = p4t.freeze(candidate_rotate, frozen_id="INVARIANCE_ROTATE")
+    assert frozen_rotate.structural_digest != frozen_a.structural_digest
+
+
 def test_freeze_refuses_a_non_candidate_outcome():
     rows = []
     for i in range(3):

@@ -479,7 +479,9 @@ def select_hypothesis(hypotheses: Sequence[Hypothesis]) -> HypothesisSelectionRe
 # ---------------------------------------------------------------------------
 
 
-def _anonymize_pattern(node: object, _counter: list[int] | None = None) -> object:
+def _anonymize_pattern(
+    node: object, _counter: list[int] | None = None, _literal_map: dict | None = None
+) -> object:
     """Rebuilds a PATTERN Node tree with every `node_id`/`provenance` field
     replaced by a canonical, training-data-free label.
 
@@ -495,16 +497,23 @@ def _anonymize_pattern(node: object, _counter: list[int] | None = None) -> objec
     """
     if _counter is None:
         _counter = [0]
+    if _literal_map is None:
+        _literal_map = {}
     if not isinstance(node, Node):
         return node
     new_children = []
     for child in node.children:
-        if isinstance(child, PatternSlot) and child.nested_pattern is not None:
+        if isinstance(child, PatternSlot):
+            nested = (
+                _anonymize_pattern(child.nested_pattern, _counter, _literal_map)
+                if child.nested_pattern is not None
+                else None
+            )
             new_children.append(
                 PatternSlot(
                     source_position=child.source_position,
-                    literal_constraint=child.literal_constraint,
-                    nested_pattern=_anonymize_pattern(child.nested_pattern, _counter),
+                    literal_constraint=_anonymize_literal(child.literal_constraint, _literal_map),
+                    nested_pattern=nested,
                     requires_source_equal=child.requires_source_equal,
                 )
             )
@@ -517,6 +526,41 @@ def _anonymize_pattern(node: object, _counter: list[int] | None = None) -> objec
         children=tuple(new_children),
         provenance=(),
     )
+
+
+def _anonymize_literal(literal_constraint: object, literal_map: dict) -> object:
+    """Anonymizes a `PatternSlot.literal_constraint` that carries training
+    entity identity (a `NodeRef`), while leaving a plain non-reference
+    constant (e.g. a bare string schema tag like `"O"`) untouched -- that
+    is not training entity identity, it is a fixed part of the shape being
+    tested.
+
+    Found and fixed (2026-09-21, external review, confirmed by direct
+    execution before fixing): `_anonymize_pattern` above anonymized a
+    Node's own `node_id`/`provenance`, but copied `literal_constraint`
+    through completely unchanged in every branch -- a slot discovered as
+    "this position is always exactly this one training entity" (e.g. a
+    recursive pattern's constant trailing slot) kept the real training
+    `NodeRef` (confirmed: `repr(frozen)` contained the literal training
+    entity id before this fix). The digest was affected too, since
+    `kernel2.structural_signature()` deliberately preserves `NodeRef`
+    identity (`("REF", ref_id)`) -- so two transformations of the exact
+    same shape, differing only in which entities happened to train them,
+    produced different digests, confirmed by direct construction of two
+    such cases before this fix.
+
+    The SAME literal value maps to the SAME anonymized token within one
+    `_anonymize_pattern` call (via `literal_map`, keyed by `ref_id`) so
+    that "these two slots are constrained to the same value" remains
+    visible in the anonymized form -- only the specific identity is
+    erased, not the structural fact itself.
+    """
+    if not isinstance(literal_constraint, NodeRef):
+        return literal_constraint
+    key = literal_constraint.ref_id
+    if key not in literal_map:
+        literal_map[key] = NodeRef(f"anon::literal::{len(literal_map)}")
+    return literal_map[key]
 
 
 @dataclass(frozen=True)
@@ -572,11 +616,20 @@ def freeze(candidate: TransformationCandidate, *, frozen_id: str) -> FrozenTrans
     pattern_node = resolve_structure(cs.transformation)
     anonymized = _anonymize_pattern(pattern_node)
     anonymized_ref = ref_object(f"T::{candidate.family}::anon", anonymized)
-    # Fingerprints the transformation's actual mapping (source positions,
-    # nesting, literal constraints), never the training row ids -- fixes
-    # the previously class-only digest, verified distinct for two
-    # different permutations of the same family before trusting it.
-    digest = sha256(repr((candidate.family, structural_signature(cs.transformation))).encode("utf-8")).hexdigest()
+    # Fingerprints the ANONYMIZED mapping (source positions, nesting,
+    # canonicalized literal constraints), never the raw training data --
+    # fixes two real bugs found by external review, confirmed by direct
+    # execution before fixing: (1) computing this from `cs.transformation`
+    # directly (rather than from `anonymized`) meant a literal_constraint's
+    # NodeRef leaked training entity identity straight into the digest,
+    # since kernel2.structural_signature() deliberately preserves NodeRef
+    # identity; (2) that meant two transformations of the IDENTICAL shape,
+    # discovered from data with different entity names, produced different
+    # digests -- confirmed by direct construction of such a pair before
+    # this fix, and now covered by a permanent regression test asserting
+    # the opposite (same digest for the same shape, still different for a
+    # different shape).
+    digest = sha256(repr((candidate.family, structural_signature(anonymized_ref))).encode("utf-8")).hexdigest()
     return FrozenTransformation(
         frozen_id=frozen_id,
         family=candidate.family,

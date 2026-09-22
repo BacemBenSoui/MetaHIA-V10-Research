@@ -43,9 +43,9 @@ WITNESS_PREDICTIONS = {
         NodeRef("c01_fresh3"),
     ),
     "C02_RECURSIVE_PERMUTATION": (
-        Node("w_c02_1", OBSERVATION, ("O", NodeRef("c02_h1q"), NodeRef("c02_h1p"), NodeRef("c02_z"))),
-        Node("w_c02_2", OBSERVATION, ("O", NodeRef("c02_h2q"), NodeRef("c02_h2p"), NodeRef("c02_z"))),
-        Node("w_c02_3", OBSERVATION, ("O", NodeRef("c02_h3q"), NodeRef("c02_h3p"), NodeRef("c02_z"))),
+        Node("w_c02_1", OBSERVATION, ("O", NodeRef("c02_h1q"), NodeRef("c02_h1p"), NodeRef("c02_hz"))),
+        Node("w_c02_2", OBSERVATION, ("O", NodeRef("c02_h2q"), NodeRef("c02_h2p"), NodeRef("c02_hz"))),
+        Node("w_c02_3", OBSERVATION, ("O", NodeRef("c02_h3q"), NodeRef("c02_h3p"), NodeRef("c02_hz"))),
     ),
     "C03_PROJECTION": (
         Node("w_c03_1", OBSERVATION, (NodeRef("c03_h1a"),)),
