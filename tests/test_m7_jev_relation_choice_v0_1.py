@@ -1,16 +1,18 @@
-"""Permanent invariant tests for M7 -- JEV/Kev relation-choice skeleton v0.1.
+"""Permanent invariant tests for M7 -- JEV/Kev relation-choice v0.1.
 
 Uses an injected fake `JevDecideClient` throughout -- no network call, no
 dependency on the LAN sandbox host, so these run deterministically in any
-environment while the Kev infrastructure on 192.168.1.11 is still being
-provisioned. There is deliberately no "live demo" test in this file yet
-(unlike test_m7_live_ollama_demo_v0_1.py's pattern) -- this module makes
-no real network call at all, so there is nothing to demo until a real
-client exists.
+environment. The fake client's `decide(state, instructions, criteria)`
+signature matches the VERIFIED real `jaredpalmer/kev` `POST /v1/systemone`
+`choice`-question contract (read directly from its README/source,
+2026-09-22), not a guess. A separate, genuinely network-dependent live
+demo lives in test_m7_jev_live_demo_v0_1.py (skips cleanly if the Kev
+server is unreachable, mirroring test_m7_live_ollama_demo_v0_1.py's own
+pattern).
 """
 from __future__ import annotations
 
-from typing import Optional, Sequence, Tuple
+from typing import Mapping, Optional, Tuple
 
 from m4_cold_start_evidence_v0_1 import CHALLENGE, GROUNDED_ANALOGY, SUPPORT
 import pytest
@@ -30,18 +32,20 @@ ALL_RELATIONS = ("EPOUX_DE", "EPOUSE_DE", "MERE_DE", "PERE_DE")
 
 
 class _FakeClient:
-    """Records the (context, choices) it was called with, and returns a
-    pre-scripted (chosen, positive_prob) pair -- or None to simulate an
-    unreachable/unusable response."""
+    """Records the (state, instructions, criteria) it was called with, and
+    returns a pre-scripted (chosen, positive_prob) pair -- or None to
+    simulate an unreachable/unusable response."""
 
     def __init__(self, result: Optional[Tuple[str, float]]):
         self.result = result
-        self.last_context: Optional[str] = None
-        self.last_choices: Optional[Sequence[str]] = None
+        self.last_state: Optional[str] = None
+        self.last_instructions: Optional[str] = None
+        self.last_criteria: Optional[Mapping[str, Optional[str]]] = None
 
-    def decide(self, *, context: str, choices: Sequence[str]):
-        self.last_context = context
-        self.last_choices = choices
+    def decide(self, *, state: str, instructions: str, criteria: Mapping[str, Optional[str]]):
+        self.last_state = state
+        self.last_instructions = instructions
+        self.last_criteria = criteria
         return self.result
 
 
@@ -95,10 +99,13 @@ def test_strict_mode_requires_at_least_one_worked_example():
         )
 
 
-def test_strict_mode_context_never_contains_any_real_relation_name():
+def test_strict_mode_never_leaks_any_real_relation_name_anywhere():
     """The core opacity property this module exists to guarantee --
-    checked by direct inspection of the constructed context string, the
-    same discipline already used for P4-T's freeze() opacity tests."""
+    checked by direct inspection of every field sent to the client (state,
+    instructions, and criteria keys/values), the same discipline already
+    used for P4-T's freeze() opacity tests. `criteria` values are all
+    `None` in STRICT mode -- no description is ever given, opaque symbol
+    or otherwise."""
     client = _FakeClient(("R3", 0.87))
     examples = (
         WorkedExample("Claire est la mère de Denis.", "MERE_DE"),
@@ -115,10 +122,12 @@ def test_strict_mode_context_never_contains_any_real_relation_name():
     )
     assert proposal is not None
     for real_name in ALL_RELATIONS:
-        assert real_name not in client.last_context
-    for choice in client.last_choices:
-        assert choice not in ALL_RELATIONS
-        assert choice.startswith("R")
+        assert real_name not in client.last_state
+        assert real_name not in client.last_instructions
+    for key, description in client.last_criteria.items():
+        assert key not in ALL_RELATIONS
+        assert key.startswith("R")
+        assert description is None
 
 
 def test_strict_mode_resolves_the_chosen_symbol_back_to_the_real_relation():
@@ -145,13 +154,12 @@ def test_strict_mode_resolves_the_chosen_symbol_back_to_the_real_relation():
 # ---------------------------------------------------------------------------
 
 
-def test_labeled_mode_exposes_the_real_relation_names_via_choices():
-    """The real vocabulary reaches the model through the typed `choices`
-    parameter (mirroring the real Jev API's own `Choice` type, P8 doc
-    Sec. 3), not necessarily through the free-text context -- this is
-    exactly what distinguishes LABELED from STRICT: in STRICT, `choices`
-    itself is opaque symbols (see the test above); in LABELED, it is the
-    real names."""
+def test_labeled_mode_exposes_the_real_relation_names_as_criteria_keys():
+    """The real vocabulary reaches the model through `criteria`'s keys
+    (Kev's real `choice`-question mechanism: "you choose the id; the model
+    never sees it" -- but it DOES see every criteria key), every
+    description still `None` -- this is exactly what distinguishes
+    LABELED from STRICT (opaque keys) and from GLOSSED (keys + text)."""
     client = _FakeClient(("MERE_DE", 0.95))
     proposal = propose_relation_jev(
         text="Alice est la mère de Bob.",
@@ -162,7 +170,8 @@ def test_labeled_mode_exposes_the_real_relation_names_via_choices():
         client=client,
     )
     assert proposal is not None
-    assert set(client.last_choices) == set(ALL_RELATIONS)
+    assert set(client.last_criteria.keys()) == set(ALL_RELATIONS)
+    assert all(description is None for description in client.last_criteria.values())
     assert proposal.relation == "MERE_DE"
     assert proposal.semantic_condition == RELATION_VOCABULARY_MODE_LABELED
 
@@ -187,7 +196,7 @@ def test_glossed_mode_requires_a_definition_for_every_relation():
         )
 
 
-def test_glossed_mode_context_contains_the_supplied_definitions():
+def test_glossed_mode_criteria_carries_the_supplied_definitions():
     client = _FakeClient(("MERE_DE", 0.95))
     glosses = {r: f"définition de {r}" for r in ALL_RELATIONS}
     proposal = propose_relation_jev(
@@ -200,7 +209,7 @@ def test_glossed_mode_context_contains_the_supplied_definitions():
         glosses=glosses,
     )
     assert proposal is not None
-    assert "définition de MERE_DE" in client.last_context
+    assert client.last_criteria == glosses
     assert proposal.semantic_condition == RELATION_VOCABULARY_MODE_GLOSSED
 
 
@@ -222,7 +231,7 @@ def test_subject_equal_to_object_is_always_rejected_before_any_call():
         client=client,
     )
     assert proposal is None
-    assert client.last_context is None  # never even called
+    assert client.last_state is None  # never even called
 
 
 def test_out_of_vocabulary_choice_is_rejected_not_coerced():
@@ -332,3 +341,92 @@ def test_evidence_metadata_carries_the_semantic_condition():
         evidence_index=0,
     )
     assert evidence.metadata["semantic_condition"] == RELATION_VOCABULARY_MODE_LABELED
+
+
+# ---------------------------------------------------------------------------
+# 7. JevKevSystemOneClient: real response-shape parsing, network mocked.
+#
+# Response shape verified directly against jaredpalmer/kev's own README
+# example (2026-09-22, read via the GitHub API, not assumed):
+#   {"answers": {"<id>": {"type": "choice", "choice": "...",
+#                          "confidence": ..., "probabilities": {...}}}}
+# ---------------------------------------------------------------------------
+
+import json as _json  # local import, only these tests touch the network layer
+from m7_jev_relation_choice_v0_1 import JevKevSystemOneClient
+
+
+class _FakeHTTPResponse:
+    def __init__(self, payload: dict, status: int = 200):
+        self._body = _json.dumps(payload).encode("utf-8")
+        self.status = status
+
+    def read(self):
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+def test_system_one_client_parses_a_real_shaped_response(monkeypatch):
+    kev_response = {
+        "model": "kev-latest",
+        "answers": {
+            "relation": {
+                "type": "choice",
+                "choice": "MERE_DE",
+                "confidence": 0.82,
+                "probabilities": {"MERE_DE": 0.91, "PERE_DE": 0.05, "EPOUX_DE": 0.02, "EPOUSE_DE": 0.02},
+            }
+        },
+        "usage": {"input_tokens": 42, "output_tokens": 10},
+        "latency_ms": 123.4,
+    }
+    import m7_jev_relation_choice_v0_1 as jevmod
+
+    monkeypatch.setattr(jevmod.urllib.request, "urlopen", lambda *a, **k: _FakeHTTPResponse(kev_response))
+    client = JevKevSystemOneClient("http://192.168.1.11:8009")
+    result = client.decide(state="Alice est la mère de Bob.", instructions="Which relation applies?", criteria={"MERE_DE": None})
+    assert result == ("MERE_DE", 0.91)
+
+
+def test_system_one_client_fails_closed_on_missing_answer(monkeypatch):
+    import m7_jev_relation_choice_v0_1 as jevmod
+
+    monkeypatch.setattr(jevmod.urllib.request, "urlopen", lambda *a, **k: _FakeHTTPResponse({"answers": {}}))
+    client = JevKevSystemOneClient("http://192.168.1.11:8009")
+    result = client.decide(state="x", instructions="y", criteria={"A": None})
+    assert result is None
+
+
+def test_system_one_client_fails_closed_on_connection_error(monkeypatch):
+    import urllib.error
+
+    import m7_jev_relation_choice_v0_1 as jevmod
+
+    def _raise(*a, **k):
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr(jevmod.urllib.request, "urlopen", _raise)
+    client = JevKevSystemOneClient("http://192.168.1.11:8009")
+    result = client.decide(state="x", instructions="y", criteria={"A": None})
+    assert result is None
+
+
+def test_system_one_client_reachable_probe_reflects_connection_state(monkeypatch):
+    import urllib.error
+
+    import m7_jev_relation_choice_v0_1 as jevmod
+
+    monkeypatch.setattr(jevmod.urllib.request, "urlopen", lambda *a, **k: _FakeHTTPResponse({"models": []}))
+    client = JevKevSystemOneClient("http://192.168.1.11:8009")
+    assert client.reachable() is True
+
+    def _raise(*a, **k):
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr(jevmod.urllib.request, "urlopen", _raise)
+    assert client.reachable() is False

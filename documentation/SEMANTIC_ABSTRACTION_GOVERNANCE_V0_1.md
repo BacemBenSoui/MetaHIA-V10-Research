@@ -176,7 +176,7 @@ la même dépendance d'infrastructure que le plan P8 original.
 | P4-R | 🟠 abandonnée comme voie principale |
 | M7 — parseur de texte (`m7_text_claim_parser_v0_1.py`) | 🟠 **LABELED, hors-axe** (Sec. 8bis) — vocabulaire fermé respecté et jamais injecté dans M1-M6/E20-D, mais la tâche elle-même est linguistique par construction, pas comparable à STRICT/LABELED/GLOSSED |
 | M7 — proposeur LLM (`m7_llm_fact_proposer_v0_1.py`) | 🟠 **LABELED** confirmé par audit direct du code (Sec. 8bis) — vocabulaire fermé lisible, jamais glosé, jamais formellement étiqueté comme tel avant ce document |
-| JEV-STRICT | ⏸ non encore mesuré (bloqué infra) — seule condition validant réellement l'hypothèse d'abstraction pour un LLM ; squelette de code prêt (Sec. 8ter) |
+| JEV-STRICT | ⏸ non encore mesuré (implémentation réelle prête, serveur Kev pas encore lancé côté LAN) — seule condition validant réellement l'hypothèse d'abstraction pour un LLM ; code + tests prêts (Sec. 8quater) |
 | JEV-LABELED | 🟢 mesuré (22/22 cas, `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 2) — **reclassé** depuis « strict » implicite vers LABELED par ce document |
 | JEV-GLOSSED | ⏸ non encore mesuré (bloqué infra) |
 | Dictionnaire de synonymes manuel dans M1-M6/E20-D/P4-T | 🔴 interdit, absent, vérifié par lecture directe |
@@ -264,13 +264,18 @@ JEV/le proposeur).
 uniquement, pour que ce mécanisme ne soit jamais comparé mécaniquement à
 JEV-STRICT/LABELED/GLOSSED sans cette réserve.
 
-## 8ter. Squelette de code JEV-STRICT, préparé avant implémentation
+## 8ter. Squelette JEV-STRICT (2026-09-22), remplacé le même jour par une vraie implémentation
 
-Voir `m7_jev_relation_choice_v0_1.py` (nouveau fichier, squelette
-uniquement — aucun appel réseau réel, préparé pendant que l'utilisateur
-provisionne l'infrastructure Kev sur `192.168.1.11`, conformément à
-`documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 4, toujours
-en vigueur).
+Un premier squelette (`m7_jev_relation_choice_v0_1.py`, aucun appel
+réseau réel, `JevDecideClient.decide(context, choices)` deviné) a été
+écrit pendant que l'utilisateur provisionnait l'infrastructure. **Ce
+squelette a été remplacé le même jour** (Sec. 8quater ci-dessous) une
+fois l'API réelle de Kev vérifiée par lecture directe du code source de
+`jaredpalmer/kev` — la forme devinée (`context`/`choices`) était
+raisonnable mais pas exacte ; la vraie API est plus riche (`state` +
+`instructions` + `criteria: {nom: description_ou_None}`) et couvre
+STRICT/LABELED/GLOSSED nativement, sans qu'aucune simulation en texte
+libre soit nécessaire.
 
 **Correction factuelle trouvée en préparant ce squelette** : le plan P8
 (Sec. 5, écrit 2026-09-21) affirmait que `jev_client_v0_1.py` était
@@ -280,41 +285,54 @@ zip externe `MetaHIA-V10-Jev-Parsing-Benchmark-v0.1.zip` exécuté en
 isolation pour produire le résultat Sec. 2 du doc P8, jamais committé ici.
 Corrigé dans `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md`.
 
-Contenu du squelette :
+## 8quater. Implémentation réelle (2026-09-22) : infrastructure confirmée, Kev non encore lancé
 
-- `RelationVocabularyMode` (`"STRICT"` / `"LABELED"` / `"GLOSSED"`) et
-  `JevProposal` (avec le champ `semantic_condition` prévu Sec. 5).
-- `build_strict_symbol_map(vocabulary)` : bijection déterministe
-  vocabulaire réel → symboles opaques (`R1`...`Rn`, ordre alphabétique du
-  vocabulaire réel, jamais un ordre qui fuiterait une information) —
-  testée indépendamment de tout réseau.
-- Trois constructeurs de requête (`_build_choice_payload_strict/labeled/glossed`) :
-  seul le mode `STRICT` exige des exemples travaillés
-  (`worked_examples`, des couples texte+symbole déjà résolus) en plus du
-  texte à classer, car un symbole opaque seul, sans aucun exemple, ne
-  porte structurellement aucune information exploitable — ceci est
-  documenté comme une exigence du mode, pas une option.
-- `propose_relation_jev(...)` : signature complète, garde-fous déjà
-  actifs et testés (sujet == objet rejeté — bug A05/T05/T08/T09 déjà
-  mesuré ; réponse hors du vocabulaire fermé rejetée ; réponse non-JSON
-  rejetée) ; le point d'appel réseau réel est un `client.decide(...)`
-  injecté (mock testable dès maintenant, jamais un appel réel tant que
-  Kev n'est pas hébergé).
-- `jev_evidence_for_prediction(...)` : miroir exact de
-  `llm_evidence_for_prediction` (toujours `GROUNDED_ANALOGY`, jamais
-  `GROUNDED_DIRECT`).
+L'utilisateur a confirmé l'infrastructure LAN prête. Vérifié par appel
+HTTP direct (`curl http://192.168.1.11:11434/api/tags`, réel, pas
+supposé) : Ollama répond, modèles présents `gpt-oss:20b`,
+`deepseek-coder-v2:16b`, `qwen2.5-coder:3b`, `qwen2.5-coder:7b` — aucun
+modèle Jev/Kev, cohérent avec la déclaration de l'utilisateur.
 
-`tests/test_m7_jev_relation_choice_v0_1.py` (réseau-free, comme tous les
-tests M7 obligatoires de ce dépôt) : bijection STRICT correcte et
-inversible, garde-fou sujet==objet, rejet hors-vocabulaire, mode STRICT
-refuse de construire une requête sans `worked_examples` (jamais une
-requête silencieusement dégradée), `semantic_condition` correctement
-posé sur `JevProposal` selon le mode appelé.
+**Découverte majeure, par lecture directe du code source réel de
+`jaredpalmer/kev`, pas supposée** : Kev **n'est jamais hébergé via
+Ollama**. C'est un serveur FastAPI/uvicorn autonome
+(`python -m kev.serve`), avec sa propre API `POST /v1/systemone` (`state`
++ `questions` typées `noul`/`choice`/`score`) — pas un modèle GGUF
+important dans Ollama. Toute planification antérieure supposant
+« héberger Kev via Ollama » (y compris le squelette Sec. 8ter) était donc
+construite sur une hypothèse fausse, corrigée ici et dans
+`documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 3bis (détail
+complet, y compris la commande exacte pour rendre le serveur joignable
+depuis ce dépôt — `kev/serve.py::main()` lie le port à `127.0.0.1` en
+dur, sans option `--host`).
 
-**Ce squelette ne lève PAS le blocage d'infrastructure** — aucun appel
-réseau réel n'est fait ni possible avec ce code seul ; il attend un
-`client` réel (`Kev`/Ollama sur `192.168.1.11`) fourni par l'appelant une
-fois l'infrastructure prête.
+**`m7_jev_relation_choice_v0_1.py` réécrit** avec le vrai contrat :
+`JevKevSystemOneClient` (client HTTP réel, `urllib`, aucune dépendance
+nouvelle) implémente `decide(state, instructions, criteria)` via
+`POST /v1/systemone`, et `reachable()` via `GET /v1/models` (sonde légère,
+même discipline que la sonde Ollama `/api/tags` déjà établie dans ce
+projet). Le champ `criteria` de Kev (`{nom: description_ou_None}`) EST le
+mécanisme natif STRICT/LABELED/GLOSSED — une description `None` par
+option (nom opaque = STRICT, nom réel = LABELED) ou une description
+explicite (GLOSSED) — remplaçant la simulation en texte libre du premier
+squelette. Tous les garde-fous (sujet==objet, hors-vocabulaire,
+probabilité malformée) inchangés et re-testés contre la nouvelle forme.
+
+23 tests (`tests/test_m7_jev_relation_choice_v0_1.py`, 22 réseau-free —
+dont le parsing de la réponse réelle de Kev via un `urlopen` simulé, forme
+vérifiée contre l'exemple du README de `jaredpalmer/kev` —, plus
+`tests/test_m7_jev_live_demo_v0_1.py`, 1 test qui fait un vrai appel HTTP
+si `KEV_BASE_URL` (défaut `http://192.168.1.11:8008`) est joignable,
+sinon skip proprement — confirmé skip à ce jour, le serveur Kev n'étant
+pas encore lancé). 613 tests collectés au total (605 passés + 8
+désélectionnés côté démos réseau).
+
+**Ce qui reste, hors de portée de cette session** : cette session n'a
+**pas d'accès shell/SSH** à `192.168.1.11` — seulement un accès réseau
+HTTP déjà vérifié vers les ports que cette machine expose elle-même.
+Lancer le serveur Kev (`serve_lan.py`, commande exacte dans le doc P8
+Sec. 3bis) reste une action que seul l'utilisateur peut effectuer sur
+cette machine.
 
 ## 9. Décision
 
@@ -325,9 +343,9 @@ distinction. Ne modifie aucun code M7 existant — reclassifie a posteriori
 le benchmark Jev déjà mesuré et les deux mécanismes M7 audités
 (Sec. 8bis : proposeur LLM = `LABELED` confirmé, parseur de texte =
 `LABELED` mais hors-axe par conception), et amende le plan
-d'implémentation P8 déjà écrit. Un squelette de code JEV-STRICT est
-maintenant prêt (Sec. 8ter, `m7_jev_relation_choice_v0_1.py`), sans appel
-réseau réel — l'implémentation reste bloquée sur l'infrastructure
-LAN/Ollama, en cours de provisionnement par l'utilisateur sur
-`192.168.1.11`. E20-D reste `OPEN`, inchangé par ce document de
-gouvernance.
+d'implémentation P8 déjà écrit. L'implémentation réelle STRICT/LABELED/
+GLOSSED est maintenant écrite et testée (Sec. 8quater,
+`m7_jev_relation_choice_v0_1.py`, vrai client HTTP contre l'API réelle de
+Kev, pas simulée) — reste seulement le lancement du serveur Kev par
+l'utilisateur sur `192.168.1.11` (hors de portée shell de cette session).
+E20-D reste `OPEN`, inchangé par ce document de gouvernance.

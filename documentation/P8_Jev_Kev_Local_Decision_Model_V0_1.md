@@ -1,11 +1,14 @@
 # MetaHIA V10 — P8 : modèle de décision typée local (Jev/Kev) pour M7 v0.1
 
-Date : 2026-09-21
-Statut : **PRIORISÉ — EN ATTENTE D'INFRASTRUCTURE.** Ne pas commencer
-l'implémentation avant que l'utilisateur fournisse l'accès/la configuration
-nécessaire pour héberger un modèle Kev via Ollama sur le serveur LAN
-`192.168.1.11` (mirror du pattern déjà établi pour le repli LAN de M7,
-`LAN_FALLBACK_HOST` dans `m7_llm_fact_proposer_v0_1.py`).
+Date : 2026-09-21 (implémentation réelle 2026-09-22, voir Sec. 3bis/5/6)
+Statut : **IMPLEMENTED_AWAITING_LIVE_CONNECTIVITY.** Le code
+(`m7_jev_relation_choice_v0_1.py`) est écrit et testé (22 tests
+réseau-free + 1 live demo qui skip proprement). Ce qui reste : que
+l'utilisateur lance le serveur Kev lui-même sur `192.168.1.11` (Sec. 3bis
+donne la commande exacte — **Kev n'est PAS hébergé via Ollama**, correction
+d'une hypothèse fausse de ce document initial, voir Sec. 3bis) ; cette
+session n'a pas d'accès shell à cette machine, seulement un accès réseau
+HTTP déjà vérifié.
 
 ## 1. Origine et périmètre
 
@@ -86,75 +89,175 @@ d'entraînement de Jev) :
 | Kev-9B | 0,286 |
 | Jev (hébergé) | 0,211 |
 
-## 4. Dépendance bloquante — infrastructure LAN
+## 3bis. Correction majeure (2026-09-22) : Kev n'est PAS hébergé via Ollama
 
-Ce chantier ne peut pas démarrer avant que l'utilisateur fournisse :
+Cette section corrige une hypothèse fausse du plan initial (Sec. 4
+ci-dessous, telle qu'écrite le 2026-09-21). En préparant réellement
+l'implémentation (l'utilisateur ayant confirmé l'infrastructure LAN
+prête, Ollama actif sur `192.168.1.11:11434` — vérifié par appel HTTP
+direct, modèles présents : `gpt-oss:20b`, `deepseek-coder-v2:16b`,
+`qwen2.5-coder:3b`, `qwen2.5-coder:7b`, aucun modèle Jev/Kev), la lecture
+directe du dépôt `jaredpalmer/kev` (README + `kev/serve.py`, via l'API
+GitHub, pas un résumé) montre que **Kev n'est jamais servi via Ollama** :
+c'est un serveur FastAPI/uvicorn autonome (`python -m kev.serve`, géré par
+`uv`), qui charge lui-même un checkpoint (adaptateur LoRA + tête pointeur
+sur une base Qwen3.5) et écoute `POST /v1/systemone` directement — pas un
+GGUF importable dans Ollama. **Toute planification antérieure supposant
+« héberger Kev via Ollama » était donc incorrecte** et est corrigée ici,
+pas silencieusement remplacée.
 
-- l'accès/la configuration nécessaire pour héberger un modèle Kev (taille à
-  déterminer selon le matériel réel du serveur `192.168.1.11` — GPU présent
-  ou non) via **Ollama** sur ce serveur ;
-- confirmation de la taille de modèle jouable (Kev-0.8B si CPU seul ;
-  Kev-4B/9B si GPU CUDA disponible sur ce serveur).
+**API réelle, vérifiée** (contrairement à la version simplifiée
+initialement supposée en Sec. 5) :
 
-Tant que cette information n'est pas fournie, **aucun code d'intégration
-n'est écrit** — seul ce document de planification existe.
-
-## 5. Plan d'implémentation déjà conçu (à exécuter une fois l'infrastructure fournie)
-
-Deux nouveaux fichiers, miroir exact du patron déjà validé pour Ollama
-(`m7_llm_fact_proposer_v0_1.py`) :
-
-### `m7_jev_relation_choice_v0_1.py`
-
-```python
-@dataclass(frozen=True)
-class JevProposal:
-    subject: str
-    relation: str
-    object: str
-    positive_prob: float
-    model: str
-
-def propose_relation_jev(*, text, all_relations, entity_candidates, client=None) -> Optional[JevProposal]:
-    # appelle JevClient.decide(...) -- mêmes questions que jev_benchmark_v0_1.py
-    # échoue fermé : réponse invalide / non-dict / choice manquant -> None, jamais fabriqué
-    # GARDE-FOU (justifié par T05/T08/T09) : si proposal.subject == proposal.object -> None
-
-def jev_evidence_for_prediction(proposal, *, candidate_id, predicted_object, evidence_index) -> EvidenceRecord:
-    # identique à llm_evidence_for_prediction : SUPPORT si accord, CHALLENGE sinon
-    # kind=EXTERNAL, analogy=True, jamais direct=True -- jamais GROUNDED_DIRECT
+```jsonc
+POST /v1/systemone
+{
+  "state": "texte à évaluer",
+  "model": "kev-latest",
+  "questions": {
+    "<id>": {                                   // l'id n'est jamais vu par le modèle
+      "type": "choice",
+      "instructions": "…",
+      "criteria": {"OPTION_A": "description ou null", "OPTION_B": null}
+    }
+  }
+}
 ```
 
-### `m7_corpus_from_jev_v0_1.py`
+Réponse : `answers["<id>"] = {"choice": "OPTION_A", "confidence": ..., "probabilities": {"OPTION_A": 0.91, ...}}`.
 
-Miroir de `m7_corpus_from_llm_v0_1.py` : construit un corpus
-`StructuralOutcomeRecord` à partir des propositions Jev/Kev,
-`provenance="GROUNDED_ANALOGY"` systématique — jamais accepté comme fait
-direct, toujours réinjecté dans le même `acquire_cold_start()`/évaluateur
-que M4/M6 utilisent déjà.
+**Ceci confirme et simplifie le protocole STRICT/LABELED/GLOSSED**
+(`documentation/SEMANTIC_ABSTRACTION_GOVERNANCE_V0_1.md` Sec. 3) : le
+champ `criteria` de Kev EST le mécanisme natif pour les trois conditions
+— une description `null` par option (nom opaque = STRICT, nom réel =
+LABELED) ou une description explicite (nom réel + texte = GLOSSED) —
+aucune simulation par texte libre n'est nécessaire, contrairement à ce
+que le squelette précédent supposait.
+
+**Contrainte réseau vérifiée** : `kev/serve.py::main()` appelle
+`uvicorn.run(app, host="127.0.0.1", port=a.port)` **en dur, sans option
+`--host`** — le serveur n'écoute donc PAS sur l'interface LAN par défaut,
+même une fois lancé. Son propre README le dit explicitement : *« The
+server binds to 127.0.0.1 and has no authentication. Keep it local unless
+you add authentication yourself »*. Pour le rendre joignable depuis ce
+dépôt (qui a un accès réseau réel et vérifié à `192.168.1.11`, mais pas
+d'accès shell/SSH à cette machine — seul l'utilisateur peut exécuter des
+commandes dessus), l'utilisateur doit lancer un petit script qui
+surcharge le binding, PAS modifier le paquet `kev` lui-même :
+
+```bash
+git clone https://github.com/jaredpalmer/kev.git && cd kev
+uv sync --extra serve
+cat > serve_lan.py <<'PYEOF'
+import sys
+import uvicorn
+_original_run = uvicorn.run
+def _run_on_all_interfaces(app, **kwargs):
+    kwargs["host"] = "0.0.0.0"
+    return _original_run(app, **kwargs)
+uvicorn.run = _run_on_all_interfaces
+from kev.serve import main
+sys.argv = ["kev.serve", "--run", "jaredpalmer/kev-0.8b", "--port", "8008"]
+main()
+PYEOF
+uv run --extra serve python serve_lan.py
+```
+
+**Choix de taille pour ce premier test** : `kev-0.8b` (le plus petit,
+~0,8B de paramètres, fonctionne sur CPU seul si aucun GPU n'est
+disponible sur ce serveur — vérifié dans `kev/device.py`, qui retombe
+proprement sur `cpu` si ni CUDA ni MPS ne sont détectés). Une fois la
+connectivité confirmée par ce dépôt, l'utilisateur peut relancer avec
+`--run jaredpalmer/kev-4b` (recommandé par le README du projet Kev
+lui-même comme point de départ si le matériel le permet) ou `kev-9b`
+sans changer quoi que ce soit côté MetaHIA — seul `--run` change.
+
+**Avertissement de sécurité, à ne pas passer sous silence** : le serveur
+Kev n'a aucune authentification par construction. L'exposer sur
+`0.0.0.0` le rend joignable par toute machine du même réseau local — un
+risque déjà accepté implicitement dans ce projet pour Ollama lui-même
+(`LAN_FALLBACK_HOST`, également sans authentification), donc cohérent
+avec la tolérance au risque déjà en vigueur sur ce LAN de sandbox, mais
+explicitement signalé ici plutôt que passé sous silence.
+
+## 4. Dépendance bloquante — infrastructure LAN
+
+**État (2026-09-22)** : l'utilisateur a confirmé l'infrastructure prête et
+Ollama actif sur `192.168.1.11` (vérifié par appel HTTP direct) — mais
+**aucun modèle Jev/Kev n'est encore téléchargé/lancé**. Le blocage
+d'origine (accès réseau au serveur) est donc levé ; il reste un blocage
+plus étroit et actionnable : le serveur `kev.serve` lui-même doit être
+lancé sur `192.168.1.11` par l'utilisateur (Sec. 3bis ci-dessus donne la
+commande exacte) — cette session n'a pas d'accès shell/SSH à cette
+machine, seulement un accès réseau HTTP déjà vérifié vers les ports
+qu'elle expose. Une fois `serve_lan.py` lancé et le port `8008` (ou celui
+choisi) confirmé joignable, l'implémentation Sec. 5 ci-dessous peut être
+testée de bout en bout en conditions réelles.
+
+## 5. Implémentation (2026-09-22, FAIT — connectivité réelle en attente de Sec. 3bis)
+
+`m7_jev_relation_choice_v0_1.py` implémente désormais le vrai contrat
+`POST /v1/systemone` (Sec. 3bis), pas l'esquisse initialement supposée
+ci-dessous (conservée seulement pour mémoire de ce qui a changé) :
+
+```python
+class JevKevSystemOneClient:
+    def __init__(self, base_url: str, *, model: str = "kev-latest", timeout: float = 60.0): ...
+    def decide(self, *, state: str, instructions: str, criteria: Mapping[str, Optional[str]]) -> Optional[Tuple[str, float]]: ...
+    def reachable(self) -> bool: ...  # GET /v1/models, sonde légère
+
+@dataclass(frozen=True)
+class JevProposal:
+    subject: str; relation: str; object: str; positive_prob: float
+    model: str; semantic_condition: str; raw_response: str
+
+def propose_relation_jev(*, text, subject, obj, all_relations, semantic_condition, client, ...) -> Optional[JevProposal]:
+    # construit criteria = {nom: description_ou_None} selon semantic_condition
+    # (STRICT: symboles opaques, descriptions toujours None, + exemples travaillés obligatoires
+    #  LABELED: noms réels, descriptions None  |  GLOSSED: noms réels + description)
+    # échoue fermé : réponse invalide / hors-vocabulaire / probabilité malformée -> None
+    # GARDE-FOU (justifié par T05/T08/T09) : sujet == objet -> None, avant même l'appel
+
+def jev_evidence_for_prediction(proposal, *, candidate_id, predicted_relation, evidence_index) -> EvidenceRecord:
+    # identique à llm_evidence_for_prediction : SUPPORT si accord, CHALLENGE sinon
+    # confidence = positive_prob réel (calibré) ; metadata["semantic_condition"] posé
+```
+
+`m7_corpus_from_jev_v0_1.py` (miroir de `m7_corpus_from_llm_v0_1.py`,
+construisant un corpus complet à partir des propositions JEV/Kev réelles)
+**n'est pas encore écrit** — étape suivante logique une fois la
+connectivité réelle confirmée (Sec. 3bis), pas avant : construire un
+corpus complet sur un client encore jamais joint en pratique aurait
+produit des chiffres non vérifiables.
 
 ### Configuration réseau
 
-Mirror exact de `LAN_FALLBACK_HOST` (déjà dans `m7_llm_fact_proposer_v0_1.py`) :
-`TYPESAFE_BASE_URL=http://192.168.1.11:<port_ollama_kev>`,
-`TYPESAFE_API_KEY` optionnel (Kev n'exige pas de clé par défaut). Aucune
-clé ni endpoint écrit en dur dans le code committé.
+`JevKevSystemOneClient(base_url)` ne lit aucune variable d'environnement
+lui-même — l'appelant fournit l'URL. Le seul endroit où une adresse LAN
+concrète apparaît dans ce dépôt est
+`tests/test_m7_jev_live_demo_v0_1.py` (`KEV_BASE_URL`, défaut
+`http://192.168.1.11:8008`), exactement le même patron que `LOCAL_HOST`
+pour Ollama. Aucune clé API n'est nécessaire par défaut (Kev n'en exige
+pas).
 
 ### Tests
 
-Miroir de `test_m7_llm_fact_proposer_invariants_v0_1.py` + un test dédié au
-garde-fou sujet≠objet + un test « live demo » optionnel (skip proprement
-si le serveur LAN est injoignable, comme `test_m7_live_ollama_demo_v0_1.py`
-le fait déjà pour Ollama).
+`tests/test_m7_jev_relation_choice_v0_1.py` (22 tests, réseau-free :
+bijection stricte, opacité STRICT vérifiée par inspection directe,
+LABELED/GLOSSED, garde-fous, `EvidenceRecord`, et le parsing de réponse
+réel de `JevKevSystemOneClient` avec un `urlopen` simulé) +
+`tests/test_m7_jev_live_demo_v0_1.py` (1 test, skip proprement si le
+serveur LAN est injoignable — actuellement le cas, voir Sec. 3bis/4 —
+mirroring `test_m7_live_ollama_demo_v0_1.py` exactement).
 
-### Garde-fous non négociables (repris du benchmark Sec. 2)
+### Garde-fous non négociables (repris du benchmark Sec. 2), tous testés
 
 - Jamais `GROUNDED_DIRECT` — toujours `GROUNDED_ANALOGY`.
-- Rejet si `subject == object` (bug T05/T08/T09).
-- Le choix de relation reste dans le vocabulaire fermé par construction
-  (type `Choice`), mais **le résultat n'est jamais accepté seul** pour une
-  relation proche d'une autre (risque A05) — toujours combiné à d'autres
-  preuves via l'évaluateur existant.
+- Rejet si `subject == object` (bug T05/T08/T09), avant même l'appel réseau.
+- Une réponse hors du vocabulaire fermé est rejetée, jamais coercée vers
+  la relation la plus proche (risque A05).
+- Une probabilité hors `[0,1]` échoue fermé plutôt que de faire planter
+  `EvidenceRecord.validate()` plus tard.
 - M7 exclu de M1-M6/E20-D, sans exception.
 
 ## 5bis. Amendement de gouvernance (2026-09-22) : condition sémantique explicite
@@ -176,35 +279,37 @@ pas `JEV-STRICT` — voir le document de gouvernance pour la nomenclature à
 trois niveaux (`STRICT` / `LABELED` / `GLOSSED`) qui remplace le clivage
 binaire initialement proposé par la revue.
 
-**Amendement au plan Sec. 5 ci-dessus.** L'utilisateur ayant confirmé
-préparer l'infrastructure sur `192.168.1.11`, un **squelette de code**
-(pas une implémentation réseau réelle) a été écrit par anticipation :
-`m7_jev_relation_choice_v0_1.py` + `tests/test_m7_jev_relation_choice_v0_1.py`,
-détail complet dans `documentation/SEMANTIC_ABSTRACTION_GOVERNANCE_V0_1.md`
-Sec. 8ter. Toujours **aucun appel réseau réel** — le squelette attend un
-`client` injecté (`client.decide(...)`), jamais câblé à une adresse en
-dur. Ce qu'il contient déjà, testé sans réseau :
-
-- `propose_relation_jev()` gagne un paramètre `relation_vocabulary_mode`
-  (`"STRICT"` : vocabulaire présenté sous forme de symboles opaques
-  générés par le corpus, jamais les noms `EPOUX_DE`/`MERE_DE`/... ;
-  `"LABELED"` : comportement déjà planifié ci-dessus, inchangé ;
-  `"GLOSSED"` : étiquettes + définition linguistique explicite).
-- `JevProposal` et chaque `EvidenceRecord` produit portent un champ
-  `semantic_condition` correspondant — jamais de corpus mélangeant deux
-  conditions sans pouvoir les distinguer a posteriori.
-- Le développement futur doit **prioriser `JEV-STRICT`** : c'est la seule
-  condition qui teste réellement l'hypothèse d'abstraction structurelle de
-  ce projet ; `JEV-LABELED` (déjà mesuré) et `JEV-GLOSSED` restent des
-  conditions expérimentales informatives mais secondaires par rapport à
-  cet objectif.
+**Amendement au plan Sec. 5 ci-dessus — mis à jour deux fois** : un
+premier squelette sans appel réseau a été écrit le 2026-09-22 (pas de
+`client` réel, `relation_vocabulary_mode` deviné avant vérification de
+l'API), puis **remplacé le même jour** par la vraie implémentation
+(Sec. 3bis/5 ci-dessus) une fois l'API réelle de `jaredpalmer/kev` lue
+directement. `propose_relation_jev()` porte désormais
+`semantic_condition` (`STRICT`/`LABELED`/`GLOSSED`), implémenté via le
+mécanisme natif de Kev (`criteria: {nom: description_ou_None}`), pas une
+simulation en texte libre. `JevProposal` et chaque `EvidenceRecord`
+produit portent le champ `semantic_condition` correspondant — jamais de
+corpus mélangeant deux conditions sans pouvoir les distinguer a
+posteriori. Le développement futur doit **prioriser `JEV-STRICT`** :
+c'est la seule condition qui teste réellement l'hypothèse d'abstraction
+structurelle de ce projet ; `JEV-LABELED` (déjà mesuré contre Jev
+officiel) et `JEV-GLOSSED` restent des conditions expérimentales
+informatives mais secondaires par rapport à cet objectif.
 
 ## 6. Décision
 
-**P8 = PRIORISÉ, bloqué sur infrastructure.** Prochaine action côté
-assistant : aucune, en attente des informations de configuration Ollama/LAN
-promises par l'utilisateur. Une fois fournies : implémenter les deux
-fichiers Sec. 5, vérifier par exécution réelle contre le serveur Kev
-hébergé, comparer les métriques mesurées ici (Sec. 2) à celles obtenues en
-local, documenter l'écart honnêtement (comme pour chaque comparaison de ce
-projet), puis décider de l'adoption.
+**P8 = `IMPLEMENTED_AWAITING_LIVE_CONNECTIVITY` (2026-09-22).**
+`m7_jev_relation_choice_v0_1.py` implémente le vrai contrat
+`POST /v1/systemone` (Sec. 3bis/5), 23 tests dont 22 réseau-free et 1
+« live demo » qui skip proprement tant que le serveur n'est pas joignable
+(état actuel, confirmé par sonde directe : Ollama répond sur
+`192.168.1.11:11434`, rien n'écoute encore sur le port Kev). Prochaine
+action côté assistant : aucune tant que l'utilisateur n'a pas lancé
+`serve_lan.py` (Sec. 3bis) sur `192.168.1.11` — cette session n'a pas
+d'accès shell à cette machine. Une fois lancé et confirmé joignable :
+exécuter le test « live demo », comparer les métriques obtenues en LABELED
+aux chiffres du benchmark officiel Jev (Sec. 2), documenter l'écart
+honnêtement (comme pour chaque comparaison de ce projet), lancer un
+premier test réel en `STRICT` (l'objectif prioritaire, jamais mesuré
+avant ce chantier), puis décider de l'adoption dans le pipeline d'évidence
+M7 (`m7_corpus_from_jev_v0_1.py`, pas encore écrit — Sec. 5).
