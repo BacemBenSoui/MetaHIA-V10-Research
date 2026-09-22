@@ -176,9 +176,9 @@ la même dépendance d'infrastructure que le plan P8 original.
 | P4-R | 🟠 abandonnée comme voie principale |
 | M7 — parseur de texte (`m7_text_claim_parser_v0_1.py`) | 🟠 **LABELED, hors-axe** (Sec. 8bis) — vocabulaire fermé respecté et jamais injecté dans M1-M6/E20-D, mais la tâche elle-même est linguistique par construction, pas comparable à STRICT/LABELED/GLOSSED |
 | M7 — proposeur LLM (`m7_llm_fact_proposer_v0_1.py`) | 🟠 **LABELED** confirmé par audit direct du code (Sec. 8bis) — vocabulaire fermé lisible, jamais glosé, jamais formellement étiqueté comme tel avant ce document |
-| JEV-STRICT | ⏸ non encore mesuré (implémentation réelle prête, serveur Kev pas encore lancé côté LAN) — seule condition validant réellement l'hypothèse d'abstraction pour un LLM ; code + tests prêts (Sec. 8quater) |
-| JEV-LABELED | 🟢 mesuré (22/22 cas, `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 2) — **reclassé** depuis « strict » implicite vers LABELED par ce document |
-| JEV-GLOSSED | ⏸ non encore mesuré (bloqué infra) |
+| JEV-STRICT | 🟠 mesuré une fois (2026-09-22, 1 cas, `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 6bis) — Kev a résolu la relation depuis un symbole opaque et 3 exemples structurels seuls, confiance 0,69 ; premier test de fumée réussi, PAS un benchmark statistiquement significatif — seule condition validant réellement l'hypothèse d'abstraction pour un LLM |
+| JEV-LABELED | 🟢 mesuré (22/22 cas contre Jev officiel, `documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 2 ; +1 cas contre Kev-0.8B réel, Sec. 6bis, confiance 0,85) — **reclassé** depuis « strict » implicite vers LABELED par ce document |
+| JEV-GLOSSED | 🟠 mesuré une fois (2026-09-22, 1 cas, Sec. 6bis) — confiance 0,92, la plus haute des trois conditions sur ce cas |
 | Dictionnaire de synonymes manuel dans M1-M6/E20-D/P4-T | 🔴 interdit, absent, vérifié par lecture directe |
 | Ontologie cachée dans M1-M6/E20-D/P4-T | 🔴 interdit, absent |
 
@@ -318,21 +318,26 @@ explicite (GLOSSED) — remplaçant la simulation en texte libre du premier
 squelette. Tous les garde-fous (sujet==objet, hors-vocabulaire,
 probabilité malformée) inchangés et re-testés contre la nouvelle forme.
 
-23 tests (`tests/test_m7_jev_relation_choice_v0_1.py`, 22 réseau-free —
+25 tests : 22 réseau-free (`tests/test_m7_jev_relation_choice_v0_1.py`,
 dont le parsing de la réponse réelle de Kev via un `urlopen` simulé, forme
-vérifiée contre l'exemple du README de `jaredpalmer/kev` —, plus
-`tests/test_m7_jev_live_demo_v0_1.py`, 1 test qui fait un vrai appel HTTP
-si `KEV_BASE_URL` (défaut `http://192.168.1.11:8008`) est joignable,
-sinon skip proprement — confirmé skip à ce jour, le serveur Kev n'étant
-pas encore lancé). 613 tests collectés au total (605 passés + 8
-désélectionnés côté démos réseau).
+vérifiée contre l'exemple du README de `jaredpalmer/kev`) + 3 « live
+demo » (`tests/test_m7_jev_live_demo_v0_1.py`, un par mode sémantique,
+chacun fait un VRAI appel HTTP si `KEV_BASE_URL` — défaut
+`http://192.168.1.11:8009` — est joignable, sinon skip proprement).
 
-**Ce qui reste, hors de portée de cette session** : cette session n'a
-**pas d'accès shell/SSH** à `192.168.1.11` — seulement un accès réseau
-HTTP déjà vérifié vers les ports que cette machine expose elle-même.
-Lancer le serveur Kev (`serve_lan.py`, commande exacte dans le doc P8
-Sec. 3bis) reste une action que seul l'utilisateur peut effectuer sur
-cette machine.
+**Mise à jour (2026-09-22, même jour)** : l'utilisateur a lancé Kev-0.8B
+et l'a exposé sur les trois interfaces de `192.168.1.11:8009` (d'abord
+lié à `127.0.0.1` seul — confirmé injoignable depuis ce dépôt par `curl`
+direct, cohérent avec Sec. 8quater ci-dessus — puis relancé sur
+`0.0.0.0`). Les 3 tests « live demo » ont été exécutés réellement contre
+ce serveur, tous passants — voir
+`documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 6bis pour le
+détail (résultat un-cas, gradient de confiance STRICT 0,69 <
+LABELED 0,85 < GLOSSED 0,92, dans l'ordre attendu). Ce qui reste,
+toujours hors de portée de cette session (pas d'accès shell/SSH à
+`192.168.1.11`) : un vrai benchmark multi-cas, action de construction de
+corpus que cette session peut faire elle-même une fois demandée, sans
+dépendre de la machine distante au-delà des appels réseau déjà établis.
 
 ## 9. Décision
 

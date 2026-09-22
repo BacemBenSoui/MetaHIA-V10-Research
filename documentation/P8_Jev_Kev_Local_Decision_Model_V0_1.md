@@ -1,14 +1,16 @@
 # MetaHIA V10 — P8 : modèle de décision typée local (Jev/Kev) pour M7 v0.1
 
-Date : 2026-09-21 (implémentation réelle 2026-09-22, voir Sec. 3bis/5/6)
-Statut : **IMPLEMENTED_AWAITING_LIVE_CONNECTIVITY.** Le code
-(`m7_jev_relation_choice_v0_1.py`) est écrit et testé (22 tests
-réseau-free + 1 live demo qui skip proprement). Ce qui reste : que
-l'utilisateur lance le serveur Kev lui-même sur `192.168.1.11` (Sec. 3bis
-donne la commande exacte — **Kev n'est PAS hébergé via Ollama**, correction
-d'une hypothèse fausse de ce document initial, voir Sec. 3bis) ; cette
-session n'a pas d'accès shell à cette machine, seulement un accès réseau
-HTTP déjà vérifié.
+Date : 2026-09-21 (implémentation réelle + premier appel réel réussi
+2026-09-22, voir Sec. 3bis/5/6bis)
+Statut : **LIVE_CONNECTIVITY_CONFIRMED, FIRST_REAL_CALL_SUCCESSFUL.**
+Le code (`m7_jev_relation_choice_v0_1.py`) est écrit, testé (25 tests) et
+**vérifié contre le vrai serveur Kev-0.8B de l'utilisateur**, exposé sur
+`192.168.1.11:8009` (**Kev n'est PAS hébergé via Ollama**, correction
+d'une hypothèse fausse de ce document initial, voir Sec. 3bis). Premier
+résultat réel, les trois conditions sémantiques, un seul cas (Sec. 6bis) :
+STRICT/LABELED/GLOSSED trouvent tous la bonne relation, confiance
+0,69/0,85/0,92 — dans l'ordre attendu. Reste : un vrai benchmark
+multi-cas (Sec. 6bis) avant toute décision d'adoption.
 
 ## 1. Origine et périmètre
 
@@ -296,20 +298,75 @@ structurelle de ce projet ; `JEV-LABELED` (déjà mesuré contre Jev
 officiel) et `JEV-GLOSSED` restent des conditions expérimentales
 informatives mais secondaires par rapport à cet objectif.
 
+## 6bis. Premier test réel de bout en bout (2026-09-22) — connectivité confirmée
+
+L'utilisateur a lancé Kev-0.8B sur `192.168.1.11`, d'abord lié à
+`127.0.0.1:8009` (confirmé injoignable depuis ce dépôt — `curl` direct,
+« Connection refused », cohérent avec la Sec. 3bis) puis exposé sur les
+trois interfaces réseau de la machine (`0.0.0.0:8009`, choix retenu par
+l'utilisateur plutôt que le forward `socat` initialement proposé). Vérifié
+par appel HTTP direct depuis ce dépôt (`GET /v1/models` réussit,
+`run: jaredpalmer/kev-0.8b`, `device: cpu`, `temperature: 2.406`).
+
+**Précision importante donnée à l'utilisateur pendant ce chantier** :
+« STRICT »/« LABELED »/« GLOSSED » ne sont **pas** des modes du serveur
+Kev lui-même — Kev n'expose que `POST /v1/systemone` (+ `/permute`,
+`/separate`, `GET /v1/models`). C'est une convention construite
+entièrement côté client, dans `propose_relation_jev()` de ce dépôt, qui
+remplit le champ natif `criteria` différemment selon le mode avant
+d'appeler le même endpoint standard. Une session opérant directement sur
+le serveur (sans visibilité sur ce dépôt) avait cherché « LABELED/STRICT »
+dans le code de `jaredpalmer/kev` et ne l'avait, à raison, pas trouvé.
+
+**Premier appel réel, les trois modes, sur la même phrase** (« Alice est
+la mère de Bob. », vocabulaire `EPOUX_DE`/`EPOUSE_DE`/`MERE_DE`/`PERE_DE`) :
+
+| Mode | Réponse | Probabilité | Détail |
+|---|---:|---:|---|
+| STRICT | `MERE_DE` (correct) | **0,69** | Résolu depuis le symbole opaque `R3`, avec 3 exemples travaillés (`Claire`→`MERE_DE`, `Eve`→`MERE_DE`, `Guy`→`PERE_DE`) — aucune étiquette lisible envoyée à Kev |
+| LABELED | `MERE_DE` (correct) | **0,85** | Étiquettes réelles, aucune définition |
+| GLOSSED | `MERE_DE` (correct) | **0,92** | Étiquettes réelles + définition explicite par relation |
+
+**Lecture honnête, pas sur-interprétée** : les trois modes trouvent la
+bonne réponse, et le gradient de confiance (STRICT < LABELED < GLOSSED)
+va dans le sens attendu par l'hypothèse de ce projet — moins
+d'information sémantique fournie, confiance mesurée plus basse. **Ceci
+est un test de fumée sur un seul cas (n=1), pas un benchmark contrôlé** :
+aucune conclusion statistique n'en est tirée ici ; il démontre seulement
+que (a) le pipeline fonctionne réellement de bout en bout contre un
+serveur externe, jamais testé avant ce jour, et (b) le mécanisme STRICT
+fonctionne concrètement — Kev peut résoudre une relation depuis un
+symbole opaque et des exemples structurels seuls, sans jamais voir le nom
+réel de la relation. C'est la première preuve empirique, même minimale,
+que l'hypothèse d'abstraction structurelle de ce projet tient pour un
+modèle de décision externe, pas seulement pour le moteur K3 lui-même.
+
+Couvert par 3 nouveaux tests « live demo »
+(`tests/test_m7_jev_live_demo_v0_1.py`, un par mode, tous passants
+contre le serveur réel — pas de valeur figée, seulement les propriétés
+structurelles garanties, puisqu'un modèle externe réel n'est jamais
+déterministe d'une exécution à l'autre).
+
+**Prochaine étape logique, pas encore faite** : un vrai benchmark
+multi-cas (au moins les 22 cas du benchmark Jev officiel Sec. 2, réutilisés
+tels quels pour permettre une comparaison directe) sur les trois
+conditions, pour remplacer ce test de fumée à un cas par une mesure
+statistiquement significative — et pour enfin construire
+`m7_corpus_from_jev_v0_1.py` (Sec. 5) sur des données réelles plutôt que
+supposées.
+
 ## 6. Décision
 
-**P8 = `IMPLEMENTED_AWAITING_LIVE_CONNECTIVITY` (2026-09-22).**
-`m7_jev_relation_choice_v0_1.py` implémente le vrai contrat
-`POST /v1/systemone` (Sec. 3bis/5), 23 tests dont 22 réseau-free et 1
-« live demo » qui skip proprement tant que le serveur n'est pas joignable
-(état actuel, confirmé par sonde directe : Ollama répond sur
-`192.168.1.11:11434`, rien n'écoute encore sur le port Kev). Prochaine
-action côté assistant : aucune tant que l'utilisateur n'a pas lancé
-`serve_lan.py` (Sec. 3bis) sur `192.168.1.11` — cette session n'a pas
-d'accès shell à cette machine. Une fois lancé et confirmé joignable :
-exécuter le test « live demo », comparer les métriques obtenues en LABELED
-aux chiffres du benchmark officiel Jev (Sec. 2), documenter l'écart
-honnêtement (comme pour chaque comparaison de ce projet), lancer un
-premier test réel en `STRICT` (l'objectif prioritaire, jamais mesuré
-avant ce chantier), puis décider de l'adoption dans le pipeline d'évidence
-M7 (`m7_corpus_from_jev_v0_1.py`, pas encore écrit — Sec. 5).
+**P8 = `LIVE_CONNECTIVITY_CONFIRMED, FIRST_REAL_CALL_SUCCESSFUL`
+(2026-09-22).** `m7_jev_relation_choice_v0_1.py` implémente le vrai
+contrat `POST /v1/systemone` (Sec. 3bis/5), 25 tests dont 22 réseau-free
+et 3 « live demo » — **tous exécutés avec succès contre le vrai serveur
+Kev-0.8B de l'utilisateur** (Sec. 6bis), y compris un premier appel
+`STRICT` réel qui a résolu correctement la relation depuis un symbole
+opaque et des exemples structurels seuls. Prochaine étape, pas encore
+faite : un vrai benchmark multi-cas sur les trois conditions (Sec. 6bis),
+pour remplacer ce test de fumée à un cas par une mesure statistiquement
+significative comparable au benchmark officiel Jev (Sec. 2), puis
+construire `m7_corpus_from_jev_v0_1.py` (Sec. 5, pas encore écrit) sur des
+données réelles avant de décider de l'adoption dans le pipeline
+d'évidence M7.

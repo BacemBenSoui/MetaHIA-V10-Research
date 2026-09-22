@@ -1,0 +1,30 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 47%]
+........................................................................ [ 59%]
+........................................................................ [ 71%]
+........................................................................ [ 83%]
+........................................................................ [ 95%]
+.............................                                            [100%]
+605 passed, 10 deselected in 56.39s
+---
+10 live-network demo tests deselected by -k "not live" (this is the standard deterministic regression log convention for this repo). Separately, tests/test_m7_jev_live_demo_v0_1.py's 4 tests were run for real against the user's live Kev-0.8B server at 192.168.1.11:8009 and all passed -- captured below.
+
+=== Real live JEV/Kev run (KEV_BASE_URL=http://192.168.1.11:8009) ===
+============================= test session starts =============================
+platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\BacemBenSoui\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+rootdir: C:\tmp\metahia_v10_repo
+collecting ... collected 3 items
+
+tests/test_m7_jev_live_demo_v0_1.py::test_live_labeled_call_returns_a_well_formed_proposal_or_none PASSED [ 33%]
+tests/test_m7_jev_live_demo_v0_1.py::test_live_glossed_call_returns_a_well_formed_proposal_or_none PASSED [ 66%]
+tests/test_m7_jev_live_demo_v0_1.py::test_live_strict_call_returns_a_well_formed_proposal_or_none PASSED [100%]
+
+============================== 3 passed in 2.03s ==============================
+
+=== First real result, all three semantic conditions, same sentence (manual smoke test, see documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md Sec.6bis) ===
+STRICT:  relation=MERE_DE (correct), positive_prob=0.69, resolved from opaque symbol R3 + 3 worked examples
+LABELED: relation=MERE_DE (correct), positive_prob=0.85, real relation names, no gloss
+GLOSSED: relation=MERE_DE (correct), positive_prob=0.92, real relation names + explicit definitions
