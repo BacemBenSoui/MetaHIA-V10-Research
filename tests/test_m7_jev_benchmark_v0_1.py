@@ -30,6 +30,12 @@ from m7_jev_relation_choice_v0_1 import (
 )
 
 
+def _dist(chosen: str, chosen_prob: float, options) -> dict:
+    others = [o for o in options if o != chosen]
+    remainder = (1.0 - chosen_prob) / len(others) if others else 0.0
+    return {chosen: chosen_prob, **{o: remainder for o in others}}
+
+
 class _AlwaysCorrectClient:
     """For LABELED/GLOSSED only (criteria keys are real relation names) --
     takes an expected-relation lookup keyed by case text, built from the
@@ -44,7 +50,7 @@ class _AlwaysCorrectClient:
         self.calls.append({"state": state, "instructions": instructions, "criteria": dict(criteria)})
         for text, expected_real in self.expected_by_text.items():
             if text in state:
-                return expected_real, self.answer_prob
+                return expected_real, self.answer_prob, _dist(expected_real, self.answer_prob, criteria.keys())
         raise AssertionError(f"no known case text found in state: {state!r}")
 
 
@@ -65,7 +71,8 @@ class _AlwaysCorrectStrictClient:
         self.calls.append({"state": state, "instructions": instructions, "criteria": dict(criteria)})
         for text, expected_real in self.expected_by_text.items():
             if text in state:
-                return self.symbol_map[expected_real], self.answer_prob
+                symbol = self.symbol_map[expected_real]
+                return symbol, self.answer_prob, _dist(symbol, self.answer_prob, criteria.keys())
         raise AssertionError(f"no known case text found in state: {state!r}")
 
 

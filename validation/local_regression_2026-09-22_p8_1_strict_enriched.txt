@@ -1,0 +1,16 @@
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 57%]
+........................................................................ [ 68%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+......................................................                   [100%]
+630 passed, 10 deselected in 39.42s
+---
+10 live-network demo tests deselected under the standard -k "not live" convention. Separately: the real 39-case x 3-condition P8.1 benchmark (STRICT enriched few-shot) was executed against the live Kev-0.8B server at 192.168.1.11:8009 (117 real HTTP calls, ~199s). Full results saved at validation/jev_benchmark_v0_2_results_2026-09-22.json. Summary:
+STRICT:  overall=0.564 positive=0.500 adversarial=0.632 paraphrase=0.500 near_synonym_all_correct=False brier=0.640 ece=0.195 mean_confidence=0.395
+LABELED: overall=0.744 positive=0.750 adversarial=0.737 paraphrase=0.750 near_synonym_all_correct=True  brier=0.377 ece=0.137 mean_confidence=0.646
+GLOSSED: overall=0.744 positive=1.000 adversarial=0.474 paraphrase=1.000 near_synonym_all_correct=False brier=0.470 ece=0.222 mean_confidence=0.821
+Key finding: EPOUX_DE/EPOUSE_DE confusion reproduced identically across both v0.1 and v0.2 corpus runs, in STRICT and LABELED (opposite bias directions), never in GLOSSED.

@@ -1,21 +1,31 @@
 # MetaHIA V10 — P8 : modèle de décision typée local (Jev/Kev) pour M7 v0.1
 
 Date : 2026-09-21 (implémentation réelle + connectivité confirmée +
-benchmark multi-cas complet 2026-09-22, voir Sec. 3bis/5/6bis/6ter)
-Statut : **MULTI_CASE_BENCHMARK_COMPLETE, MIXED_RESULT_HONESTLY_REPORTED.**
-Le code (`m7_jev_relation_choice_v0_1.py` + `m7_jev_benchmark_v0_1.py`)
-est écrit, testé (33 tests) et **vérifié contre le vrai serveur Kev-0.8B
-de l'utilisateur**, exposé sur `192.168.1.11:8009` (**Kev n'est PAS
-hébergé via Ollama**, correction d'une hypothèse fausse de ce document
-initial, voir Sec. 3bis). Résultat réel sur 22 cas × 3 conditions
-(Sec. 6ter, reproductible à l'identique sur deux exécutions) : le
-gradient STRICT < LABELED < GLOSSED tient sur les cas positifs (62,5 % /
-75 % / 100 %) mais **s'inverse partiellement** sur la robustesse
-adversariale (16,7 % / 66,7 % / 50 %) — GLOSSED reproduit, avec un second
-modèle indépendant, l'échec de coercition « conjoint → EPOUX_DE » déjà
-mesuré sur Jev officiel (Sec. 2). Reste : construire
-`m7_corpus_from_jev_v0_1.py` en choisissant explicitement entre LABELED
-et GLOSSED selon ce compromis mesuré, pas supposé.
+deux benchmarks multi-cas complets, dont P8.1 -- STRICT enriched
+few-shot -- 2026-09-22, voir Sec. 3bis/5/6bis/6ter/6quater)
+Statut : **TWO_BENCHMARKS_COMPLETE, CLASSIFICATION_REFINED.** Le code
+(`m7_jev_relation_choice_v0_1.py` + `m7_jev_benchmark_v0_1.py` +
+`m7_jev_benchmark_v0_2.py`) est écrit, testé (50 tests) et **vérifié
+contre le vrai serveur Kev-0.8B de l'utilisateur**, exposé sur
+`192.168.1.11:8009` (**Kev n'est PAS hébergé via Ollama**, correction
+d'une hypothèse fausse de ce document initial, voir Sec. 3bis). Deux
+résultats réels : 22 cas × 3 conditions (Sec. 6ter), puis 39 cas × 3
+conditions après enrichissement du few-shot STRICT (Sec. 6quater,
+demandé explicitement pour distinguer un déficit d'exemples d'une
+limite réelle du mécanisme). Réponse : robustesse adversariale de STRICT
+16,7 % → 63,2 % (le déficit était bien largement un déficit
+d'exemples), mais précision positive en baisse (62,5 % → 50,0 %),
+systématique, pas aléatoire. **Découverte la plus robuste, confirmée
+deux fois indépendamment** : Kev-0.8B confond `EPOUX_DE`/`EPOUSE_DE` en
+LABELED et STRICT (sens opposés), jamais en GLOSSED. Classification
+retenue : LABELED = candidat opérationnel M7 (meilleur compromis ET
+meilleure calibration mesurée) ; STRICT = test scientifique
+d'abstraction (mécanisme validé sur l'adversarial général, pas encore
+sur le quasi-synonyme) ; GLOSSED = condition maximale d'assistance
+sémantique (précision parfaite, mais pire calibration -- confiant à tort
+sur ses erreurs). Reste : construire `m7_corpus_from_jev_v0_1.py` sur
+LABELED, en gardant la confusion EPOUX_DE/EPOUSE_DE comme point à
+corriger avant adoption définitive.
 
 ## 1. Origine et périmètre
 
@@ -457,21 +467,177 @@ exemples par classe, y compris des exemples de négation/question pour
 `AUCUNE`) pour vérifier si l'échec adversarial de STRICT est un
 artefact du few-shot minimal ou une limite plus profonde.
 
+## 6quater. P8.1 — STRICT enriched few-shot (2026-09-22) : 39 cas × 3 conditions, résultat riche et non lissé
+
+Demandé explicitement, avec un cadre de décision à trois issues (Cas A :
+few-shot insuffisant, le problème se résout ; Cas B : positifs
+s'améliorent mais l'adversarial reste faible, limite réelle du
+mécanisme ; Cas C : aucun changement). **Précision méthodologique** :
+`corpus/jev_benchmark_cases_v0_2.json` (nouveau fichier, v0.1 laissé
+inchangé) sépare pour la première fois un vrai `demonstration_set` (24
+exemples : 3 par relation réelle + 2 par sous-catégorie adversariale) de
+39 cas d'évaluation (16 positifs inchangés + 19 adversariaux, 3-4
+paraphrases par catégorie à sujet/objet constants + 4 cas
+« positive_paraphrase » testant une structure syntaxique jamais montrée
+dans aucune démonstration — le test H1 vs H2 demandé). Disjonction
+démonstration/évaluation vérifiée programmatiquement (pas seulement
+affirmée), même discipline que P4-T.2 v0.2.
+
+**Résultat réel** (`validation/jev_benchmark_v0_2_results_2026-09-22.json`,
+117 appels HTTP réels, ~199s) :
+
+| Condition | Global | Positifs (16) | Adversariaux (19) | Paraphrase struct. (4) | « conjoint » résiste ? | Brier | ECE | Confiance moy. |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| STRICT | 56,4 % | 50,0 % | **63,2 %** | 50,0 % | ❌ Non | 0,640 | 0,195 | 0,395 |
+| LABELED | 74,4 % | 75,0 % | 73,7 % | 75,0 % | **✅ Oui** | **0,377** | **0,137** | 0,646 |
+| GLOSSED | 74,4 % | **100,0 %** | 47,4 % | 100,0 % | ❌ Non | 0,470 | 0,222 | 0,821 |
+
+**Réponse au cadre A/B/C, sur l'axe adversarial : Cas A confirmé, sans
+ambiguïté.** La robustesse adversariale de STRICT passe de 16,7 % (v0.1,
+5 exemples) à **63,2 %** (v0.2, 24 exemples) — le déficit few-shot
+minimal de v0.1 explique bien la majeure partie de l'échec observé.
+C'est un résultat clair, positif, qui valide l'approche.
+
+**Mais un résultat inattendu, non lissé, sur l'axe positif** : la
+précision positive de STRICT **baisse** (62,5 % → 50,0 %) — et ce n'est
+pas du bruit, c'est **systématique** : les 4 cas `PERE_DE` sont
+**tous** prédits `MERE_DE` (nouveau dans v0.2 ; v0.1 avait une erreur
+partielle, moins systématique, dans l'autre sens). Ceci mérite une
+investigation séparée (hypothèse non vérifiée : effet d'ordre/récence
+dans le prompt few-shot, les exemples `MERE_DE` et `PERE_DE` étant
+regroupés consécutivement dans `demonstration_set` — non testé ici,
+piste pour un P8.2).
+
+**La découverte la plus robuste de tout ce chantier, confirmée deux fois
+indépendamment (v0.1 ET v0.2, corpus différents)** : **Kev-0.8B confond
+systématiquement `EPOUX_DE` et `EPOUSE_DE`**, dans LABELED comme dans
+STRICT, mais **jamais** en GLOSSED :
+
+| Condition | v0.1 (T09-T16) | v0.2 (T09-T16 + P03) |
+|---|---|---|
+| STRICT | 4/4 `EPOUSE_DE` prédits `EPOUX_DE` | identique, + P03 (paraphrase) aussi confondu |
+| LABELED | 4/4 `EPOUX_DE` prédits `EPOUSE_DE` (sens inverse !) | identique, + P03 confondu |
+| GLOSSED | 8/8 corrects | 8/8 + P03 corrects |
+
+Les deux conditions sans glose se trompent, **dans des sens opposés
+l'une de l'autre** (LABELED biaise vers `EPOUSE_DE`, STRICT vers
+`EPOUX_DE`) — ce n'est donc pas un biais de position/ordre partagé, mais
+une incapacité réelle à distinguer les deux sans l'indice de genre
+explicite. GLOSSED, avec ses définitions (« le mari » / « la femme »),
+résout ce cas précis **parfaitement, deux fois**. Lecture honnête : ce
+n'est pas que « plus d'information sémantique aide toujours » (le
+résultat `EPOUX_DE`/`conjoint` de la Sec. 6ter montre le contraire) —
+c'est que **l'information sémantique aide précisément quand elle lève
+une ambiguïté que le nom seul (réel ou opaque) ne lève pas**, et nuit
+précisément quand elle invite le modèle à généraliser au-delà du
+vocabulaire fermé. Deux mécanismes différents, pas un seul « plus =
+mieux ».
+
+**Test H1 vs H2 (`positive_paraphrase`, structure jamais démontrée)** :
+les trois conditions généralisent à la nouvelle syntaxe
+(« La `RELATION` de Y s'appelle X ») dans une mesure réelle — STRICT
+50 % (2/4), LABELED 75 % (3/4, le seul échec étant à nouveau la
+confusion `EPOUX_DE`/`EPOUSE_DE`), GLOSSED 100 %. Aucune des trois ne
+s'effondre à 0 %, ce qui est en soi une preuve, même modeste, contre
+l'hypothèse H1 pure (mémorisation de motif de surface uniquement) —
+mais l'échantillon (4 cas) est trop petit pour trancher plus finement.
+
+**Calibration multiclasses, mesurée pour la première fois (Brier +
+ECE)** : LABELED est le **mieux calibré** des trois (Brier 0,377, ECE
+0,137) — pas seulement le meilleur compromis en précision brute. GLOSSED
+a le **pire ECE** (0,222) malgré sa précision positive parfaite : sa
+confiance moyenne élevée (0,821) inclut une confiance **tout aussi
+élevée sur ses erreurs** (les 4 cas `conjoint`, confiance 0,83 à 0,96
+alors qu'ils sont incorrects) — GLOSSED n'est donc pas seulement moins
+robuste sur l'adversarial, il est **confiant à tort** sur précisément
+les cas où la discipline « pas de dictionnaire sémantique, pas de
+coercition vers une relation voisine » compte le plus. C'est un
+argument quantitatif, pas seulement qualitatif, contre une adoption
+aveugle de GLOSSED.
+
+**« conjoint » reste-t-il `AUCUNE` sur les 4 paraphrases (A05a-d) ?**
+Non pour STRICT (4/4 coercé en `EPOUX_DE`, confiance ~0,30-0,34 — une
+coercition peu confiante, mais une coercition quand même). **Oui pour
+LABELED** (4/4 correctement `AUCUNE`, confiance 0,47-0,72) — un résultat
+meilleur que le test à un cas de la Sec. 6bis ne le laissait présager,
+confirmé sur 4 formulations différentes, pas une seule. Non pour GLOSSED
+(4/4 coercé en `EPOUX_DE`, confiance élevée 0,83-0,96) — confirme, avec
+un échantillon élargi, l'échec déjà mesuré en Sec. 6ter sur un seul cas.
+
+39 cas × 3 conditions couverts par 15 tests déterministes
+(`tests/test_m7_jev_benchmark_v0_2.py`) : forme du corpus, disjonction
+démonstration/évaluation vérifiée, contrôle expérimental (sujet/objet
+constants par catégorie adversariale), matrice de confusion, Brier
+multiclasses et ECE (vérifiés contre des valeurs calculées à la main,
+même formule que `m6_structural_learning_v0_1.py`, réimplémentation
+autonome car ce module est couplé à un autre modèle de données), le
+test de régression permanent « conjoint reste `AUCUNE` ». **Deux bugs
+réels trouvés par ces tests avant tout run réseau** : `positive_accuracy`
+utilisait `category.startswith("positive")`, qui capturait aussi
+`positive_paraphrase` par accident — corrigé pour une comparaison
+d'égalité exacte de catégorie.
+
+**Extension nécessaire de `m7_jev_relation_choice_v0_1.py`** (module
+existant modifié en place, pas une nouvelle version — travail en cours,
+pas encore verrouillé) : `JevDecideClient.decide()` retourne désormais
+`(choix, probabilité_choisie, distribution_complète)` au lieu de
+`(choix, probabilité_choisie)` seul — nécessaire pour calculer un vrai
+Brier/ECE multiclasses (`positive_prob` seul ne dit rien de la
+répartition sur les options non choisies). Tous les clients factices des
+tests existants mis à jour en conséquence ; `JevProposal` porte
+désormais `probabilities`, et `jev_evidence_for_prediction()` la
+transmet dans `metadata["probabilities"]`.
+
 ## 6. Décision
 
-**P8 = `MULTI_CASE_BENCHMARK_COMPLETE, MIXED_RESULT_HONESTLY_REPORTED`
-(2026-09-22).** `m7_jev_relation_choice_v0_1.py` implémente le vrai
-contrat `POST /v1/systemone` (Sec. 3bis/5), 33 tests au total (22 +
-3 « live demo » + 8 sur le benchmark) — **tous exécutés, dont 22 cas ×
-3 conditions en conditions réelles contre le serveur Kev-0.8B de
-l'utilisateur** (Sec. 6bis/6ter). Résultat central, non lissé (Sec. 6ter) :
-le gradient STRICT < LABELED < GLOSSED se confirme sur les cas positifs
-(62,5 % / 75 % / 100 %) mais **s'inverse partiellement** sur la
-robustesse adversariale (STRICT 16,7 % < GLOSSED 50 % < LABELED 66,7 %)
-— GLOSSED reproduit, avec un second modèle indépendant, l'échec de
-coercition « conjoint → EPOUX_DE » déjà observé sur Jev officiel
-(Sec. 2). Décision d'adoption reportée à la construction de
-`m7_corpus_from_jev_v0_1.py` (Sec. 5, pas encore écrit), qui devra
-choisir explicitement entre LABELED (meilleur compromis global mesuré
-ici) et GLOSSED (meilleure précision positive, pire robustesse) plutôt
-que de supposer l'un strictement supérieur à l'autre.
+**P8 = `TWO_BENCHMARKS_COMPLETE, CLASSIFICATION_REFINED` (2026-09-22).**
+`m7_jev_relation_choice_v0_1.py` implémente le vrai contrat
+`POST /v1/systemone` (Sec. 3bis/5), désormais avec distribution de
+probabilité complète (nécessaire au Brier/ECE de Sec. 6quater). 50 tests
+au total (24 relation-choice + 3 live demo + 8 benchmark v0.1 + 15
+benchmark v0.2/P8.1) — **tous exécutés, dont 22 cas × 3 conditions
+(v0.1, Sec. 6ter) puis 39 cas × 3 conditions (v0.2/P8.1, Sec. 6quater)
+en conditions réelles contre le serveur Kev-0.8B de l'utilisateur**.
+
+**Réponse au cadre A/B/C posé pour P8.1** : Cas A confirmé sur l'axe
+adversarial (STRICT 16,7 % → 63,2 % avec le few-shot enrichi — le
+déficit de v0.1 était bien largement un déficit d'exemples), mais avec
+un résultat inattendu non anticipé par le cadre initial : la précision
+positive de STRICT a **baissé** (62,5 % → 50,0 %), de façon systématique
+(confusion `PERE_DE`→`MERE_DE` nouvelle en v0.2), pas aléatoire —
+piste ouverte pour un P8.2 (effet d'ordre des exemples few-shot, non
+testé ici).
+
+**La classification provisoire proposée est adoptée, affinée par les
+données** :
+
+```text
+JEV/KEV STRICT   = test scientifique d'abstraction — mécanisme validé
+                    pour la robustesse adversariale générale (Cas A),
+                    mais échoue encore spécifiquement sur le
+                    quasi-synonyme (« conjoint ») et sur EPOUX_DE/EPOUSE_DE
+JEV/KEV LABELED  = candidat opérationnel M7 — meilleur compromis
+                    ET meilleure calibration mesurée (Brier 0,377,
+                    ECE 0,137) ; résiste à « conjoint » sur 4/4
+                    paraphrases ; reste à corriger : confusion
+                    EPOUX_DE/EPOUSE_DE (biais inverse de STRICT)
+JEV/KEV GLOSSED  = condition maximale d'assistance sémantique —
+                    précision positive parfaite (100 %, deux fois),
+                    mais pire ECE (0,222) : confiant à tort précisément
+                    sur les cas de coercition « conjoint »
+```
+
+**Découverte la plus robuste, confirmée deux fois indépendamment** :
+Kev-0.8B confond `EPOUX_DE`/`EPOUSE_DE` en LABELED et en STRICT (dans
+des sens opposés), mais jamais en GLOSSED — l'information sémantique
+explicite aide précisément quand elle lève une ambiguïté que le nom seul
+ne lève pas, et nuit précisément quand elle invite à généraliser
+au-delà du vocabulaire fermé (« conjoint »). Ce ne sont pas deux facettes
+du même phénomène.
+
+Décision d'adoption pour `m7_corpus_from_jev_v0_1.py` (Sec. 5, toujours
+pas écrit) : **LABELED reste le candidat par défaut le mieux justifié
+par les données** (meilleur compromis global, meilleure calibration,
+seule condition à passer le test de non-coercition sur 4/4 paraphrases)
+— mais le corriger sur la confusion EPOUX_DE/EPOUSE_DE avant adoption
+définitive reste ouvert, pas encore fait.

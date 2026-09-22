@@ -85,15 +85,21 @@ class JevDecideClient(Protocol):
     mapping of option name to an optional description -- `None` means no
     description is given for that option, which is exactly what makes
     STRICT/LABELED possible without inventing a separate API). Returns
-    `(chosen_option, probability_of_chosen_option)`, or `None` if the call
-    could not be completed at all -- distinct from a reachable call that
-    legitimately returns an out-of-vocabulary option, which
-    `propose_relation_jev` itself rejects below.
+    `(chosen_option, probability_of_chosen_option, full_probability_distribution)`,
+    or `None` if the call could not be completed at all -- distinct from a
+    reachable call that legitimately returns an out-of-vocabulary option,
+    which `propose_relation_jev` itself rejects below.
+
+    The full distribution (added 2026-09-22, P8.1) is required for real
+    multiclass calibration (Brier score, ECE) -- `positive_prob` alone
+    (the chosen option's own probability) cannot reconstruct it, since it
+    says nothing about how probability was distributed across the
+    options that were NOT chosen.
     """
 
     def decide(
         self, *, state: str, instructions: str, criteria: Mapping[str, Optional[str]]
-    ) -> Optional[Tuple[str, float]]:
+    ) -> Optional[Tuple[str, float, Mapping[str, float]]]:
         ...
 
 
@@ -114,7 +120,7 @@ class JevKevSystemOneClient:
 
     def decide(
         self, *, state: str, instructions: str, criteria: Mapping[str, Optional[str]]
-    ) -> Optional[Tuple[str, float]]:
+    ) -> Optional[Tuple[str, float, Mapping[str, float]]]:
         payload = json.dumps(
             {
                 "state": state,
@@ -145,7 +151,7 @@ class JevKevSystemOneClient:
         positive_prob = probabilities.get(choice)
         if not isinstance(positive_prob, (int, float)):
             return None
-        return choice, float(positive_prob)
+        return choice, float(positive_prob), {k: float(v) for k, v in probabilities.items()}
 
     def reachable(self) -> bool:
         """Lightweight reachability probe (`GET /v1/models`), mirroring
@@ -182,6 +188,7 @@ class JevProposal:
     model: str
     semantic_condition: str
     raw_response: str
+    probabilities: Mapping[str, float]
 
 
 def build_strict_symbol_map(vocabulary: Sequence[str]) -> Dict[str, str]:
@@ -256,7 +263,7 @@ def propose_relation_jev(
     result = client.decide(state=state, instructions=instructions, criteria=criteria)
     if result is None:
         return None
-    chosen, positive_prob = result
+    chosen, positive_prob, probabilities = result
     if chosen not in inverse_map:
         # Closed-vocabulary violation (measured A04/A05 failure mode) --
         # never coerced to the nearest-looking known relation.
@@ -266,7 +273,16 @@ def propose_relation_jev(
         # response, not a usable proposal -- fails closed here rather
         # than crashing later inside EvidenceRecord.validate().
         return None
+    if not isinstance(probabilities, Mapping) or not all(
+        isinstance(v, (int, float)) and 0.0 <= float(v) <= 1.0 for v in probabilities.values()
+    ):
+        return None
     real_relation = inverse_map[chosen]
+    # Re-key the distribution to real relation names -- in STRICT mode
+    # `probabilities` arrives keyed by opaque symbol, and nothing
+    # downstream of this function (confusion matrices, calibration) may
+    # ever need to know the symbol mapping.
+    real_probabilities = {inverse_map[k]: float(v) for k, v in probabilities.items() if k in inverse_map}
 
     return JevProposal(
         subject=subject,
@@ -275,7 +291,8 @@ def propose_relation_jev(
         positive_prob=float(positive_prob),
         model=model_name,
         semantic_condition=semantic_condition,
-        raw_response=json.dumps({"chosen": chosen, "positive_prob": positive_prob}),
+        raw_response=json.dumps({"chosen": chosen, "positive_prob": positive_prob, "probabilities": probabilities}),
+        probabilities=real_probabilities,
     )
 
 
@@ -315,7 +332,10 @@ def jev_evidence_for_prediction(
         confidence=proposal.positive_prob,
         direct=False,
         analogy=True,
-        metadata={"semantic_condition": proposal.semantic_condition},
+        metadata={
+            "semantic_condition": proposal.semantic_condition,
+            "probabilities": dict(proposal.probabilities),
+        },
     )
 
 

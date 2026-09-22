@@ -31,12 +31,21 @@ from m7_jev_relation_choice_v0_1 import (
 ALL_RELATIONS = ("EPOUX_DE", "EPOUSE_DE", "MERE_DE", "PERE_DE")
 
 
+def _dist(chosen: str, chosen_prob: float, options) -> dict:
+    """A plausible full probability distribution for tests that don't
+    care about its exact shape -- puts `chosen_prob` on `chosen`, spreads
+    the remainder evenly across the rest."""
+    others = [o for o in options if o != chosen]
+    remainder = (1.0 - chosen_prob) / len(others) if others else 0.0
+    return {chosen: chosen_prob, **{o: remainder for o in others}}
+
+
 class _FakeClient:
     """Records the (state, instructions, criteria) it was called with, and
-    returns a pre-scripted (chosen, positive_prob) pair -- or None to
-    simulate an unreachable/unusable response."""
+    returns a pre-scripted (chosen, positive_prob, probabilities) triple --
+    or None to simulate an unreachable/unusable response."""
 
-    def __init__(self, result: Optional[Tuple[str, float]]):
+    def __init__(self, result: Optional[Tuple[str, float, Mapping[str, float]]]):
         self.result = result
         self.last_state: Optional[str] = None
         self.last_instructions: Optional[str] = None
@@ -86,7 +95,7 @@ def test_strict_mode_requires_at_least_one_worked_example():
     """An opaque symbol carries no information on its own -- silently
     falling back to an unlabeled request would defeat the whole point of
     the STRICT condition, so this must raise, never proceed."""
-    client = _FakeClient(("R1", 0.9))
+    client = _FakeClient(("R1", 0.9, {"R1": 0.9}))
     with pytest.raises(ValueError):
         propose_relation_jev(
             text="Alice est la mère de Bob.",
@@ -106,7 +115,7 @@ def test_strict_mode_never_leaks_any_real_relation_name_anywhere():
     used for P4-T's freeze() opacity tests. `criteria` values are all
     `None` in STRICT mode -- no description is ever given, opaque symbol
     or otherwise."""
-    client = _FakeClient(("R3", 0.87))
+    client = _FakeClient(("R3", 0.87, _dist("R3", 0.87, ["R1", "R2", "R3", "R4"])))
     examples = (
         WorkedExample("Claire est la mère de Denis.", "MERE_DE"),
         WorkedExample("Eve est la mère de Frank.", "MERE_DE"),
@@ -128,10 +137,16 @@ def test_strict_mode_never_leaks_any_real_relation_name_anywhere():
         assert key not in ALL_RELATIONS
         assert key.startswith("R")
         assert description is None
+    # the returned proposal, on the other hand, is re-keyed to real names --
+    # nothing downstream of propose_relation_jev should ever need to know
+    # the opaque-symbol mapping.
+    assert set(proposal.probabilities.keys()) == set(ALL_RELATIONS)
 
 
 def test_strict_mode_resolves_the_chosen_symbol_back_to_the_real_relation():
-    client = _FakeClient(("R3", 0.87))  # R3 = MERE_DE (3rd alphabetically among ALL_RELATIONS)
+    client = _FakeClient(
+        ("R3", 0.87, _dist("R3", 0.87, ["R1", "R2", "R3", "R4"]))
+    )  # R3 = MERE_DE (3rd alphabetically among ALL_RELATIONS)
     examples = (WorkedExample("Claire est la mère de Denis.", "MERE_DE"),)
     proposal = propose_relation_jev(
         text="Alice est la mère de Bob.",
@@ -160,7 +175,7 @@ def test_labeled_mode_exposes_the_real_relation_names_as_criteria_keys():
     never sees it" -- but it DOES see every criteria key), every
     description still `None` -- this is exactly what distinguishes
     LABELED from STRICT (opaque keys) and from GLOSSED (keys + text)."""
-    client = _FakeClient(("MERE_DE", 0.95))
+    client = _FakeClient(("MERE_DE", 0.95, _dist("MERE_DE", 0.95, ALL_RELATIONS)))
     proposal = propose_relation_jev(
         text="Alice est la mère de Bob.",
         subject="Alice",
@@ -182,7 +197,7 @@ def test_labeled_mode_exposes_the_real_relation_names_as_criteria_keys():
 
 
 def test_glossed_mode_requires_a_definition_for_every_relation():
-    client = _FakeClient(("MERE_DE", 0.95))
+    client = _FakeClient(("MERE_DE", 0.95, _dist("MERE_DE", 0.95, ALL_RELATIONS)))
     incomplete_glosses = {"MERE_DE": "X est la mère de Y"}  # missing the other 3
     with pytest.raises(ValueError):
         propose_relation_jev(
@@ -197,7 +212,7 @@ def test_glossed_mode_requires_a_definition_for_every_relation():
 
 
 def test_glossed_mode_criteria_carries_the_supplied_definitions():
-    client = _FakeClient(("MERE_DE", 0.95))
+    client = _FakeClient(("MERE_DE", 0.95, _dist("MERE_DE", 0.95, ALL_RELATIONS)))
     glosses = {r: f"définition de {r}" for r in ALL_RELATIONS}
     proposal = propose_relation_jev(
         text="Alice est la mère de Bob.",
@@ -221,7 +236,7 @@ def test_glossed_mode_criteria_carries_the_supplied_definitions():
 def test_subject_equal_to_object_is_always_rejected_before_any_call():
     """Measured T05/T08/T09 self-loop bug: refused unconditionally,
     without even calling the client."""
-    client = _FakeClient(("MERE_DE", 0.99))
+    client = _FakeClient(("MERE_DE", 0.99, _dist("MERE_DE", 0.99, ALL_RELATIONS)))
     proposal = propose_relation_jev(
         text="Alice est la mère d'Alice.",
         subject="Alice",
@@ -238,7 +253,7 @@ def test_out_of_vocabulary_choice_is_rejected_not_coerced():
     """Measured A05 failure mode: an out-of-vocabulary answer must be
     rejected outright, never silently mapped to the nearest-looking known
     relation."""
-    client = _FakeClient(("CONJOINT_DE", 0.98))  # not in ALL_RELATIONS
+    client = _FakeClient(("CONJOINT_DE", 0.98, {"CONJOINT_DE": 0.98}))  # not in ALL_RELATIONS
     proposal = propose_relation_jev(
         text="Alice est la conjointe de Bob.",
         subject="Alice",
@@ -264,7 +279,23 @@ def test_unreachable_or_unusable_client_response_yields_no_proposal():
 
 
 def test_malformed_probability_fails_closed_rather_than_crashing_later():
-    client = _FakeClient(("MERE_DE", 1.5))  # out of [0,1]
+    client = _FakeClient(("MERE_DE", 1.5, _dist("MERE_DE", 0.9, ALL_RELATIONS)))  # positive_prob out of [0,1]
+    proposal = propose_relation_jev(
+        text="Alice est la mère de Bob.",
+        subject="Alice",
+        obj="Bob",
+        all_relations=ALL_RELATIONS,
+        semantic_condition=RELATION_VOCABULARY_MODE_LABELED,
+        client=client,
+    )
+    assert proposal is None
+
+
+def test_malformed_probability_distribution_fails_closed():
+    """The distribution itself (not just the chosen option's own
+    probability) is validated too -- a value out of [0,1] anywhere in it
+    is a malformed response, never a usable proposal."""
+    client = _FakeClient(("MERE_DE", 0.9, {"MERE_DE": 0.9, "PERE_DE": 1.4, "EPOUX_DE": 0.0, "EPOUSE_DE": 0.0}))
     proposal = propose_relation_jev(
         text="Alice est la mère de Bob.",
         subject="Alice",
@@ -277,7 +308,7 @@ def test_malformed_probability_fails_closed_rather_than_crashing_later():
 
 
 def test_unknown_semantic_condition_is_rejected():
-    client = _FakeClient(("MERE_DE", 0.9))
+    client = _FakeClient(("MERE_DE", 0.9, _dist("MERE_DE", 0.9, ALL_RELATIONS)))
     with pytest.raises(ValueError):
         propose_relation_jev(
             text="Alice est la mère de Bob.",
@@ -303,6 +334,7 @@ def _proposal(relation="MERE_DE", positive_prob=0.87, semantic_condition=RELATIO
         model="kev-4b",
         semantic_condition=semantic_condition,
         raw_response="{}",
+        probabilities=_dist(relation, positive_prob, ALL_RELATIONS),
     )
 
 
@@ -341,6 +373,17 @@ def test_evidence_metadata_carries_the_semantic_condition():
         evidence_index=0,
     )
     assert evidence.metadata["semantic_condition"] == RELATION_VOCABULARY_MODE_LABELED
+
+
+def test_evidence_metadata_carries_the_full_probability_distribution():
+    """Needed for real multiclass calibration (P8.1) -- positive_prob
+    alone cannot reconstruct how probability was spread across the
+    options that were NOT chosen."""
+    proposal = _proposal(positive_prob=0.6)
+    evidence = jev_evidence_for_prediction(
+        proposal, candidate_id="CAND-1", predicted_relation="MERE_DE", evidence_index=0
+    )
+    assert evidence.metadata["probabilities"] == dict(proposal.probabilities)
 
 
 # ---------------------------------------------------------------------------
@@ -390,7 +433,7 @@ def test_system_one_client_parses_a_real_shaped_response(monkeypatch):
     monkeypatch.setattr(jevmod.urllib.request, "urlopen", lambda *a, **k: _FakeHTTPResponse(kev_response))
     client = JevKevSystemOneClient("http://192.168.1.11:8009")
     result = client.decide(state="Alice est la mère de Bob.", instructions="Which relation applies?", criteria={"MERE_DE": None})
-    assert result == ("MERE_DE", 0.91)
+    assert result == ("MERE_DE", 0.91, {"MERE_DE": 0.91, "PERE_DE": 0.05, "EPOUX_DE": 0.02, "EPOUSE_DE": 0.02})
 
 
 def test_system_one_client_fails_closed_on_missing_answer(monkeypatch):
