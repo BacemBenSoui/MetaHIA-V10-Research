@@ -427,10 +427,10 @@ vit dans les objets structurels dérivés »).
 | Critère E20-D | Ce que P4-T apporte | Ce qui manque |
 |---|---|---|
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
-| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un tiers externe (aucun disponible dans cette session) |
+| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un **tiers réellement externe** (paquet prêt depuis P4-T.7, `MetaHIA_ThirdParty_Validation_Protocol_P4T_V0_1.md`, mais pas encore exécuté par un tel tiers) |
 | Relation → opération → structure | 🟢 fort pour transformations structurelles, **et structure explicitement vérifiée nouvelle contre un ensemble observé (P4-T.5, `SELECTION_MAPPING`)** | généralisation au-delà du langage actuel (projection/duplication/composition) ; P4-T.5 non étendu aux familles à base de motif/multi-source |
 | Coût/ROI | 🟢 mesure réelle (Porte G) + adaptateur ROI vers E20-D.19 (P4-T.6, Sec. 7.1) | `gain_attendu` reste fourni par l'appelant (comme dans E20-D.19 lui-même), jamais calculé automatiquement |
-| Non-circularité | 🟢 forte | validation tierce formelle |
+| Non-circularité | 🟢 forte, **protocole de validation tierce écrit et auto-exécuté (P4-T.7)** | validation tierce **réellement externe** (auto-exécution seule ne ferme jamais ce gate, même règle que M6/M7) |
 | Provenance (gel) | 🟢 maintenant réellement vérifié, deux passes (Sec. 6.1, Sec. 6.2) | — |
 | Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle, **et démontrée de bout en bout dans le benchmark verrouillé (P4-T.2 v0.2)** | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
 
@@ -497,16 +497,32 @@ explicite :
    `e20d_cognitive_control_v0_1.py` (E20-D.19) — mêmes constantes de
    décision réutilisées telles quelles, pas de `PathRecord` fabriqué, pas
    de `gain_attendu` inventé. 5 tests de régression.
-7. **P4-T.7 — validation indépendante** (paquet tiers, comme M4-M7) — pas
-   encore fait.
+7. **P4-T.7 — validation indépendante** (paquet tiers, comme M4-M7).
+   **Protocole écrit et auto-exécuté (2026-09-22)** :
+   `documentation/MetaHIA_ThirdParty_Validation_Protocol_P4T_V0_1.md`, 10
+   cas critiques (C01-C10) couvrant Gate B (P4-T.1/P4-T.1bis, 3 familles),
+   Gate E (anti-triche SELECTION_MAPPING), P4-T.3 (sélection d'hypothèses,
+   ambiguïté et unicité), les deux benchmarks verrouillés (P4-T.2 v0.1
+   7/7 + v0.2 6/6, non-circularité statique+dynamique), P4-T.5 (structure
+   émergente) et P4-T.6 (ROI). Réutilise exclusivement des tests déjà
+   existants et déjà vérifiés — aucune nouvelle assertion de mécanisme
+   n'a été écrite pour ce protocole, seulement le contrat critique et le
+   pinning de hash. Auto-exécution 2026-09-22 : 10/10 cas critiques PASS,
+   63/63 tests de la suite critique, suite complète inchangée (voir
+   `release_manifest.json`). **`P4-T = PASS_INDEPENDENT_SCOPE`
+   (niveau mécanisme, auto-administré) — le statut exact déjà appliqué
+   à M7 après son premier round.** Comme pour M6 et M7, **une exécution
+   auto-administrée ne ferme pas le gate** : aucun tiers réellement
+   externe n'a encore exécuté ce protocole dans cette session (toujours
+   vrai, non résolu par ce travail) ; la clôture reste une décision du
+   porteur du projet sur la base d'une exécution externe réelle, jamais
+   une auto-déclaration.
 
-Reste une seule étape non commencée dans la séquence originale : P4-T.7
-(validation tierce, qui suppose un tiers réellement disponible — non le
-cas dans cette session). Pas urgente ; à décider explicitement avant de
-commencer, comme pour chaque étape précédente de ce chantier. P6/P7
-(diversité de corpus M6) et JEV/Kev (M7) restent **explicitement
-séparés** de cette trajectoire — ni preuve de clôture E20-D, ni substitut
-à P4-T.2-P4-T.7.
+Le paquet est maintenant prêt à être remis à un tiers réellement
+indépendant dès qu'un tel tiers sera disponible — ce n'était pas le cas
+avant ce document. P6/P7 (diversité de corpus M6) et JEV/Kev (M7)
+restent **explicitement séparés** de cette trajectoire — ni preuve de
+clôture E20-D, ni substitut à P4-T.2-P4-T.7.
 
 ## 10. Tests
 

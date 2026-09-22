@@ -339,3 +339,46 @@ C'est une décision de configuration du porteur du projet, informée par des don
 de calibration réelles — pas une clôture de gate de validation tierce (aucune des quatre
 options n'a nécessité de nouveau protocole, chacune ne faisant que recombiner des mécanismes
 déjà individuellement validés).
+
+---
+
+## 2026-09-22 — Paquet de validation tierce de P4-T.7 préparé (pas encore envoyé)
+
+### Contexte
+Rééquilibrage explicite demandé par le porteur du projet le même jour (voir
+`documentation/P8_Jev_Kev_Local_Decision_Model_V0_1.md` Sec. 6octies) : arrêt des ablations
+JEV/Kev sur LABELED, effort redirigé vers le chemin critique E20-D, en commençant par P4-T.7 —
+la seule étape non commencée de la séquence P4-T.1→P4-T.7
+(`documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 9.2).
+
+### Paquet préparé
+- `documentation/MetaHIA_ThirdParty_Validation_Protocol_P4T_V0_1.md`, même format que les
+  protocoles M6/M7 : 10 cas critiques (C01–C10), 11 fichiers à hash gelé (`kernel2.py`,
+  `e20d_protocol.py`, `e20d_cognitive_control_v0_1.py`, le module P4-T principal, les deux
+  trios de benchmark verrouillé v0.1/v0.2, l'adaptateur de structure émergente).
+- Contrairement aux protocoles M6/M7, **aucun nouveau fichier de test n'a été écrit** : les 10
+  cas critiques réutilisent des tests déjà existants et déjà vérifiés (cités par nom exact,
+  chacun confirmé résoudre vers exactement un test réel par collection `pytest -k` avant
+  finalisation du document) — tout le mécanisme P4-T était déjà déterministe et sans réseau,
+  contrairement au proposeur LLM de M7 qui avait justifié un fichier critique dédié
+  sans-réseau.
+
+### Auto-exécution (2026-09-22, PAS un retour tiers)
+- Commande critique (4 fichiers) : 10/10 cas critiques PASS, 63/63 tests.
+- Suite complète déterministe (`-k "not live"`) : 660 passed / 10 deselected, 0 régression.
+- Aucune modification de fichier.
+- **`P4-T = PASS_INDEPENDENT_SCOPE` (niveau mécanisme, auto-administré)** — même statut que M7
+  après son premier round, avant tout retour externe.
+
+### État après cette préparation
+Le paquet est prêt à être envoyé, mais **n'a pas encore été envoyé à un tiers réellement
+indépendant** — aucun tiers de ce type n'était disponible dans cette session, exactement comme
+noté dans `documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 9.2 avant ce
+travail. Règle inchangée, rappelée explicitement dans le nouveau protocole lui-même : une
+auto-exécution ne ferme jamais ce gate (même règle que M6/M7, et même leçon méthodologique que
+le gate d'annotation P1 — un porteur de projet, même rigoureux, n'est pas un tiers pleinement
+indépendant). La clôture de cette étape reste une décision du porteur du projet, sur la base
+d'une exécution externe réelle, jamais une auto-déclaration de cet assistant.
+
+### Clôture de l'étape
+**Non close.** Statut : paquet prêt, en attente d'un tiers réellement disponible.
