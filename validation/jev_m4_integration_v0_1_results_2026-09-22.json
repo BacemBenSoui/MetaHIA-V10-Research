@@ -1,0 +1,69 @@
+{
+  "experiment": "P8.4 -- LABELED to M4 integration (does M4 contain a known LABELED misclassification?)",
+  "date_utc": "2026-09-22",
+  "kev_base_url": "http://192.168.1.11:8009",
+  "n_checks": 4,
+  "checks": [
+    {
+      "check_id": "clean_agreement",
+      "description": "Candidate matches what the independent text actually says -- sanity check.",
+      "structural_candidate_relation": "MERE_DE",
+      "jev_classified_relation": "MERE_DE",
+      "jev_confidence": 0.95,
+      "evidence_polarities": [
+        "SUPPORT"
+      ],
+      "default_final_state": "SUPPORTED",
+      "provenance_aware_final_state": "SUPPORTED",
+      "correct_final_state": "SUPPORTED",
+      "default_matches_ground_truth": true,
+      "provenance_aware_matches_ground_truth": true
+    },
+    {
+      "check_id": "jev_catches_structural_error",
+      "description": "Candidate is deliberately wrong (PERE_DE); the text correctly says MERE_DE.",
+      "structural_candidate_relation": "PERE_DE",
+      "jev_classified_relation": "MERE_DE",
+      "jev_confidence": 0.95,
+      "evidence_polarities": [
+        "CHALLENGE"
+      ],
+      "default_final_state": "CONTRADICTED",
+      "provenance_aware_final_state": "CONTRADICTED",
+      "correct_final_state": "CONTRADICTED",
+      "default_matches_ground_truth": true,
+      "provenance_aware_matches_ground_truth": true
+    },
+    {
+      "check_id": "known_limitation_contamination",
+      "description": "Candidate is CORRECT (EPOUX_DE, matches the text exactly), but the text is the documented EPOUX_DE/EPOUSE_DE LABELED failure mode -- tests whether one wrong classification alone flips a true candidate to CONTRADICTED.",
+      "structural_candidate_relation": "EPOUX_DE",
+      "jev_classified_relation": "EPOUSE_DE",
+      "jev_confidence": 0.57,
+      "evidence_polarities": [
+        "CHALLENGE"
+      ],
+      "default_final_state": "CONTRADICTED",
+      "provenance_aware_final_state": "CONTRADICTED",
+      "correct_final_state": "SUPPORTED",
+      "default_matches_ground_truth": false,
+      "provenance_aware_matches_ground_truth": false
+    },
+    {
+      "check_id": "known_limitation_with_corroboration",
+      "description": "Same as known_limitation_contamination, plus one independent GROUNDED_DIRECT support -- tests whether corroborating direct evidence changes the outcome.",
+      "structural_candidate_relation": "EPOUX_DE",
+      "jev_classified_relation": "EPOUSE_DE",
+      "jev_confidence": 0.57,
+      "evidence_polarities": [
+        "CHALLENGE",
+        "SUPPORT"
+      ],
+      "default_final_state": "CONTRADICTED",
+      "provenance_aware_final_state": "SUPPORTED",
+      "correct_final_state": "SUPPORTED",
+      "default_matches_ground_truth": false,
+      "provenance_aware_matches_ground_truth": true
+    }
+  ]
+}

@@ -933,23 +933,182 @@ réutilisation sans modification de `summarize_order_ablation` sur ces
 rapports (troisième réutilisation générique de cette fonction, après
 P8.2 et P8.3a).
 
+## 6octies. P8.4 — Rééquilibrage explicite : LABELED gelé, intégration réelle M7→M4 testée (2026-09-22)
+
+**Décision de gouvernance de session, demandée explicitement par
+l'utilisateur, à documenter avant tout autre travail JEV/Kev.**
+Constat de l'utilisateur, accepté sans réserve : entre l'introduction de
+Kev et P8.3b, ce chantier a produit **1 314 appels HTTP réels** (66 +
+117 + 429 + 507 + 195) et a déjà répondu aux questions qui justifiaient
+ce volume — few-shot (important), ordre STRICT (fort), ordre critères
+LABELED (fort), formulation LABELED (faible). Continuer à tester de
+nouvelles variantes lexicales (P8.3c/d/e...) aurait une valeur marginale
+faible, alors que M7/JEV-KEV est une couche d'évidence externe
+(`M7 — Evidence externe / parsing`), pas le chemin critique du projet
+(`M1→M2→M3→M4→M5→M6 + E20-D`). **Ce document acte donc l'arrêt des
+ablations de prompt sur LABELED et le gel de sa configuration.**
+
+### Statut : `LABELED = PROVISIONAL_M7_BASELINE`
+
+```text
+condition       = LABELED
+criteria order  = ordre original du corpus (celui de P8.1/P8.3a/P8.3b) --
+                   PAS "separated" (P8.3a, meilleure calibration
+                   mesurée) : cette combinaison order+instructions
+                   n'a jamais été testée ensemble, l'adopter sans
+                   vérification serait exactement le type de
+                   composition non vérifiée que ce projet refuse
+                   ailleurs (voir aussi le choix similaire fait dans
+                   m7_jev_m4_integration_v0_1.py, Sec. 6octies ci-dessous)
+instructions    = formulation originale (« Which relation applies to
+                   this sentence? ») -- PAS "imperative_short" (P8.3b,
+                   meilleure précision mesurée), même raison
+model           = Kev-0.8B (jaredpalmer/kev)
+status          = NOT PRODUCTION -- candidat opérationnel M7
+                   provisoire, pas verrouillé dans un pipeline réel
+known_limitation_1 = confusion EPOUX_DE/EPOUSE_DE, mesurée 5 fois
+                      indépendamment (P8.1, P8.3a × 13 ordres, P8.3b ×
+                      5 formulations) -- jamais résolue, jamais
+                      inversée, jamais éliminée par aucune
+                      perturbation testée à ce jour
+known_limitation_2 = sensibilité à l'ordre des critères -- P8.3a :
+                      précision globale 61,5 % à 82,1 % selon l'ordre ;
+                      « conjoint »→AUCUNE échoue dans 8/13 ordres testés
+```
+
+`m7_corpus_from_jev_v0_1.py` (Sec. 5) reste **volontairement pas
+écrit** — construire un corpus de production sur une configuration
+provisoire, non verrouillée, serait prématuré.
+
+### La question réorientée : pas « quel est le meilleur prompt LABELED »
+mais « LABELED apporte-t-il une information utile au système
+cognitif, et cette architecture peut-elle contenir son imperfection
+connue ? »
+
+Testé directement (`m7_jev_m4_integration_v0_1.py`), sur un **petit
+corpus contrôlé de 4 cas, seulement 2 appels HTTP réels distincts**
+(pas un nouveau grand benchmark), en réutilisant exactement le
+pipeline `acquire_cold_start()` déjà établi par
+`m7_corpus_from_llm_v0_1.py` (`build_evidence`, un évaluateur
+SUPPORT/CHALLENGE→SUPPORTED/CONTRADICTED). Deux évaluateurs comparés
+sur les mêmes preuves : `default_evaluator` (le pattern déjà utilisé
+tel quel par `m7_corpus_from_llm_v0_1.py`/`m6_corpus_from_m4_m5_v0_2.py`
+: **un seul CHALLENGE accepté force CONTRADICTED**, quel que soit le
+nombre de SUPPORT présents) contre `provenance_aware_evaluator`
+(nouveau, mais **pas inventé** — il opérationnalise la hiérarchie déjà
+énoncée par ce projet, GROUNDED_DIRECT > GROUNDED_ANALOGY : un
+CHALLENGE de provenance GROUNDED_ANALOGY, exactement ce qu'est
+TOUJOURS une preuve JEV/Kev, ne renverse plus seul un SUPPORT de
+provenance GROUNDED_DIRECT).
+
+**Résultat réel** (`validation/jev_m4_integration_v0_1_results_2026-09-22.json`,
+2 appels HTTP réels) :
+
+| Cas | Candidat | JEV répond | `default` | `provenance_aware` | Correct | `default` correct ? | `provenance_aware` correct ? |
+|---|---|---|---|---|---|---|---|
+| clean_agreement | MERE_DE | MERE_DE | SUPPORTED | SUPPORTED | SUPPORTED | ✅ | ✅ |
+| jev_catches_structural_error | PERE_DE (délibérément faux) | MERE_DE | CONTRADICTED | CONTRADICTED | CONTRADICTED | ✅ | ✅ |
+| **known_limitation_contamination** | EPOUX_DE (correct) | **EPOUSE_DE** (erreur connue, reproduite en direct) | **CONTRADICTED** | CONTRADICTED | SUPPORTED | **❌** | **❌** |
+| **known_limitation_with_corroboration** | EPOUX_DE (correct) + 1 preuve directe corroborante | EPOUSE_DE | **CONTRADICTED** | **SUPPORTED** | SUPPORTED | **❌** | **✅** |
+
+**Lecture honnête, la plus importante de tout le chantier P8** :
+
+1. **La valeur réelle de LABELED est confirmée** : quand la structure
+   propose une relation fausse (`jev_catches_structural_error`), JEV
+   la contredit correctement et le système atteint le bon état final —
+   ce n'est pas un résultat acquis d'avance, c'est mesuré en direct.
+2. **Le risque de contamination est réel, pas hypothétique** : le bug
+   EPOUX_DE/EPOUSE_DE, déjà documenté 5 fois sur des bancs d'essai,
+   **contamine réellement un candidat structurel vrai** dès qu'aucune
+   autre preuve n'est disponible — `Boris est l'époux de Kyra.`
+   (EPOUX_DE, littéralement vrai) devient `CONTRADICTED` à tort. Ce
+   n'est plus une inquiétude théorique, c'est reproduit en direct
+   contre le serveur réel.
+3. **L'évaluateur actuellement utilisé ailleurs dans ce dépôt
+   (`m7_corpus_from_llm_v0_1.py`, `m6_corpus_from_m4_m5_v0_2.py`) NE
+   CONTIENT PAS ce risque**, même avec une preuve directe corroborante
+   — un seul CHALLENGE d'analogie externe suffit à renverser n'importe
+   quel nombre de SUPPORT directs, dans la convention actuelle.
+4. **Mais le confinement est architecturalement disponible, pas
+   seulement souhaitable** : `provenance_aware_evaluator`, qui
+   n'invente rien mais applique la hiérarchie GROUNDED_DIRECT >
+   GROUNDED_ANALOGY déjà déclarée par ce projet, **contient
+   effectivement l'erreur** dès qu'une preuve directe corroborante
+   existe (dernière ligne du tableau) — sans perdre la vraie valeur de
+   JEV mesurée au point 1 (le cas `jev_catches_structural_error` reste
+   `CONTRADICTED`, correctement, sous les deux évaluateurs).
+
+**Conséquence directe, répondant à la question posée en Sec. 4 de
+P8.3a et reformulée par l'utilisateur** : la fragilité de LABELED
+**change réellement l'adéquation de la convention d'évaluateur
+actuelle**, mais **pas l'adéquation de LABELED à son rôle M7** — le
+problème n'est pas dans la source d'évidence (imparfaite, mais
+calibrée et positivement utile quand elle est seule preuve
+disponible), il est dans le fait que `m7_corpus_from_llm_v0_1.py` et
+`m6_corpus_from_m4_m5_v0_2.py` utilisent aujourd'hui un évaluateur qui
+ne distingue pas la force de la provenance. **Ceci est désormais une
+question d'architecture d'évidence pour M4/M6, pas un chantier de
+correction de prompt JEV** — exactement la reformulation proposée.
+Aucun changement n'est fait aujourd'hui à `m7_corpus_from_llm_v0_1.py`
+ni `m6_corpus_from_m4_m5_v0_2.py` eux-mêmes (hors périmètre de cette
+session, décision à prendre séparément) ; `provenance_aware_evaluator`
+existe pour l'instant uniquement dans `m7_jev_m4_integration_v0_1.py`,
+comme preuve de faisabilité, pas comme remplacement déployé.
+
+Couvert par 7 tests déterministes
+(`tests/test_m7_jev_m4_integration_v0_1.py`) : accord propre, capture
+correcte d'une erreur structurelle délibérée, contamination d'un
+candidat vrai par une preuve JEV seule et fausse, confinement par
+`provenance_aware_evaluator` uniquement, réutilisation du cache de
+proposition (2 appels distincts pour 4 cas, vérifié par comptage),
+sérialisation JSON, échec propre (`None`) sur client injoignable —
+tous vérifiés sur client factice avant le run réel, qui a reproduit
+exactement le comportement prédit.
+
+**Redirection d'effort actée à partir de maintenant** : arrêt des
+nouvelles ablations JEV/Kev (P8.3c/d/e...) ; effort prioritaire
+redirigé vers P4-T/E20-D (P4-T.7 validation tierce notamment) et la
+question M6 `BASIS_GLOBAL_PRIOR` (généralisation structurelle réelle,
+pas encore démontrée) -- non commencé dans cette session, à traiter
+comme chantier séparé.
+
 ## 6. Décision
 
-**P8 = `FIVE_EXPERIMENTS_COMPLETE, LABELED_FRAGILITY_ISOLATED_TO_CRITERIA_ORDER` (2026-09-22).**
+**P8 = `LABELED_FROZEN_AS_PROVISIONAL_M7_BASELINE, M4_INTEGRATION_RISK_DEMONSTRATED_AND_CONTAINABLE` (2026-09-22).**
 `m7_jev_relation_choice_v0_1.py` implémente le vrai contrat
 `POST /v1/systemone` (Sec. 3bis/5), désormais avec distribution de
 probabilité complète (nécessaire au Brier/ECE de Sec. 6quater) et un
-paramètre optionnel `instructions_override` (Sec. 6septies). 78 tests
+paramètre optionnel `instructions_override` (Sec. 6septies). 85 tests
 au total (25 relation-choice + 3 live demo + 8 benchmark v0.1 + 15
 benchmark v0.2/P8.1 + 9 order-ablation/P8.2 + 9 label-order-ablation/P8.3a
-+ 9 instruction-robustness/P8.3b) — **tous exécutés, dont 22 cas × 3
-conditions (v0.1, Sec. 6ter), 39 cas × 3 conditions (v0.2/P8.1, Sec.
-6quater), 11 ordres × 39 cas en STRICT seul (P8.2, Sec. 6quinquies),
-13 ordres × 39 cas en LABELED seul (P8.3a, Sec. 6sexies), puis 5
-formulations d'instructions × 39 cas en LABELED seul (P8.3b, Sec.
-6septies) en conditions réelles contre le serveur Kev-0.8B de
-l'utilisateur — 1314 appels HTTP réels au total sur l'ensemble de P8
-(66 + 117 + 429 + 507 + 195)**.
++ 9 instruction-robustness/P8.3b + 7 M4-integration/P8.4) — **tous
+exécutés, dont 22 cas × 3 conditions (v0.1, Sec. 6ter), 39 cas × 3
+conditions (v0.2/P8.1, Sec. 6quater), 11 ordres × 39 cas en STRICT
+seul (P8.2, Sec. 6quinquies), 13 ordres × 39 cas en LABELED seul
+(P8.3a, Sec. 6sexies), 5 formulations d'instructions × 39 cas en
+LABELED seul (P8.3b, Sec. 6septies), puis 4 cas d'intégration M7→M4
+(P8.4, Sec. 6octies) en conditions réelles contre le serveur Kev-0.8B
+de l'utilisateur — 1316 appels HTTP réels au total sur l'ensemble de P8
+(66 + 117 + 429 + 507 + 195 + 2)**.
+
+**Rééquilibrage explicite acté avec P8.4 (Sec. 6octies)** : après
+1 314 appels réels sur P8.1-P8.3b, la valeur marginale de nouvelles
+ablations de prompt LABELED est jugée faible face au chemin critique
+du projet (M1→M2→M3→M4→M5→M6 + E20-D). **LABELED est gelé comme
+`PROVISIONAL_M7_BASELINE`** (configuration originale, `status = NOT
+PRODUCTION`, EPOUX_DE/EPOUSE_DE et sensibilité à l'ordre des critères
+documentées comme limitations connues, pas comme chantiers actifs).
+L'effort a été redirigé vers la question posée par l'utilisateur --
+« LABELED apporte-t-il une information utile, et l'architecture
+peut-elle contenir son imperfection connue ? » -- testée directement
+(pas supposée) sur un petit corpus contrôlé de 4 cas, 2 appels réels
+seulement : le risque de contamination est réel (une preuve LABELED
+seule et fausse renverse un candidat structurel vrai, reproduit en
+direct), mais **architecturalement containable** par un évaluateur qui
+respecte la hiérarchie GROUNDED_DIRECT > GROUNDED_ANALOGY déjà déclarée
+par ce projet -- sans perdre la vraie valeur de LABELED mesurée sur le
+cas où il détecte correctement une erreur structurelle. Aucune nouvelle
+ablation JEV/Kev (P8.3c/d/e...) n'est prévue à ce stade.
 
 **Réponse au cadre A/B/C posé pour P8.1, complétée par P8.2** : Cas A
 confirmé sur l'axe adversarial (STRICT 16,7 % → 63,2 % avec le few-shot
@@ -1019,19 +1178,19 @@ sens l'emporte — un phénomène réel, non expliqué par ce test, pas
 inventé ici.
 
 Décision d'adoption pour `m7_corpus_from_jev_v0_1.py` (Sec. 5, toujours
-pas écrit) : **LABELED reste le candidat par défaut le mieux justifié
-par les données, et l'image s'est précisée plutôt qu'aggravée** entre
-P8.3a et P8.3b. P8.3a avait montré une fragilité réelle sur l'axe
-« ordre des critères » ; P8.3b montre que cette fragilité **ne se
-généralise pas** à la formulation des instructions, l'autre input
-LABELED-spécifique testable — LABELED n'est donc pas fragile de façon
-diffuse, sa seule faiblesse mesurée à ce jour est concentrée sur
-l'ordre de présentation des critères. **Adoption définitive toujours
-pas prononcée** ; corriger EPOUX_DE/EPOUSE_DE et, si LABELED est
-retenu, fixer son ordre de critères à `separated` (meilleure
-calibration mesurée, Sec. 6sexies) restent ouverts. Prochaine étape
-possible, non commencée : paraphrases supplémentaires des phrases
-d'entrée elles-mêmes (au-delà des 4 cas `positive_paraphrase` déjà
-couverts en P8.1/Sec. 6quater), pour compléter la cartographie de
-robustesse de LABELED avant un verrouillage définitif de
-`m7_corpus_from_jev_v0_1.py`.
+**volontairement pas écrit**) : **inchangée, mais désormais
+explicitement non prioritaire.** LABELED reste le candidat par défaut
+le mieux justifié par les données (voir Sec. 6octies pour le statut
+`PROVISIONAL_M7_BASELINE` gelé) ; corriger EPOUX_DE/EPOUSE_DE et
+adopter un ordre de critères optimisé restent des chantiers ouverts,
+mais **explicitement dépriorisés** au profit de P4-T/E20-D et de la
+question M6 `BASIS_GLOBAL_PRIOR`. Plus aucune nouvelle ablation de
+prompt LABELED (P8.3c/d/e, paraphrases supplémentaires des phrases
+d'entrée, etc.) n'est prévue avant une décision explicite de reprise
+de ce chantier. Le résultat le plus important de P8 dans son ensemble
+n'est plus un chiffre de précision LABELED, mais le résultat
+architectural de P8.4 (Sec. 6octies) : une source M7 imparfaite est
+réellement utile ET son imperfection est réellement containable, mais
+seulement si l'évaluateur SUPPORT/CHALLENGE utilisé par M4/M6 en tient
+compte -- une question désormais transmise à l'axe M4/M6, hors
+périmètre de ce document.
