@@ -1,0 +1,68 @@
+{
+  "committed_at_utc": "2026-09-22T07:29:46Z",
+  "witness_module_imported_yet": false,
+  "predictions": [
+    {
+      "case_id": "C01_PERMUTATION",
+      "family_expected": "COMPARE_PERMUTATION",
+      "outcome": "CANDIDATE",
+      "predicted_repr": [
+        "*c01_fresh2",
+        "*c01_fresh1",
+        "*c01_fresh3"
+      ]
+    },
+    {
+      "case_id": "C02_RECURSIVE_PERMUTATION",
+      "family_expected": "COMPARE_RECURSIVE",
+      "outcome": "CANDIDATE",
+      "predicted_repr": [
+        "Node(node_id='predicted::anon::pattern::1::c02_hsrc1', kind='OBSERVATION', children=('O', *c02_h1q, *c02_h1p, *c02_z), provenance=('anon::pattern::1', 'c02_hsrc1'))",
+        "Node(node_id='predicted::anon::pattern::2::c02_hsrc2', kind='OBSERVATION', children=('O', *c02_h2q, *c02_h2p, *c02_z), provenance=('anon::pattern::2', 'c02_hsrc2'))",
+        "Node(node_id='predicted::anon::pattern::3::c02_hsrc3', kind='OBSERVATION', children=('O', *c02_h3q, *c02_h3p, *c02_z), provenance=('anon::pattern::3', 'c02_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "C03_PROJECTION",
+      "family_expected": "SELECTION_MAPPING",
+      "outcome": "CANDIDATE",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKED::C03_PROJECTION::c03_hsrc1', kind='OBSERVATION', children=(*c03_h1a,), provenance=('LOCKED::C03_PROJECTION', 'c03_hsrc1'))",
+        "Node(node_id='predicted::LOCKED::C03_PROJECTION::c03_hsrc2', kind='OBSERVATION', children=(*c03_h2a,), provenance=('LOCKED::C03_PROJECTION', 'c03_hsrc2'))",
+        "Node(node_id='predicted::LOCKED::C03_PROJECTION::c03_hsrc3', kind='OBSERVATION', children=(*c03_h3a,), provenance=('LOCKED::C03_PROJECTION', 'c03_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "C04_DUPLICATION",
+      "family_expected": "SELECTION_MAPPING",
+      "outcome": "CANDIDATE",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKED::C04_DUPLICATION::c04_hsrc1', kind='OBSERVATION', children=(*c04_h1a, *c04_h1a, *c04_h1b), provenance=('LOCKED::C04_DUPLICATION', 'c04_hsrc1'))",
+        "Node(node_id='predicted::LOCKED::C04_DUPLICATION::c04_hsrc2', kind='OBSERVATION', children=(*c04_h2a, *c04_h2a, *c04_h2b), provenance=('LOCKED::C04_DUPLICATION', 'c04_hsrc2'))",
+        "Node(node_id='predicted::LOCKED::C04_DUPLICATION::c04_hsrc3', kind='OBSERVATION', children=(*c04_h3a, *c04_h3a, *c04_h3b), provenance=('LOCKED::C04_DUPLICATION', 'c04_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "C05_COMPOSITION",
+      "family_expected": "COMPOSED",
+      "outcome": "CANDIDATE",
+      "predicted_repr": [
+        "Node(node_id='predicted::LOCKED::C05_COMPOSITION::c05_hsrc1', kind='OBSERVATION', children=(*c05_h1a,), provenance=('LOCKED::C05_COMPOSITION', 'c05_hsrc1'))",
+        "Node(node_id='predicted::LOCKED::C05_COMPOSITION::c05_hsrc2', kind='OBSERVATION', children=(*c05_h2a,), provenance=('LOCKED::C05_COMPOSITION', 'c05_hsrc2'))",
+        "Node(node_id='predicted::LOCKED::C05_COMPOSITION::c05_hsrc3', kind='OBSERVATION', children=(*c05_h3a,), provenance=('LOCKED::C05_COMPOSITION', 'c05_hsrc3'))"
+      ]
+    },
+    {
+      "case_id": "C06_AMBIGUOUS",
+      "family_expected": "AMBIGUOUS",
+      "outcome": "AMBIGUOUS",
+      "predicted_repr": []
+    },
+    {
+      "case_id": "C07_REJECTED",
+      "family_expected": "REJECTED",
+      "outcome": "REJECTED",
+      "predicted_repr": []
+    }
+  ]
+}

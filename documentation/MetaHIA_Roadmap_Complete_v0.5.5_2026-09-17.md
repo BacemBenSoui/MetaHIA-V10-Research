@@ -432,13 +432,31 @@ P4-T). Détail complet : `documentation/P4T_Structural_Transformation_Induction_
 Sec. 8.1 et 9.1-9.2 (matrice de clôture E20-D mise à jour : sélection d'hypothèses passe de
 🔴 absente à 🟢 fait).
 
+~~P4-T.2 — vrai benchmark séparé (train/holdout aveugle/témoin indépendant, verrouillé
+avant exécution).~~ **FAIT (2026-09-21).** Trois fichiers distincts :
+`p4t_locked_benchmark_cases_v0_1.py` (train + holdout SOURCE seule, aucune information de
+cible même masquée), `p4t_locked_benchmark_witness_v0_1.py` (seul fichier avec les bonnes
+réponses), `p4t_locked_benchmark_runner_v0_1.py` (ordonne découverte → gel → replay aveugle
+→ **engagement sur disque** → seulement ensuite lecture du témoin). Verrouillage vérifié
+mécaniquement, pas seulement promis : contrôle statique par texte (`inspect.getsource`),
+contrôle statique par AST (mirroring `_m7_dependency_scan` déjà utilisé pour M7), et
+contrôle **dynamique** confirmant via `sys.modules` lui-même que le module témoin est
+absent au moment de l'engagement. 7 cas couvrant les 5 familles P4-T (permutation,
+récursif, projection, duplication, composition) plus les deux issues fermées
+(`AMBIGUOUS`, `REJECTED`) — **7/7 correspondent au témoin**, vérifié par exécution réelle.
+Deux bugs réels trouvés et corrigés pendant la construction : comparaison par `repr()`
+(qui embarque un `node_id` arbitraire, jamais identique entre exécutions) au lieu de
+`kernel2.structural_equal()` — confirmé 4/5 cas à prédiction échouaient à tort avant
+correction ; `frozen_id` basé sur une adresse mémoire non déterministe, corrigé pour un
+fichier de prédictions engagées reproductible. 8 nouveaux tests. **Portée déclarée
+explicitement** : protocole auto-administré (structurellement verrouillé), PAS une
+clôture de gate par un tiers externe — même distinction déjà posée pour M4-M7 dans ce
+projet. Détail complet : `documentation/P4T2_Locked_Benchmark_V0_1.md`.
+
 **Prochaine étape : non encore décidée explicitement** — options restantes, par ordre de
-la séquence proposée par la dernière revue externe : (a) **P4-T.2** — vrai benchmark
-séparé (train/holdout aveugle/témoin indépendant, verrouillé avant exécution), toujours
-identifié comme le verrou le plus pertinent restant, devant un cinquième domaine M6 ou
-JEV/Kev ; (b) P4-T.4 — nouvelles familles de transformation au-delà de
-permutation/récursif/projection/duplication/composition ; (c) P4-T.6 — brancher la Porte G
-sur le modèle ROI d'E20-D.19 ; (d) P8 — dès que l'infrastructure Ollama/LAN promise par
-l'utilisateur est disponible. Aucune de ces quatre n'est urgente à l'exception de l'ordre
-de priorité déjà exprimé par l'utilisateur (P4-T avant un cinquième domaine M6) ; à décider
-explicitement avant de commencer, comme pour chaque étape précédente de ce chantier.
+la séquence proposée par la dernière revue externe : (a) P4-T.4 — nouvelles familles de
+transformation au-delà de permutation/récursif/projection/duplication/composition ; (b)
+P4-T.6 — brancher la Porte G sur le modèle ROI d'E20-D.19 ; (c) P8 — dès que
+l'infrastructure Ollama/LAN promise par l'utilisateur est disponible ; (d) cinquième
+domaine M6. Aucune de ces quatre n'est urgente ; à décider explicitement avant de
+commencer, comme pour chaque étape précédente de ce chantier.

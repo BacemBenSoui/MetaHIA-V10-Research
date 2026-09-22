@@ -266,7 +266,7 @@ vit dans les objets structurels dérivés »).
 | Critère E20-D | Ce que P4-T apporte | Ce qui manque |
 |---|---|---|
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
-| Holdout aveugle | 🟢 mécanisme, gel maintenant réellement opaque | benchmark réellement gelé séparément par un tiers |
+| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré (P4-T.2, `documentation/P4T2_Locked_Benchmark_V0_1.md`) | verrouillage par un tiers externe (aucun disponible dans cette session) |
 | Relation → opération → structure | 🟢 fort pour transformations structurelles | généralisation au-delà du langage actuel (projection/duplication/composition) |
 | Coût/ROI | 🟠 mesure réelle (Porte G) | intégration à `e20d_cognitive_control_v0_1.py` (E20-D.19) |
 | Non-circularité | 🟢 forte | validation tierce formelle |
@@ -281,8 +281,15 @@ explicite :
 1. **P4-T.1 — durcissement du gel.** **FAIT (2026-09-21, Sec. 6.1)** :
    provenance d'entraînement supprimée de `FrozenTransformation`, digest
    canonique via `structural_signature()`, 2 tests de régression permanents.
-2. **P4-T.2 — vrai benchmark séparé** (train / holdout aveugle / témoin
-   indépendant, verrouillé avant exécution) — pas encore fait.
+2. **P4-T.2 — vrai benchmark séparé.** **FAIT (2026-09-21)** : trois
+   fichiers distincts (cas/train+holdout-source, témoin, exécuteur),
+   verrouillage vérifié statiquement (texte + AST) et dynamiquement
+   (`sys.modules`), 7 cas couvrant toutes les familles + les deux issues
+   fermées, 7/7 correspondent au témoin. Deux bugs réels trouvés et
+   corrigés pendant la construction (comparaison par `repr()` au lieu de
+   `structural_equal`, `frozen_id` non déterministe). Protocole
+   **auto-administré**, pas verrouillé par un tiers — voir
+   `documentation/P4T2_Locked_Benchmark_V0_1.md` pour la portée exacte.
 3. **P4-T.3 — sélection d'hypothèses.** **FAIT (2026-09-21, Sec. 8.1)** :
    `discover_all_hypotheses()`/`select_hypothesis()` (rasoir d'Occam,
    ambiguïté exposée sur égalité de rang) + corroboration optionnelle via

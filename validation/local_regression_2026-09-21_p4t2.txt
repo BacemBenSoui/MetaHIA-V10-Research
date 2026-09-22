@@ -1,0 +1,427 @@
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 38%]
+........................................................................ [ 51%]
+........................................................................ [ 64%]
+.......................................F......s......................... [ 77%]
+........................................................................ [ 90%]
+......................................................                   [100%]
+================================== FAILURES ===================================
+________________ test_live_four_way_comparison_runs_end_to_end ________________
+
+prompt = 'Tu reçois une phrase en français qui décrit éventuellement une relation familiale entre deux personnes.\n\nPhrase : "...re chaîne). Si la phrase n\'exprime clairement aucune de ces relations, réponds par {}. Ne fournis aucune explication.'
+model = 'llama3.2:latest', host = 'http://localhost:11434', timeout = 30.0
+
+    def ollama_generate_json(
+        prompt: str,
+        *,
+        model: str = LOCAL_MODEL,
+        host: str = LOCAL_HOST,
+        timeout: float = 30.0,
+    ) -> Optional[dict]:
+        """Real call to a single Ollama instance, JSON-constrained output.
+    
+        Returns the parsed JSON object, or None if the server responded but the
+        output was not valid JSON (a genuine "no usable proposal", not an
+        error). Raises OllamaUnavailable if the server cannot be reached at all
+        -- callers decide whether that should skip this evidence source or
+        propagate. See `ollama_generate_json_with_fallback` for the
+        local-then-LAN-sandbox behavior `propose_relation_llm` actually uses by
+        default.
+        """
+        payload = json.dumps({"model": model, "prompt": prompt, "stream": False, "format": "json"}).encode("utf-8")
+        request = urllib.request.Request(
+            f"{host}/api/generate", data=payload, headers={"Content-Type": "application/json"}
+        )
+        try:
+>           with urllib.request.urlopen(request, timeout=timeout) as response:
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+m7_llm_fact_proposer_v0_1.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:189: in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:489: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:506: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:466: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:1348: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:1323: in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1459: in getresponse
+    response.begin()
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:336: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:297: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <socket.SocketIO object at 0x000002457B87A050>
+b = <memory at 0x000002457B5D53C0>
+
+    def readinto(self, b):
+        """Read up to len(b) bytes into the writable buffer *b* and return
+        the number of bytes read.  If the socket is non-blocking and no bytes
+        are available, None is returned.
+    
+        If *b* is non-empty, a 0 return value indicates that the connection
+        was shutdown at the other end.
+        """
+        self._checkClosed()
+        self._checkReadable()
+        if self._timeout_occurred:
+            raise OSError("cannot read from timed out object")
+        try:
+>           return self._sock.recv_into(b)
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+E           TimeoutError: timed out
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\socket.py:723: TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+prompt = 'Tu reçois une phrase en français qui décrit éventuellement une relation familiale entre deux personnes.\n\nPhrase : "...re chaîne). Si la phrase n\'exprime clairement aucune de ces relations, réponds par {}. Ne fournis aucune explication.'
+primary_host = 'http://localhost:11434', primary_model = 'llama3.2:latest'
+fallback_host = 'http://192.168.1.11:11434', fallback_model = 'qwen2.5-coder:7b'
+primary_timeout = 30.0, fallback_timeout = 90.0
+
+    def ollama_generate_json_with_fallback(
+        prompt: str,
+        *,
+        primary_host: str = LOCAL_HOST,
+        primary_model: str = LOCAL_MODEL,
+        fallback_host: str = LAN_FALLBACK_HOST,
+        fallback_model: str = LAN_FALLBACK_MODEL,
+        primary_timeout: float = 30.0,
+        fallback_timeout: float = 90.0,
+    ) -> Tuple[Optional[dict], str]:
+        """Tries the local Ollama instance first; falls back to the LAN sandbox
+        server ONLY if the local instance is genuinely unreachable (connection
+        failure), never merely because it returned an unusable response -- that
+        stays "no proposal" from the local model, not a cue to ask a different
+        one. If the fallback is also unreachable, its OllamaUnavailable
+        propagates (both backends genuinely down is a real error, not silence).
+    
+        Returns `(response, model_used)` -- the model name is reported alongside
+        the response (rather than left for the caller to infer) precisely so
+        that no caller can silently misattribute a fallback answer to the
+        primary model, the bug this shape replaced 2026-09-17.
+    
+        `fallback_timeout` defaults higher than `primary_timeout`: confirmed by
+        a real call 2026-09-17 that a cold (not-yet-loaded) larger model on the
+        shared LAN server can take longer than 30s to respond on its first
+        request, even though the network round-trip itself is fast (~80ms) --
+        this is a model-loading cost on shared hardware, not a reachability
+        problem, so it gets a longer allowance rather than being misclassified
+        as unavailable.
+        """
+        try:
+>           response = ollama_generate_json(prompt, model=primary_model, host=primary_host, timeout=primary_timeout)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+m7_llm_fact_proposer_v0_1.py:140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+prompt = 'Tu reçois une phrase en français qui décrit éventuellement une relation familiale entre deux personnes.\n\nPhrase : "...re chaîne). Si la phrase n\'exprime clairement aucune de ces relations, réponds par {}. Ne fournis aucune explication.'
+model = 'llama3.2:latest', host = 'http://localhost:11434', timeout = 30.0
+
+    def ollama_generate_json(
+        prompt: str,
+        *,
+        model: str = LOCAL_MODEL,
+        host: str = LOCAL_HOST,
+        timeout: float = 30.0,
+    ) -> Optional[dict]:
+        """Real call to a single Ollama instance, JSON-constrained output.
+    
+        Returns the parsed JSON object, or None if the server responded but the
+        output was not valid JSON (a genuine "no usable proposal", not an
+        error). Raises OllamaUnavailable if the server cannot be reached at all
+        -- callers decide whether that should skip this evidence source or
+        propagate. See `ollama_generate_json_with_fallback` for the
+        local-then-LAN-sandbox behavior `propose_relation_llm` actually uses by
+        default.
+        """
+        payload = json.dumps({"model": model, "prompt": prompt, "stream": False, "format": "json"}).encode("utf-8")
+        request = urllib.request.Request(
+            f"{host}/api/generate", data=payload, headers={"Content-Type": "application/json"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body = json.loads(response.read())
+        except (urllib.error.URLError, OSError, TimeoutError) as exc:
+>           raise OllamaUnavailable(f"could not reach Ollama at {host}: {exc}") from exc
+E           m7_llm_fact_proposer_v0_1.OllamaUnavailable: could not reach Ollama at http://localhost:11434: timed out
+
+m7_llm_fact_proposer_v0_1.py:100: OllamaUnavailable
+
+During handling of the above exception, another exception occurred:
+
+self = <urllib.request.HTTPHandler object at 0x000002457B3596A0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x000002457B7F8310>, http_conn_args = {}
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+>               h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:1319: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1367: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1413: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1362: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1122: in _send_output
+    self.send(msg)
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1066: in send
+    self.connect()
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1032: in connect
+    self.sock = self._create_connection(
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\socket.py:868: in create_connection
+    raise exceptions[0]
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+address = ('192.168.1.11', 11434), timeout = 90.0, source_address = None
+all_errors = False
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None, *, all_errors=False):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default. When a connection
+        cannot be created, raises the last error if *all_errors* is False,
+        and an ExceptionGroup of all errors if *all_errors* is True.
+        """
+    
+        host, port = address
+        exceptions = []
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionAbortedError: [WinError 10053] Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\socket.py:853: ConnectionAbortedError
+
+During handling of the above exception, another exception occurred:
+
+prompt = 'Tu reçois une phrase en français qui décrit éventuellement une relation familiale entre deux personnes.\n\nPhrase : "...re chaîne). Si la phrase n\'exprime clairement aucune de ces relations, réponds par {}. Ne fournis aucune explication.'
+model = 'qwen2.5-coder:7b', host = 'http://192.168.1.11:11434', timeout = 90.0
+
+    def ollama_generate_json(
+        prompt: str,
+        *,
+        model: str = LOCAL_MODEL,
+        host: str = LOCAL_HOST,
+        timeout: float = 30.0,
+    ) -> Optional[dict]:
+        """Real call to a single Ollama instance, JSON-constrained output.
+    
+        Returns the parsed JSON object, or None if the server responded but the
+        output was not valid JSON (a genuine "no usable proposal", not an
+        error). Raises OllamaUnavailable if the server cannot be reached at all
+        -- callers decide whether that should skip this evidence source or
+        propagate. See `ollama_generate_json_with_fallback` for the
+        local-then-LAN-sandbox behavior `propose_relation_llm` actually uses by
+        default.
+        """
+        payload = json.dumps({"model": model, "prompt": prompt, "stream": False, "format": "json"}).encode("utf-8")
+        request = urllib.request.Request(
+            f"{host}/api/generate", data=payload, headers={"Content-Type": "application/json"}
+        )
+        try:
+>           with urllib.request.urlopen(request, timeout=timeout) as response:
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+m7_llm_fact_proposer_v0_1.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:189: in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:489: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:506: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:466: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:1348: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <urllib.request.HTTPHandler object at 0x000002457B3596A0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x000002457B7F8310>, http_conn_args = {}
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+                h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+            except OSError as err: # timeout error
+>               raise URLError(err)
+E               urllib.error.URLError: <urlopen error [WinError 10053] Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte>
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py:1322: URLError
+
+The above exception was the direct cause of the following exception:
+
+    def test_live_four_way_comparison_runs_end_to_end():
+>       report = build_mixed_corpus_v2()
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_m7_mixed_corpus_v0_2_live_demo_v0_1.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+m7_corpus_mixed_v0_2.py:80: in build_mixed_corpus_v2
+    text_report = build_text_claim_corpus(generate_fn=text_generate_fn, model=model)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+m7_corpus_from_text_claims_v0_1.py:144: in build_text_claim_corpus
+    parsed = parse_claim_from_text(
+m7_text_claim_parser_v0_1.py:91: in parse_claim_from_text
+    raw, model_used = ollama_generate_json_with_fallback(prompt, primary_model=model)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+m7_llm_fact_proposer_v0_1.py:143: in ollama_generate_json_with_fallback
+    response = ollama_generate_json(prompt, model=fallback_model, host=fallback_host, timeout=fallback_timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+prompt = 'Tu reçois une phrase en français qui décrit éventuellement une relation familiale entre deux personnes.\n\nPhrase : "...re chaîne). Si la phrase n\'exprime clairement aucune de ces relations, réponds par {}. Ne fournis aucune explication.'
+model = 'qwen2.5-coder:7b', host = 'http://192.168.1.11:11434', timeout = 90.0
+
+    def ollama_generate_json(
+        prompt: str,
+        *,
+        model: str = LOCAL_MODEL,
+        host: str = LOCAL_HOST,
+        timeout: float = 30.0,
+    ) -> Optional[dict]:
+        """Real call to a single Ollama instance, JSON-constrained output.
+    
+        Returns the parsed JSON object, or None if the server responded but the
+        output was not valid JSON (a genuine "no usable proposal", not an
+        error). Raises OllamaUnavailable if the server cannot be reached at all
+        -- callers decide whether that should skip this evidence source or
+        propagate. See `ollama_generate_json_with_fallback` for the
+        local-then-LAN-sandbox behavior `propose_relation_llm` actually uses by
+        default.
+        """
+        payload = json.dumps({"model": model, "prompt": prompt, "stream": False, "format": "json"}).encode("utf-8")
+        request = urllib.request.Request(
+            f"{host}/api/generate", data=payload, headers={"Content-Type": "application/json"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body = json.loads(response.read())
+        except (urllib.error.URLError, OSError, TimeoutError) as exc:
+>           raise OllamaUnavailable(f"could not reach Ollama at {host}: {exc}") from exc
+E           m7_llm_fact_proposer_v0_1.OllamaUnavailable: could not reach Ollama at http://192.168.1.11:11434: <urlopen error [WinError 10053] Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte>
+
+m7_llm_fact_proposer_v0_1.py:100: OllamaUnavailable
+=========================== short test summary info ===========================
+FAILED tests/test_m7_mixed_corpus_v0_2_live_demo_v0_1.py::test_live_four_way_comparison_runs_end_to_end
+1 failed, 556 passed, 1 skipped in 49536.55s (13:45:36)
