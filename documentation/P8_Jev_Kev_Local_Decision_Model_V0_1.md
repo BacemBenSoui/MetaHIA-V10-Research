@@ -148,6 +148,43 @@ le fait déjà pour Ollama).
   preuves via l'évaluateur existant.
 - M7 exclu de M1-M6/E20-D, sans exception.
 
+## 5bis. Amendement de gouvernance (2026-09-22) : condition sémantique explicite
+
+Une revue externe a alerté sur une zone sensible spécifique à JEV : la
+distinction entre un test qui respecte réellement l'invariant « pas de
+dictionnaire sémantique » et un test qui, même sans dictionnaire écrit à
+la main, laisse fuiter de la sémantique par un autre canal. Analysée en
+détail, formalisée et **vérifiée contre le benchmark Sec. 2 ci-dessus**
+dans `documentation/SEMANTIC_ABSTRACTION_GOVERNANCE_V0_1.md`.
+
+**Constat vérifié, pas supposé** : le benchmark Sec. 2 (22 cas contre
+`jev-1.13.0`) n'était pas un test « sans information sémantique » — le cas
+A05 (« conjoint » coercé en `EPOUX_DE`, confiance 0,98) prouve que Jev a
+exploité sa propre connaissance linguistique du mot français contenu dans
+le NOM de l'étiquette `EPOUX_DE`, sans qu'aucune glose n'ait été fournie
+par ce projet. **Le benchmark Sec. 2 est donc reclassé `JEV-LABELED`**,
+pas `JEV-STRICT` — voir le document de gouvernance pour la nomenclature à
+trois niveaux (`STRICT` / `LABELED` / `GLOSSED`) qui remplace le clivage
+binaire initialement proposé par la revue.
+
+**Amendement au plan Sec. 5 ci-dessus**, à appliquer au moment de
+l'implémentation (toujours bloquée sur l'infrastructure LAN/Ollama — ceci
+ne lève pas ce blocage) :
+
+- `propose_relation_jev()` gagne un paramètre `relation_vocabulary_mode`
+  (`"STRICT"` : vocabulaire présenté sous forme de symboles opaques
+  générés par le corpus, jamais les noms `EPOUX_DE`/`MERE_DE`/... ;
+  `"LABELED"` : comportement déjà planifié ci-dessus, inchangé ;
+  `"GLOSSED"` : étiquettes + définition linguistique explicite).
+- `JevProposal` et chaque `EvidenceRecord` produit portent un champ
+  `semantic_condition` correspondant — jamais de corpus mélangeant deux
+  conditions sans pouvoir les distinguer a posteriori.
+- Le développement futur doit **prioriser `JEV-STRICT`** : c'est la seule
+  condition qui teste réellement l'hypothèse d'abstraction structurelle de
+  ce projet ; `JEV-LABELED` (déjà mesuré) et `JEV-GLOSSED` restent des
+  conditions expérimentales informatives mais secondaires par rapport à
+  cet objectif.
+
 ## 6. Décision
 
 **P8 = PRIORISÉ, bloqué sur infrastructure.** Prochaine action côté
