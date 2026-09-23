@@ -1192,3 +1192,70 @@ validation par tiers humain externe, décision du porteur du projet, sur
 la base d'un unique retour convergent.` Prochaine étape possible,
 distincte de cette clôture : cadrage explicite de `P4-U.2`, réservé au
 porteur du projet.
+
+---
+
+## 2026-09-23 — Cadrage de P4-U.2 (découverte autonome de relations inconnues) — aucun code, aucun protocole verrouillé
+
+### Demande explicite
+« Cadrez P4-U.2 » — demandé par le porteur du projet immédiatement
+après la clôture du gate P4-U.1.
+
+### Revue directe du dépôt avant toute proposition (agent Explore)
+Confirmé par lecture directe de code, pas supposé :
+- `kernel2.py` (`reference_equal`/`structural_equal`) ne peut
+  aujourd'hui, dans AUCUN cas, juger que deux arêtes à `NodeRef`
+  d'opérateur distincts instancient la même relation — c'est
+  précisément le vide que P4-U.2 doit combler, identifié comme la
+  SEULE pièce manquante réelle.
+- `reify_path_link`/`materialize_reified_link`/`reinject_reified_links`
+  (kernel2.py) existent déjà, vivants (via
+  `m3_recursive_structural_closure_v0_1.py`), et sont directement
+  réutilisables pour réifier un candidat regroupé — sans modification.
+- `Hypothesis.status` (kernel2.py) fournit déjà le contrat épistémique
+  UNKNOWN-par-défaut requis — à réutiliser tel quel.
+- `ref_jaccard`/`structural_similarity`
+  (`e20d_rationalization_v0_1.py`, VIVANT, appelé par P4-T) est le
+  seul moteur de similarité réel du dépôt — brique la plus directement
+  réutilisable pour la pièce manquante, moyennant une extension (1
+  candidat contre 1 pool -> clusterisation multi-paires).
+- Les 4 autres fichiers `e20d_*` morts (`operator_relation`,
+  `operator_behavior`, `property_discovery`, `emergent_structure`)
+  relus directement : aucun n'opère sur des opérateurs non déjà
+  identifiés — confirmé n'être PAS le chaînon manquant.
+  `e20d_operation_synthesis_v0_1.py` (mort) porte en revanche déjà le
+  contrat IDENTIFIED_EXISTING/CREATED_NEW/AMBIGUOUS exact dont
+  l'étape finale de P4-U.2 aurait besoin — réactivation envisageable,
+  mais jamais silencieuse.
+- Aucun énoncé exact de « une dérivation ne peut pas être sa propre
+  preuve » n'existe dans ce dépôt V10-Research (vérifié absent, pas
+  supposé) ; l'équivalent le plus proche est
+  `m3_recursive_structural_closure_v0_1.py:13` (« DERIVED structures
+  are never treated as epistemic evidence ») — érigé en contrainte non
+  négociable du cadrage.
+
+### Document produit
+`documentation/P4U2_Autonomous_Relation_Discovery_V0_1.md` — cadrage
+seul, aucun code, aucun seuil numérique, aucun cas de test. Contenu :
+distinction précise avec P4-T/P4-U.1 ; identification du vide réel
+(regroupement par similarité malgré des opérateurs distincts, jamais
+par égalité exacte) ; inventaire des pièces réutilisables sans
+modification (Sec. 3) ; squelette d'architecture proposé (Sec. 5) ;
+risque méthodologique central signalé comme PLUS sévère qu'en P4-U.1
+(une statistique de similarité par PAIRE, `O(n²)` sur le pool de
+candidats, contre un compte par squelette `O(n)` en P4-U.1 — risque de
+faux positifs structurellement plus grand, non résolu ici) ; décisions
+déjà prises à ne pas rouvrir (kernel2.py non modifié, pas de
+réactivation silencieuse des `e20d_*` morts, pas de dictionnaire
+sémantique, UNKNOWN par défaut) ; trois questions ouvertes nécessitant
+une décision explicite du porteur du projet avant tout protocole v0.1
+(comment simuler une « relation inconnue » dans le premier corpus ;
+portée du premier increment ; réactivation ou non de
+`operation_synthesis`).
+
+### État après cette entrée
+```text
+P4-U.2 : CADRÉ (ce document), PAS ENCORE PROTOCOLE, PAS DE CODE
+Décision du porteur du projet requise sur 3 questions ouvertes (Sec. 9)
+avant toute écriture de protocole v0.1
+```
