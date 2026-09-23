@@ -496,3 +496,129 @@ fixer les valeurs numériques de la checklist (Sec. 16, points 2/7/8),
 puis implémenter dans l'ordre déjà annoncé (module minimal → cas
 verrouillés U1/U2/U3 → tests déterministes → run réel). **Ce document
 ne code toujours rien.**
+
+## 20. Implémentation partielle (2026-09-23) — module minimal construit, MAIS calibration numérique bloquée par une tension protocolaire réelle, non résolue ici
+
+Suite à la validation explicite de cette v0.2 par le porteur du projet
+et à la demande de fixer les valeurs numériques manquantes et de lancer
+l'implémentation. **Le module minimal est écrit et testé
+(`p4u1_unsupervised_pattern_discovery_v0_1.py`, 22 tests déterministes,
+`tests/test_p4u1_unsupervised_pattern_discovery_v0_1.py`) — mais la
+calibration des seuils numériques (checklist Sec. 16, points 2/7/8) a
+révélé une tension protocolaire réelle, jamais rencontrée avant
+l'exécution effective de simulations réelles, qui bloque légitimement
+la construction du premier benchmark verrouillé.** Ce n'est pas un bug
+d'implémentation à corriger silencieusement — c'est une propriété
+mathématique du protocole lui-même, découverte par calibration réelle,
+qui appelle une décision, pas un contournement unilatéral.
+
+### Trois bugs réels trouvés et corrigés avant toute calibration (discipline déjà établie, appliquée ici aussi)
+
+1. **`max_paths=None` (censé signifier « illimité ») retombait
+   silencieusement sur la limite par défaut de `kernel2.discover_paths()`
+   (1000)** — `discover_candidates` omettait simplement le paramètre au
+   lieu de désactiver explicitement la limite, perdant silencieusement
+   les chemins des familles de relations les plus rares dans un corpus
+   multi-familles. Corrigé en passant `sys.maxsize` explicitement quand
+   `max_paths is None`.
+2. **Deux modèles nuls préservant le degré exact ont été essayés et ont
+   tous deux échoué pour une raison mathématique, pas une insuffisance
+   de mélange** : pour un squelette de composition à 2 sauts, le
+   support total équivaut exactement à
+   `Σ_n (degré_entrant_A(n) × degré_sortant_B(n))` — toute permutation
+   qui préserve le degré exact de chaque nœud (double-edge-swap strict,
+   puis permutation complète de la liste des cibles) laisse cette somme
+   **algébriquement invariante**, quel que soit le nombre de tentatives
+   de mélange. Le modèle nul verrouillé dans le module réutilise
+   désormais un échantillonnage uniforme indépendant à partir du pool
+   PAR RÔLE (source vs cible, jamais fusionnés — une fusion accidentelle
+   des deux pools, essayée en premier, gonflait artificiellement le
+   null-max bien au-delà du signal réel), rejetant les boucles et les
+   doublons — disclosed explicitement dans le code, jamais silencieux
+   (conforme à la clause d'échappement de la Sec. 6).
+3. **Les squelettes « aller-retour » sur la MÊME relation
+   (`_is_trivial_wedge`, ex. `X <-REL- Y -REL-> Z`) dominaient
+   systématiquement la statistique du maximum (Sec. 7)** — sous
+   l'échantillonnage avec remise, un nœud qui reçoit par hasard
+   plusieurs arêtes de la même relation produit une explosion
+   combinatoire (`k×(k-1)`) de tels chemins, écrasant tout signal de
+   composition à deux relations distinctes dans le calcul du maximum.
+   Exclus désormais de toute candidature (Gate A elle-même), pour tous
+   les corpus uniformément — jamais réglé au cas par cas pour faire
+   passer un scénario précis.
+
+### La tension protocolaire réelle, non résolue
+
+En calibrant les seuils sur un vrai corpus, une contradiction directe
+est apparue entre les exigences de Gate B et de Gate C :
+
+- **Gate B a besoin d'une structure concentrée (« hub »)** pour
+  produire une séparation statistique réelle par rapport au modèle nul.
+  Vérifié algébriquement puis empiriquement : une composition « plate »
+  (chaque nœud-pont avec degré entrant/sortant exactement 1, ex. N
+  triples indépendants) a une valeur ATTENDUE sous le modèle nul
+  **exactement égale** à son propre support réel (démontré ci-dessus,
+  point 2) — elle ne peut donc, par construction, jamais dépasser de
+  façon fiable un seuil de percentile 99 du maximum nul. Seule une
+  structure à forte concentration (peu de nœuds-pont, fan-in/fan-out
+  élevé) diluée par des distracteurs à faible degré produit une
+  séparation réelle (vérifié : support réel 180 contre percentile 99
+  nul ≈ 22-26 sur plusieurs configurations testées).
+- **Gate C, via `kernel2.replay_path_pattern_holdout()` (réutilisé sans
+  modification), échoue systématiquement en `AMBIGUOUS` (jamais
+  `REPLAYED`) dès qu'un nœud du chemin a PLUS D'UNE continuation valide
+  pour la relation suivante** (`max_candidates_per_step=1`, son propre
+  défaut, vérifié par lecture directe et confirmé par exécution) — donc
+  exactement la structure à fan-out concentré que Gate B exige pour
+  être statistiquement significative est **structurellement incapable
+  de jamais réussir Gate C**, quelle que soit la qualité de la
+  régularité injectée.
+
+**Autrement dit : aucune structure de corpus ne peut, avec la
+définition actuelle de Gate B (statistique de support brut + maximum
+sous modèle nul) et de Gate C (rejeu à candidat unique par étape,
+`kernel2.replay_path_pattern_holdout()` non modifié), satisfaire les
+deux portes simultanément pour le même squelette.** Ce n'est pas une
+question de mauvais réglage de corpus — c'est une propriété du couple
+(statistique de découverte, mécanisme de rejeu) tel que défini
+actuellement.
+
+### Ce qui n'a PAS été fait à partir de ce constat, délibérément
+
+Aucun contournement unilatéral n'a été choisi ici (ex. relâcher
+`max_candidates_per_step`, changer la statistique de Gate B, accepter
+une structure « plate » en sachant qu'elle ne peut statistiquement pas
+réussir Gate B). Ce sont des décisions de protocole, pas des détails
+d'implémentation — elles reviennent au porteur du projet, exactement
+comme chaque étape précédente de ce chantier (P4-T.7, le gel de
+LABELED, etc.) a été décidée explicitement, jamais auto-déclarée par
+cet assistant.
+
+### État actuel
+
+```text
+Module minimal (p4u1_unsupervised_pattern_discovery_v0_1.py) : ÉCRIT, TESTÉ (22 tests)
+Cas verrouillés U1/U2/U3 (cases/witness/runner)              : PAS ÉCRITS
+Valeurs numériques de la checklist (Sec. 16, points 2/7/8)   : PAS FIGÉES
+Run réel                                                      : PAS LANCÉ
+```
+
+716 tests collectés au total (0 régression). Options possibles pour
+débloquer, à trancher explicitement avant de reprendre (aucune n'est
+recommandée au-dessus des autres ici) :
+
+1. Assouplir Gate C pour compter une réplication comme réussie dès
+   qu'AU MOINS UNE des continuations ambiguës correspond au squelette
+   attendu (nécessite une définition précise de « correspond », sans
+   réintroduire une fuite de la cible).
+2. Remplacer la statistique de Gate B par une mesure qui ne dépend pas
+   de la concentration fan-out (ex. une statistique par nœud-pont
+   individuel plutôt qu'une somme globale), rouvrant la question du
+   modèle nul associé.
+3. Accepter une structure « plate » pour le premier benchmark et
+   documenter honnêtement que Gate B ne peut alors jamais démontrer de
+   signification statistique au-delà du hasard — un résultat
+   scientifique valide en soi, mais qui viderait Gate B de sa fonction
+   pour ce premier cas.
+4. Une statistique de découverte entièrement différente, non explorée
+   ici.

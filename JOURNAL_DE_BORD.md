@@ -538,3 +538,81 @@ induite à partir de paires données).
 **FERMÉ (2026-09-23).** `P4-T.7 = CLOSED — validation par tiers humain
 et porteur du projet.` Décision du porteur du projet, sur la base de
 deux exécutions convergentes dont une réellement indépendante.
+
+---
+
+## 2026-09-23 — P4-U.1 : module minimal construit, implémentation mise en pause sur une tension protocolaire réelle (Gate B vs Gate C)
+
+### Contexte
+Suite à la validation explicite par le porteur du projet du protocole
+`documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_2.md`
+et à l'instruction *« Validé, fixez les valeurs numériques manquantes
+et lancez l'implémentation »*.
+
+### Ce qui a été construit et testé
+`p4u1_unsupervised_pattern_discovery_v0_1.py` (extraction de squelette,
+découverte de candidats avec filtrage de profondeur et exclusion des
+squelettes « aller-retour » sur une même relation, modèle nul par
+pool, statistique du maximum sous modèle nul, percentile, évaluation
+Gate B/Gate C, `FrozenPatternU1` avec `structural_digest` au même
+format que `freeze()` de P4-T, énumération des départs admissibles,
+rejeu via `kernel2.replay_path_pattern_holdout` non modifié) +
+`tests/test_p4u1_unsupervised_pattern_discovery_v0_1.py` (22 tests
+déterministes, tous passants). Trois bugs réels trouvés et corrigés
+avant toute calibration — détail complet dans
+`documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_2.md`
+Sec. 20 : `max_paths=None` retombant silencieusement sur la limite par
+défaut de `kernel2` (1000) ; deux modèles nuls à préservation exacte du
+degré prouvés mathématiquement invariants pour un support de
+composition à 2 sauts ; squelettes « aller-retour » sur une même
+relation dominant la statistique du maximum par explosion
+combinatoire. Suite complète : 726 tests collectés (716 passed / 10
+deselected en excluant les démonstrations réseau, 0 régression).
+
+### La tension protocolaire trouvée en calibrant les seuils — non résolue unilatéralement
+En tentant de fixer les valeurs numériques manquantes de la checklist
+(Sec. 16, points 2/7/8) sur des corpus d'essai (jamais sur le
+benchmark verrouillé lui-même, qui n'existe pas encore — conforme à la
+règle du protocole « seuils fixés avant de voir un résultat de
+holdout ») :
+
+- **Gate B exige une structure concentrée (« hub »)** pour produire une
+  séparation statistique réelle par rapport au modèle nul — une
+  structure « plate » (chaque nœud-pont de degré 1) a une valeur
+  ATTENDUE sous le modèle nul strictement égale à son propre support
+  réel (propriété algébrique démontrée, pas un défaut de mélange) et
+  ne peut donc, par construction, jamais dépasser un seuil de
+  percentile 99 du maximum nul.
+- **Gate C, via `kernel2.replay_path_pattern_holdout()` réutilisé sans
+  modification (`max_candidates_per_step=1` par défaut), retourne
+  systématiquement `AMBIGUOUS` (jamais `REPLAYED`) dès qu'un nœud a
+  plus d'une continuation valide** — exactement la structure à
+  fan-out concentré que Gate B exige.
+
+**Aucune structure de corpus ne peut donc satisfaire les deux portes
+simultanément** avec la combinaison actuelle (statistique de support
+brut pour Gate B, mécanisme de rejeu à candidat unique par étape pour
+Gate C). Ce n'est pas un problème de réglage de corpus ni un bug
+d'implémentation — c'est une propriété du couple de définitions de
+portes tel qu'il est actuellement écrit dans le protocole v0.2.
+
+### Ce qui n'a délibérément pas été fait
+Aucun contournement unilatéral n'a été choisi à partir de ce constat
+(assouplir `max_candidates_per_step`, changer la statistique de Gate B,
+accepter une structure plate en sachant qu'elle ne peut statistiquement
+pas réussir Gate B). Ce sont des décisions de protocole, réservées au
+porteur du projet, exactement comme chaque étape précédente de ce
+chantier. Quatre options non tranchées sont documentées dans
+`documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_2.md`
+Sec. 20.
+
+### État après cette entrée
+```text
+Module minimal (p4u1_unsupervised_pattern_discovery_v0_1.py) : ÉCRIT, TESTÉ (22 tests)
+Cas verrouillés U1/U2/U3 (cases/witness/runner)              : PAS ÉCRITS
+Valeurs numériques de la checklist (Sec. 16, points 2/7/8)   : PAS FIGÉES
+Run réel                                                      : PAS LANCÉ
+```
+
+**Implémentation en pause.** Décision requise du porteur du projet
+avant de reprendre la construction du premier benchmark verrouillé.
