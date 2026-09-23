@@ -1593,3 +1593,76 @@ Prochaine étape : calibration jetable des valeurs numériques
 manquantes (Sec. 13 du protocole), jamais sur le futur benchmark
 verrouillé lui-même
 ```
+
+---
+
+## 2026-09-23 — P4-U.2 : calibration jetable exécutée (statistique de cohésion × modèle nul × Gate H) — résultat décisif sur le modèle nul, toujours aucun code
+
+Suite au protocole v0.1 gelé (entrée précédente), exécution de la
+calibration jetable demandée explicitement par le porteur du projet sur
+les trois verrous prioritaires (jamais sur le futur benchmark verrouillé
+lui-même — script jetable, non committé, exécuté depuis le scratchpad de
+session, même discipline que `scripts/_scratch_p4u1_calibration.py` pour
+P4-U.1). Rapport complet :
+`documentation/P4U2_Calibration_Experiment_2026-09-23.md`.
+
+- **Modèle nul — résultat décisif, empiriquement démontré, pas
+  théorique** : sur un corpus TWIN construit pour être rigoureusement
+  homogène (4 cycles orientés disjoints, toute arête a une signature
+  strictement identique), `group-resample-only` (topologie réelle fixe,
+  ré-échantillonnage de l'appartenance au groupe) répond correctement
+  « aucune distinction » (z=0.0 exact, les trois statistiques de
+  cohésion). `topology-only` (casser la topologie de tout le graphe),
+  et `combined` qui en hérite, déclarent au contraire une significativité
+  massive (z jusqu'à 31,7) — un **faux positif net et démontré** : casser
+  la topologie détruit la régularité globale de TOUT le graphe, pas
+  seulement celle du groupe candidat, donc mesure une question
+  différente de celle posée par Gate I. **Conclusion directe : le modèle
+  nul principal de Gate I doit être construit autour du
+  ré-échantillonnage de l'appartenance au groupe, jamais autour de la
+  seule cassure de topologie globale.**
+- **Statistique de cohésion — pas encore tranché** : sur le cas facile
+  (SEP, signal net), les trois candidats (`Cohesion_A` proportion de
+  traits communs, `Cohesion_B` distance intra-groupe, `Cohesion_C`
+  concentration multi-profondeur) détectent tous le signal sans
+  ambiguïté. Sur le cas difficile (PARTIAL, reproduction exacte du
+  Corpus 3 de l'expérience d'identifiabilité, 80 %/20 %), sous le modèle
+  nul jugé valide (`group-resample-only`), les trois atterrissent au
+  même niveau, juste sous le seuil conventionnel de 95 %/z=1,96 — un
+  résultat honnête de puissance limitée à cette taille d'échantillon
+  (groupe de 20, N_null=200), pas un échec de calibration. Aucune des
+  trois n'est éliminée ni retenue seule.
+- **Gate H — pilote `contradiction_support`** : comportement linéaire et
+  prévisible confirmé (0 %, 5 %, 15 %, 30 % de membres remplacés →
+  `contradiction_support` = 0.000/0.050/0.150/0.300 exactement). Fourchette
+  provisoire de tolérance `τ` proposée entre 0.10 et 0.15 — un jugement
+  de calibration, pas une valeur tranchée par ce seul pilote.
+- **Deux erreurs de méthode trouvées et corrigées avant toute
+  conclusion, pas après** (discipline déjà appliquée aux investigations
+  précédentes) : (1) une première construction de TWIN mélangeait deux
+  rôles structurels différents dans le pool de ré-échantillonnage,
+  refaisant sans le vouloir le même test que SEP plutôt qu'un vrai cas
+  nul — corrigée par la reconstruction en cycles rigoureusement
+  homogènes ; (2) un percentile en convention "<=" saturait à 100 % sur
+  un cas nul parfaitement dégénéré (TWIN/group-resample, z=0.0 réel) —
+  corrigé par une convention mid-rank standard.
+- **Explicitement non testé dans cette calibration** : la correction
+  multi-comparaisons (protocole Sec. 13, point 6) — cette calibration
+  n'a évalué qu'un seul groupe candidat à la fois, jamais le scénario
+  réaliste à plusieurs candidats simultanés (l'équivalent direct du
+  max-statistic de P4-U.1). Reste entièrement à faire avant tout gel.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, CALIBRATION JETABLE #1 EXÉCUTÉE
+Acquis : modèle nul principal = ré-échantillonnage de groupe (topologie
+fixe), démontré empiriquement, pas seulement argumenté
+Ouvert : choix final de la statistique de cohésion (les 3 sont à égalité
+sur le cas difficile), N_null/percentile à geler, correction
+multi-comparaisons (non testée), tolérance Gate H exacte
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision du porteur du projet -- gel numérique, ou
+prolongation de la calibration (statistique combinée / correction
+multi-comparaisons / tolérance Gate H)
+```

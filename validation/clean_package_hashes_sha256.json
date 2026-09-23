@@ -2,7 +2,7 @@
   ".gitattributes": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
   ".gitignore": "6f4ff2992c4e2558837e2e09c39ed2bba140658755b22d046aab810ea2c90ca0",
   "DEPLOYMENT.md": "f49023e3ba7b6e72754995077f0402d641da6af9bd9cda9bcee04238481668dd",
-  "JOURNAL_DE_BORD.md": "af495469ad629616e23ad098601bc5b1136811fd44988d80bf1acf9ab151bbe9",
+  "JOURNAL_DE_BORD.md": "24d9daf887aada6e595c26e458ff1fe155135fafc7354770b6e7f029cd75a752",
   "MIGRATION_V10_UPDATE_2026-09-17.md": "4e8b6838cb45e5a1d75ab76682be732d46d3d95d4d2bffd1f740ef61612a5b45",
   "NOTICE.txt": "4c49375083313a9b7cbacfa0a31a987dfb7819dc7d623b1d825cc5941620202a",
   "cli_preprod_v0_1.py": "b9d3c26d44714458979c69f206401a84da5f7ef7f0913d28ee62478c3dbd57d3",
@@ -163,7 +163,7 @@
   "p6_three_domain_regression_v0_1.py": "427a95dc25a8e89427dab896ebdafb729bb2acdac1bc57fec4ec822cf83703f9",
   "p7_four_domain_multiseed_v0_1.py": "ab880fe7769fb561ba4864b4bf8519658e62b9b6f3d8719c25602d2cd74e863c",
   "p7_four_domain_regression_v0_1.py": "da8e211413d6d9e1c92e0d865c947c503b7438b065f3266255f7a32d4764a01a",
-  "release_manifest.json": "b5e6a9923bf8c17fea75278130aab4912383d187613f349b8afecc7316c04b1d",
+  "release_manifest.json": "6b493b201460253d3e7554d441c1380f60fed2fee28239d147019ff3162e0d92",
   "scripts/diagnose_multihop_witness_brier_mechanism_v0_1.py": "092e9df7e5c609a3945f97423d31de3e1caa773b27912f8f001723e1edd18c63",
   "scripts/measure_m7_mechanism_resource_overhead_v0_1.py": "cbdfcf736dfbd4e8d4c4effdf31ff49d5f29e9595a738a467db197ec0e1249b3",
   "scripts/print_consensus_text_claim_results_v0_1.py": "a8bf8a1db41466097465fecd4b19ad5232cedf2309b00bb04e75a567e9e4be3f",
@@ -359,7 +359,7 @@
   "validation/m6_context_transfer_diagnosis_v0_1_results_2026-09-22.json": "4517159ba0248ddbed0bddd17946fd0a83295bae5746292a5cf107bb2ec2eee9",
   "validation/m6_internal_learning_diagnosis_v0_1_results_2026-09-23.json": "5dedd36ce0248dfb2b5837d2971646d17fc79f6ed1e8dc7242bbf52951081dbb",
   "validation/m6_internal_regularized_diagnosis_v0_1_results_2026-09-23.json": "e07c49ac36cd2fbace0e94724682cdcc940bbac8c152d929426644d0c4c43c13",
-  "validation/p4t_locked_benchmark_predictions_v0_1.json": "0bb6db0748694dbeaea371ed39108dbf4d9785f1f5e1ed7bbf693dc7e7af2d31",
-  "validation/p4t_locked_benchmark_predictions_v0_2.json": "430f8176c33ba8966c7752f3d6c5caea51ffaf2e94872ba658a60d381ac60dcc",
-  "validation/p4u1_locked_benchmark_predictions_v0_1.json": "a19b98bc3a049424512129a62e753f477ef954b50e9779b47e9b480c4441d0d1"
+  "validation/p4t_locked_benchmark_predictions_v0_1.json": "41cc9500dee9f643944b13ad32435cf8c34090b3e8baf03415d651b76c4a1c43",
+  "validation/p4t_locked_benchmark_predictions_v0_2.json": "e780ca51babca7fb1ca8258cb7cb85e889d85a52b9f6e1da6f991e7caac16132",
+  "validation/p4u1_locked_benchmark_predictions_v0_1.json": "ea212008ed8d09adf0cac9f166e9abb08a568ee8547f0058c7ce864c09501643"
 }
