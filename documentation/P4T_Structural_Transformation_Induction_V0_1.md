@@ -555,9 +555,12 @@ humaine elle-même (Sec. 18) et comme cette clôture le répète ici sans
 l'atténuer : elle ferme la question de l'honnêteté et de la
 non-circularité du mécanisme P4-T dans son périmètre actuel — elle ne
 ferme ni `E20-D` (les 4 conditions globales restent à traiter, matrice
-Sec. 9.1) ni la question de la découverte structurelle autonome
-générale (`P4-U`, discutée le même jour, explicitement hors périmètre
-de ce protocole dès sa Sec. 1). P6/P7 (diversité de corpus M6) et
+Sec. 9.1) ni la question de la découverte structurelle autonome. Cette
+dernière fait désormais l'objet de son propre protocole, écrit le même
+jour et volontairement borné : `documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_1.md`
+(P4-U.1, `OPEN_RESEARCH`, pas encore implémenté — découverte de
+compositions sur relations déjà étiquetées, explicitement pas une
+découverte de relation inconnue). P6/P7 (diversité de corpus M6) et
 JEV/Kev (M7) restent **explicitement séparés** de cette trajectoire —
 ni preuve de clôture E20-D, ni substitut à P4-T.2-P4-T.7.
 
