@@ -1,0 +1,898 @@
+{
+  "experiment": "M6-INTERNAL diagnosis -- does StructuralLearningPolicy exploit Rule x Context x Depth x Provenance on a partially-seen rule?",
+  "date_utc": "2026-09-23",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "domains": {
+    "family": {
+      "n_records": 26,
+      "per_seed": [
+        {
+          "domain": "family",
+          "seed": 0,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.4533333333333334,
+          "global_only_ece": 0.06666666666666665,
+          "brier_delta": 1.5466666666666666
+        },
+        {
+          "domain": "family",
+          "seed": 1,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.7133333333333333,
+          "global_only_ece": 0.36666666666666653,
+          "brier_delta": 1.2866666666666666
+        },
+        {
+          "domain": "family",
+          "seed": 2,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.545,
+          "global_only_ece": 0.15000000000000002,
+          "brier_delta": 1.455
+        },
+        {
+          "domain": "family",
+          "seed": 3,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.545,
+          "global_only_ece": 0.15000000000000002,
+          "brier_delta": 1.455
+        },
+        {
+          "domain": "family",
+          "seed": 4,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.7133333333333333,
+          "global_only_ece": 0.36666666666666653,
+          "brier_delta": 1.2866666666666666
+        },
+        {
+          "domain": "family",
+          "seed": 5,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.4533333333333333,
+          "global_only_ece": 0.06666666666666665,
+          "brier_delta": 1.5466666666666666
+        },
+        {
+          "domain": "family",
+          "seed": 6,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.545,
+          "global_only_ece": 0.15000000000000002,
+          "brier_delta": 1.455
+        },
+        {
+          "domain": "family",
+          "seed": 7,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.545,
+          "global_only_ece": 0.15000000000000002,
+          "brier_delta": 1.455
+        },
+        {
+          "domain": "family",
+          "seed": 8,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.545,
+          "global_only_ece": 0.15000000000000002,
+          "brier_delta": 1.455
+        },
+        {
+          "domain": "family",
+          "seed": 9,
+          "n_train": 20,
+          "n_holdout": 6,
+          "n_rules_eligible": 6,
+          "basis_counts": {
+            "EXACT_BUCKET": 6
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 2.0,
+          "real_policy_ece": 1.0,
+          "global_only_brier": 0.4533333333333333,
+          "global_only_ece": 0.06666666666666665,
+          "brier_delta": 1.5466666666666666
+        }
+      ],
+      "summary": {
+        "n_seeds_with_non_empty_split": 10,
+        "mean_exact_or_rule_only_rate": 1.0,
+        "mean_brier_delta": 1.4488333333333334,
+        "stdev_brier_delta": 0.09516084499284928,
+        "n_seeds_real_policy_beats_baseline": 0,
+        "n_seeds_real_policy_worse_than_baseline": 10,
+        "n_seeds_tied": 0,
+        "mean_n_holdout": 6.0,
+        "n_rules_eligible": 6
+      }
+    },
+    "organization": {
+      "n_records": 24,
+      "per_seed": [
+        {
+          "domain": "organization",
+          "seed": 0,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.37500000000000006,
+          "global_only_ece": 0.33333333333333326,
+          "brier_delta": 0.625
+        },
+        {
+          "domain": "organization",
+          "seed": 1,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.5,
+          "global_only_ece": 0.16666666666666674,
+          "brier_delta": 0.5
+        },
+        {
+          "domain": "organization",
+          "seed": 2,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.375,
+          "global_only_ece": 0.0,
+          "brier_delta": 0.625
+        },
+        {
+          "domain": "organization",
+          "seed": 3,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.375,
+          "global_only_ece": 0.0,
+          "brier_delta": 0.625
+        },
+        {
+          "domain": "organization",
+          "seed": 4,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.375,
+          "global_only_ece": 0.0,
+          "brier_delta": 0.625
+        },
+        {
+          "domain": "organization",
+          "seed": 5,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.3333333333333333,
+          "global_only_ece": 0.16666666666666674,
+          "brier_delta": 0.6666666666666667
+        },
+        {
+          "domain": "organization",
+          "seed": 6,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.375,
+          "global_only_ece": 0.0,
+          "brier_delta": 0.625
+        },
+        {
+          "domain": "organization",
+          "seed": 7,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.7083333333333334,
+          "global_only_ece": 0.33333333333333326,
+          "brier_delta": 0.29166666666666663
+        },
+        {
+          "domain": "organization",
+          "seed": 8,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.7083333333333334,
+          "global_only_ece": 0.33333333333333326,
+          "brier_delta": 0.29166666666666663
+        },
+        {
+          "domain": "organization",
+          "seed": 9,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 1.0,
+          "real_policy_ece": 0.5,
+          "global_only_brier": 0.3333333333333334,
+          "global_only_ece": 0.16666666666666674,
+          "brier_delta": 0.6666666666666665
+        }
+      ],
+      "summary": {
+        "n_seeds_with_non_empty_split": 10,
+        "mean_exact_or_rule_only_rate": 1.0,
+        "mean_brier_delta": 0.5541666666666666,
+        "stdev_brier_delta": 0.1457340932174964,
+        "n_seeds_real_policy_beats_baseline": 0,
+        "n_seeds_real_policy_worse_than_baseline": 10,
+        "n_seeds_tied": 0,
+        "mean_n_holdout": 12.0,
+        "n_rules_eligible": 12
+      }
+    },
+    "supply_chain": {
+      "n_records": 24,
+      "per_seed": [
+        {
+          "domain": "supply_chain",
+          "seed": 0,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.40277777777777785,
+          "global_only_ece": 0.25,
+          "brier_delta": 0.09722222222222215
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 1,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.4583333333333333,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.041666666666666685
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 2,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.388888888888889,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.111111111111111
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 3,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.388888888888889,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.111111111111111
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 4,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.4583333333333333,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.041666666666666685
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 5,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.388888888888889,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.111111111111111
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 6,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.40277777777777785,
+          "global_only_ece": 0.25,
+          "brier_delta": 0.09722222222222215
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 7,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.388888888888889,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.111111111111111
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 8,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.4583333333333333,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.041666666666666685
+        },
+        {
+          "domain": "supply_chain",
+          "seed": 9,
+          "n_train": 12,
+          "n_holdout": 12,
+          "n_rules_eligible": 12,
+          "basis_counts": {
+            "EXACT_BUCKET": 12
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.5,
+          "real_policy_ece": 0.25,
+          "global_only_brier": 0.40277777777777785,
+          "global_only_ece": 0.25,
+          "brier_delta": 0.09722222222222215
+        }
+      ],
+      "summary": {
+        "n_seeds_with_non_empty_split": 10,
+        "mean_exact_or_rule_only_rate": 1.0,
+        "mean_brier_delta": 0.08611111111111105,
+        "stdev_brier_delta": 0.03126285743728537,
+        "n_seeds_real_policy_beats_baseline": 0,
+        "n_seeds_real_policy_worse_than_baseline": 10,
+        "n_seeds_tied": 0,
+        "mean_n_holdout": 12.0,
+        "n_rules_eligible": 12
+      }
+    },
+    "library": {
+      "n_records": 20,
+      "per_seed": [
+        {
+          "domain": "library",
+          "seed": 0,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.36000000000000015,
+          "global_only_ece": 0.30000000000000004,
+          "brier_delta": 0.23999999999999982
+        },
+        {
+          "domain": "library",
+          "seed": 1,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.4400000000000001,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.15999999999999986
+        },
+        {
+          "domain": "library",
+          "seed": 2,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.4400000000000001,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.15999999999999986
+        },
+        {
+          "domain": "library",
+          "seed": 3,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.4400000000000001,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.15999999999999986
+        },
+        {
+          "domain": "library",
+          "seed": 4,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.4400000000000001,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.15999999999999986
+        },
+        {
+          "domain": "library",
+          "seed": 5,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.34,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.25999999999999995
+        },
+        {
+          "domain": "library",
+          "seed": 6,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.36000000000000015,
+          "global_only_ece": 0.30000000000000004,
+          "brier_delta": 0.23999999999999982
+        },
+        {
+          "domain": "library",
+          "seed": 7,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.4400000000000001,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.15999999999999986
+        },
+        {
+          "domain": "library",
+          "seed": 8,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.4400000000000001,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.15999999999999986
+        },
+        {
+          "domain": "library",
+          "seed": 9,
+          "n_train": 10,
+          "n_holdout": 10,
+          "n_rules_eligible": 10,
+          "basis_counts": {
+            "EXACT_BUCKET": 10
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.6,
+          "real_policy_ece": 0.30000000000000004,
+          "global_only_brier": 0.34,
+          "global_only_ece": 0.10000000000000009,
+          "brier_delta": 0.25999999999999995
+        }
+      ],
+      "summary": {
+        "n_seeds_with_non_empty_split": 10,
+        "mean_exact_or_rule_only_rate": 1.0,
+        "mean_brier_delta": 0.19599999999999987,
+        "stdev_brier_delta": 0.04695151163109071,
+        "n_seeds_real_policy_beats_baseline": 0,
+        "n_seeds_real_policy_worse_than_baseline": 10,
+        "n_seeds_tied": 0,
+        "mean_n_holdout": 10.0,
+        "n_rules_eligible": 10
+      }
+    },
+    "combined_4_domains": {
+      "n_records": 94,
+      "per_seed": [
+        {
+          "domain": "combined_4_domains",
+          "seed": 0,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.3888888888888886,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.5111111111111114
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 1,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.37805212620027456,
+          "global_only_ece": 0.1703703703703704,
+          "brier_delta": 0.5219478737997254
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 2,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.5048010973936902,
+          "global_only_ece": 0.1342592592592593,
+          "brier_delta": 0.39519890260630985
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 3,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.4019204389574762,
+          "global_only_ece": 0.03981481481481475,
+          "brier_delta": 0.4980795610425238
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 4,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.4714677640603564,
+          "global_only_ece": 0.09074074074074068,
+          "brier_delta": 0.4285322359396436
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 5,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.5048010973936902,
+          "global_only_ece": 0.1342592592592593,
+          "brier_delta": 0.39519890260630985
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 6,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.4019204389574762,
+          "global_only_ece": 0.03981481481481475,
+          "brier_delta": 0.4980795610425238
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 7,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.5048010973936902,
+          "global_only_ece": 0.1342592592592593,
+          "brier_delta": 0.39519890260630985
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 8,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.38888888888888873,
+          "global_only_ece": 0.08333333333333337,
+          "brier_delta": 0.5111111111111113
+        },
+        {
+          "domain": "combined_4_domains",
+          "seed": 9,
+          "n_train": 54,
+          "n_holdout": 40,
+          "n_rules_eligible": 40,
+          "basis_counts": {
+            "EXACT_BUCKET": 40
+          },
+          "exact_or_rule_only_rate": 1.0,
+          "real_policy_brier": 0.9,
+          "real_policy_ece": 0.44999999999999996,
+          "global_only_brier": 0.4432098765432098,
+          "global_only_ece": 0.047222222222222165,
+          "brier_delta": 0.4567901234567902
+        }
+      ],
+      "summary": {
+        "n_seeds_with_non_empty_split": 10,
+        "mean_exact_or_rule_only_rate": 1.0,
+        "mean_brier_delta": 0.4611248285322359,
+        "stdev_brier_delta": 0.05327888275136696,
+        "n_seeds_real_policy_beats_baseline": 0,
+        "n_seeds_real_policy_worse_than_baseline": 10,
+        "n_seeds_tied": 0,
+        "mean_n_holdout": 40.0,
+        "n_rules_eligible": 40
+      }
+    }
+  }
+}

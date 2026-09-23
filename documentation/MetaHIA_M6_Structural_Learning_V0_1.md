@@ -454,3 +454,123 @@ fermer aucun gate.
 667 tests collectés (0 régression). Voir
 `scripts/run_m6_context_transfer_diagnosis_v0_1.py` pour reproduire
 l'expérience complète.
+
+## 13. Reformulation M6-INTERNAL / M6-TRANSFER (2026-09-23) — deux capacités différentes, pas deux niveaux d'un même test
+
+Clarification conceptuelle demandée explicitement par le porteur du
+projet en réponse à la Sec. 12 : les Sec. 11/12 mesurent en réalité une
+seule capacité, jamais nommée comme telle jusqu'ici. On la nomme
+désormais rétroactivement **M6-TRANSFER** : *une règle jamais vue
+bénéficie-t-elle de quelque chose appris sur d'autres règles ?*
+`split_by_rule()` (Sec. 3) est conçu spécifiquement pour tester
+M6-TRANSFER, et seulement cela — c'est pourquoi `BASIS_EXACT_BUCKET`/
+`BASIS_RULE_ONLY` n'y sont jamais atteignables (Sec. 11), et pourquoi le
+diagnostic de transfert contextuel (Sec. 12) était la bonne question à
+poser dans ce cadre.
+
+Mais le nom même du module (`Rule × Context × Depth × Provenance ->
+distribution`, Sec. 2) promet une seconde capacité, jamais mesurée
+jusqu'ici parce que `split_by_rule()` l'empêche structurellement : **M6-
+INTERNAL** — *quand plusieurs observations d'une même règle existent,
+`StructuralLearningPolicy` exploite-t-elle réellement `Rule × Context ×
+Depth × Provenance` sur une observation retenue d'une règle
+partiellement vue ?* Ce ne sont pas deux niveaux de performance d'un
+même test : ce sont deux capacités différentes, avec des protocoles
+d'évaluation structurellement incompatibles (l'un exige qu'une règle de
+holdout soit absente de l'entraînement, l'autre exige le contraire).
+
+**Protocole** (`m6_internal_learning_diagnosis_v0_1.py`, adaptateur
+parallèle, `StructuralLearningPolicy` non modifié) : `split_within_rule()`,
+l'inverse structurel exact de `split_by_rule()` — pour toute règle ayant
+au moins `min_records_per_rule` observations (2 par défaut), une
+fraction de SES PROPRES enregistrements part en holdout tout en
+garantissant qu'au moins un enregistrement de cette même règle reste en
+entraînement ; une règle avec moins d'observations part entièrement en
+entraînement (rien à retenir qui testerait « déjà partiellement vue »
+plutôt que de reproduire le cas de `split_by_rule()`). La politique
+réelle est comparée à `GlobalOnlyPolicy`, une base compatible en
+signature qui prédit toujours la fréquence de classe globale
+d'entraînement, ignorant règle et contexte — exactement ce que
+M6-TRANSFER a toujours mesuré. 10 tests déterministes
+(`tests/test_m6_internal_learning_diagnosis_v0_1.py`) : aucun bug trouvé
+cette fois.
+
+**Découverte préalable, avant tout run réel** : sur les 4 corpus de
+domaine, **aucune règle n'a jamais plus de 2 observations** — vérifié
+directement. Avec la fraction de holdout par défaut (0,2) déjà utilisée
+ailleurs dans ce projet, `round(2 × 0,2) = 0` : le holdout M6-INTERNAL
+serait toujours vide, pas parce qu'aucune règle n'est éligible, mais
+parce qu'aucune fraction raisonnable ne retient jamais ne serait-ce
+qu'un seul enregistrement d'une règle à 2 observations. Une fraction de
+0,5 (nécessaire, pas une préférence) a été utilisée pour rendre ce test
+possible du tout.
+
+**Résultat réel** (`validation/m6_internal_learning_diagnosis_v0_1_results_2026-09-23.json`,
+10 seeds × 5 configurations) :
+
+| Domaine | Règles éligibles | Taux EXACT/RULE_ONLY | Δ Brier moyen (réel − base globale) | σ | Réel gagne |
+|---|---:|---:|---:|---:|---:|
+| family | 6 | 100 % | **+1,449** | 0,095 | 0/10 |
+| organization | 12 | 100 % | **+0,554** | 0,146 | 0/10 |
+| supply_chain | 12 | 100 % | +0,086 | 0,031 | 0/10 |
+| library | 10 | 100 % | +0,196 | 0,047 | 0/10 |
+| combiné (4 domaines) | 40 | 100 % | +0,461 | 0,053 | 0/10 |
+
+**Lecture honnête, sans lissage : un résultat négatif net, plus décisif
+que celui de la Sec. 12, et entièrement expliqué mécaniquement.**
+
+1. **`EXACT_BUCKET`/`RULE_ONLY` sont désormais atteignables à 100 %**,
+   confirmant que le protocole teste bien ce qu'il prétend tester — la
+   première fois que ces deux bases sont exercées sur un holdout dans
+   toute l'histoire de ce projet.
+2. **Mais la politique réelle fait PIRE que la base globale plate, dans
+   les 5 configurations, sur les 10 seeds, sans une seule exception**
+   (0/50 victoires). Ce n'est pas un signal faible ou mitigé comme en
+   Sec. 12 — c'est un résultat négatif net et reproductible.
+3. **Mécanisme identifié et vérifié directement, pas supposé** :
+   `StructuralLearningPolicy._to_prediction()` ne fait aucun lissage —
+   avec un support de 1 (une seule observation d'entraînement pour la
+   règle), la prédiction est un one-hot à 100 % de confiance sur la
+   classe observée. Quand la seconde observation de cette même règle
+   (celle retenue en holdout) a une issue **différente** — chose qui
+   arrive réellement, `Rule × Context × Depth × Provenance` n'étant pas
+   parfaitement déterministe même pour un enregistrement de « même
+   règle » — la pénalité de Brier est maximale (2,0, contre au plus
+   ~0,67 pour une base globale prudente qui répartit sa masse). Un seul
+   enregistrement suffit à produire une confiance totale, jamais
+   justifiée par une taille d'échantillon de 1.
+4. **La magnitude du dommage suit exactement le taux d'incohérence
+   intra-règle, mesuré indépendamment** : proportion des règles à 2
+   observations dont les deux issues diffèrent — family 100 %
+   (Δ le plus élevé, +1,449), organization 50 % (Δ +0,554), library
+   30 % (Δ +0,196), supply_chain 25 % (Δ le plus faible, +0,086, mais
+   toujours positif). Plus une règle produit des issues incohérentes
+   entre ses observations, plus la surconfiance sans lissage coûte
+   cher — une explication causale complète, pas une corrélation
+   laissée inexpliquée.
+
+**Conséquence** : ce diagnostic répond à la question M6-INTERNAL posée
+en introduction de cette section, et la réponse est claire et négative
+sur les corpus actuels — **quand M6 peut exploiter `Rule × Context ×
+Depth × Provenance` (ce qui n'arrive jamais en évaluation M6-TRANSFER,
+Sec. 11), le faire sans lissage dégrade la calibration plutôt que de
+l'améliorer**, à cause d'un estimateur ponctuel non régularisé combiné
+à une véritable variabilité d'issue intra-règle. **Ce n'est pas une
+critique du principe `Rule × Context × Depth × Provenance` lui-même**
+(la Sec. 12 montre qu'un signal de contexte peut exister, notamment sur
+`organization`) — c'est une critique précise et vérifiée de l'absence
+de lissage/régularisation dans `StructuralLearningPolicy._to_prediction()`
+face à un support de 1. Piste ouverte, non entreprise ici (parallel
+adapter, pas de modification de la politique validée) : un lissage de
+type Laplace ou une pondération par la confiance liée au support
+pourrait corriger ce problème spécifique — à tester séparément, sans
+toucher à la politique déjà `VALIDATED`.
+
+**Ce que cela ne remet pas en cause** : la clôture `VALIDATED` de M6
+reste inchangée — ce diagnostic, comme celui de la Sec. 12, est un
+adaptateur parallèle qui ne modifie jamais `StructuralLearningPolicy` et
+ne prétend fermer aucun gate.
+
+687 tests collectés (0 régression). Voir
+`scripts/run_m6_internal_learning_diagnosis_v0_1.py` pour reproduire
+l'expérience complète.
