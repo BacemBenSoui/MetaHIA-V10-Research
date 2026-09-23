@@ -277,3 +277,32 @@ Résumé :
 Toujours aucun protocole verrouillé, aucun code P4-U.2 — cette
 investigation fournit une base empirique pour la question ouverte,
 elle ne la referme pas.
+
+## 12. Expérience d'identifiabilité sur une signature candidate multi-profondeur (2026-09-23)
+
+Étape distincte, explicitement demandée par le porteur du projet entre
+l'investigation (Sec. 11) et le futur protocole v0.1 — détail complet
+dans
+`documentation/P4U2_Identifiability_Experiment_2026-09-23.md`. Une
+signature combinant profondeurs 1/2/3 (via `discover_paths`,
+INCHANGÉ) a été testée comme HYPOTHÈSE, pas comme définition acquise,
+sur trois corpus :
+
+- Un cas `SEPARABLE` confirmé (signal net, sans ambiguïté).
+- Un cas `INSUFFICIENT_STRUCTURAL_INFORMATION` confirmé, y compris par
+  une vérification indépendante au niveau du groupe (signal
+  authentiquement nul, pas un artefact de méthode).
+- Un cas révélant un **constat méthodologique plus important que les
+  verdicts eux-mêmes** : une comparaison de signature par égalité
+  exacte par observation a d'abord donné un verdict FAUX
+  (`INSUFFICIENT` alors qu'un signal réel existait, 80 % contre 20 %,
+  z=3,79, statistiquement significatif) — corrigé en remplaçant cette
+  vérification par une statistique de groupe. **Conséquence directe
+  pour Gate I (Sec. 2)** : elle ne peut pas se limiter à une égalité de
+  signature, elle doit intégrer une comparaison statistique de groupe
+  face à un modèle nul, dès sa première version — pas une conséquence
+  théorique anticipée, une nécessité démontrée par exécution.
+
+Toujours aucun protocole verrouillé, aucun code P4-U.2. Ce commit clôt
+l'enquête exploratoire préalable — pas une validation de l'algorithme
+P4-U.2 lui-même.

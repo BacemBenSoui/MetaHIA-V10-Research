@@ -1476,3 +1476,57 @@ Toujours aucun protocole verrouillé, aucun code P4-U.2
 Prochaine étape : écriture du protocole formel v0.1, informée par
 cette investigation
 ```
+
+---
+
+## 2026-09-23 — Expérience d'identifiabilité sur une signature candidate multi-profondeur
+
+### Étape demandée explicitement par le porteur du projet
+Séquence fixée avant tout protocole : investigation (faite) → signature
+candidate → **expérience d'identifiabilité (cette entrée)** → protocole
+P4-U.2 v0.1 → modèle nul → benchmark aveugle. Le commit précédent
+(`b1f58bf`) devait être considéré comme la clôture de l'enquête
+exploratoire, pas une validation de l'algorithme — cette expérience
+teste une hypothèse de représentation, pas un résultat déjà acquis.
+
+### Signature testée (hypothèse, jamais présentée comme acquise)
+Combinaison profondeurs 1/2/3 via `discover_paths` (INCHANGÉ) : compte
+de chemins par profondeur + séquences de direction observées, filtrés
+aux chemins dont le premier pas correspond à l'arête masquée étudiée.
+
+### Trois corpus, trois verdicts
+1. `SEPARABLE` confirmé (signal net, continuation systématique contre
+   absence systématique).
+2. `INSUFFICIENT_STRUCTURAL_INFORMATION` confirmé, y compris par
+   vérification indépendante au niveau du groupe (100 % de
+   continuation des deux côtés — signal authentiquement nul).
+3. **Constat le plus important de cette expérience** : un chevauchement
+   partiel (80 % contre 20 % de continuation) a d'abord reçu un verdict
+   FAUX (`INSUFFICIENT`) par une vérification naïve d'égalité exacte de
+   signature par observation. Corrigé avant de conclure : un test
+   statistique à deux proportions au niveau du groupe révèle un signal
+   réel et significatif (z=3,79, p<0,05) — la vérification naïve
+   confondait « aucun signal » et « signal réel mais bruité ».
+
+### Conséquence directe pour le futur protocole
+Gate I ne peut pas se limiter à une égalité de signature par
+observation — elle doit intégrer une comparaison statistique de groupe
+face à un modèle nul, dès sa première version. Ce n'est plus une
+anticipation théorique (déjà notée en v0.3 Sec. 7) mais une nécessité
+démontrée par exécution directe.
+
+### Document produit
+`documentation/P4U2_Identifiability_Experiment_2026-09-23.md`. Sec. 12
+ajoutée à
+`documentation/P4U2_Autonomous_Relation_Discovery_V0_3.md` pointant
+vers ce résultat (les décisions déjà gelées de la v0.3 restent
+inchangées).
+
+### État après cette entrée
+```text
+P4-U.2 : cadrage v0.3 + investigation + expérience d'identifiabilité
+         complétées
+Toujours aucun protocole verrouillé, aucun code P4-U.2
+Prochaine étape : écriture du protocole formel P4-U.2 v0.1, avec Gate I
+intégrant une comparaison statistique de groupe dès sa première version
+```
