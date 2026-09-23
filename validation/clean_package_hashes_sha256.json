@@ -73,7 +73,7 @@
   "documentation/P4R_Non_Circular_Structural_Transfer_V0_2.md": "024e91af698d124ab1f0d56d82ff327b543d23eb2d185e3e082f86e7aa6149e7",
   "documentation/P4T2_Locked_Benchmark_V0_1.md": "4d0f035a127c8afe80b1d66bd6a5b38c07f03c301aed320a5688895a8aac3a0a",
   "documentation/P4T5_Emergent_Structure_V0_1.md": "1ff4e982ed694748f84984557764abce6ca0862e2e2856e680c8d16238d7faa5",
-  "documentation/P4T_Structural_Transformation_Induction_V0_1.md": "649158da554b1db7a98022c7f9d3c2d441710929f416b1b854c61355ba520dcc",
+  "documentation/P4T_Structural_Transformation_Induction_V0_1.md": "18f75d94f64444d0e54e594cfb182b0b34171329e80b956dd0c6095e089081d0",
   "documentation/P4_Invalidation_and_P4R_Replacement_V0_2.md": "dba74ac82b1022fcced01daf1c624709bdb38cd1526a8ce257ae7ab6469ee8b6",
   "documentation/P4_Transfer_Review_and_Rejection_2026-09-19.md": "89b99993bbf6d950e4e056bb3c5fdc81fd9634552f612d20ec1ceaecc98152b1",
   "documentation/P5_M1_M6_Stabilization_Multidomain_Regression_v0_1.md": "cc1821886eb5ea3162b628e481cdd804e2aad91e9a7b09f2b85090b893564344",
@@ -139,7 +139,7 @@
   "p6_three_domain_regression_v0_1.py": "427a95dc25a8e89427dab896ebdafb729bb2acdac1bc57fec4ec822cf83703f9",
   "p7_four_domain_multiseed_v0_1.py": "ab880fe7769fb561ba4864b4bf8519658e62b9b6f3d8719c25602d2cd74e863c",
   "p7_four_domain_regression_v0_1.py": "da8e211413d6d9e1c92e0d865c947c503b7438b065f3266255f7a32d4764a01a",
-  "release_manifest.json": "cedfa78a0390f04ee89c0c48fc96fc594d65c6d00edac20d0db34f0ebb173c88",
+  "release_manifest.json": "04af8ad604f0abb6fdc0ef6cf3e7b2992b68fd4003ce1b3db74694e48c7a5f90",
   "scripts/diagnose_multihop_witness_brier_mechanism_v0_1.py": "092e9df7e5c609a3945f97423d31de3e1caa773b27912f8f001723e1edd18c63",
   "scripts/measure_m7_mechanism_resource_overhead_v0_1.py": "cbdfcf736dfbd4e8d4c4effdf31ff49d5f29e9595a738a467db197ec0e1249b3",
   "scripts/print_consensus_text_claim_results_v0_1.py": "a8bf8a1db41466097465fecd4b19ad5232cedf2309b00bb04e75a567e9e4be3f",
@@ -284,8 +284,8 @@
   "validation/local_regression_2026-09-22_p8_1_strict_enriched.txt": "861f7c6f0d97bf58b58358998b098e4fdeec33619f58aacf54fccba7ba4182bd",
   "validation/local_regression_2026-09-22_p8_jev_live_success.txt": "053b6175ab993bbb5551064b6e7524a8485dfc1d8a1e9b869856095092368d2e",
   "validation/local_regression_2026-09-22_p8_jev_real_client.txt": "e8394bc7ba091e6f460115efbe391a97dc2ca019d14cb2a26c14f22ab8fca968",
-  "validation/p4t_locked_benchmark_predictions_v0_1.json": "6fa5024507713c4f3517e79b8de8874f779216544ade3b3d20d601174d4f2b78",
-  "validation/p4t_locked_benchmark_predictions_v0_2.json": "7c26c797739dd7481b52d6bc7e04eb25048fc27fd4dbed08d613fa9a9952e71d",
+  "validation/p4t_locked_benchmark_predictions_v0_1.json": "819a5b2744e7fe62f102ba52f4fd233c612bde82595d81a857a562a564662c37",
+  "validation/p4t_locked_benchmark_predictions_v0_2.json": "8f418042aefc0056f5341ab67eadeadc3d7dd0dd0eac13dc695a6c90900ae300",
   "validation/jev_order_ablation_v0_1_results_2026-09-22.json": "2cee4cb640b8bc814794fabf9bb7c6ad0fc84920f816d879d748c2ee79f9603b",
   "validation/local_regression_2026-09-22_p8_2_order_ablation.txt": "5732c1ecc1fb26236e056cd3a68197cf68a6a06f64bcadd055c25f7e7592395d",
   "m7_jev_order_ablation_v0_1.py": "86defb1d6b4c0798d265c9b9f2c0faeeb383d320bb5db01549301bfc216a255f",
@@ -326,5 +326,7 @@
   "tests/test_m6_internal_regularized_diagnosis_v0_1.py": "00c71f06789bfb8a619726db4f9f5d188492f649fdc2c47b22cc5f9ae1683dea",
   "validation/local_regression_2026-09-23_p4t7_gate_closed.txt": "8cb94b3c2189fc2f78a7e6fead29ee09aff332e6ff7708077d0607eb6cb6290f",
   "validation/local_regression_2026-09-23_p4u1_protocol.txt": "3bea364abb75c5f7a800b698eaa8eaf54170eef9e37579a1e782d094cd7dbf6c",
-  "documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_1.md": "4a7c9b2ece1f700664c50687d0fde1d36e479365d2443906e37ad7c286bde27d"
+  "documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_1.md": "a7508e32ef506a002cc21f61aadb62e6cec0eff79acf7ff7235d11ffebd45384",
+  "validation/local_regression_2026-09-23_p4u1_v0_2_protocol.txt": "ae42652f0d64c956003322969d82106e695765f97debe3ccc2ee1372206b7165",
+  "documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_2.md": "9fd486e4b7f5efbed464f81a18cd29b13518cff40819d8009bfa186e8f1a8b71"
 }

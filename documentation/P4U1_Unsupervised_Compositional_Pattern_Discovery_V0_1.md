@@ -1,5 +1,15 @@
 # MetaHIA V10 — P4-U.1 : découverte non supervisée de compositions structurelles (protocole, avant tout code)
 
+> **Remplacé par la v0.2 avant toute implémentation**
+> (`documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_2.md`),
+> suite à une revue méthodologique du porteur du projet (2026-09-23) qui a
+> identifié plusieurs points bloquants (modèle nul non défini
+> précisément, absence de correction pour comparaisons multiples,
+> Gate B/C non quantitatives, `min_depth` non imposé). **Ce document
+> v0.1 est conservé tel quel pour l'historique de la revue** — aucune
+> implémentation ne doit s'appuyer dessus ; se référer exclusivement à
+> la v0.2.
+
 ## 0. Statut
 
 ```text
