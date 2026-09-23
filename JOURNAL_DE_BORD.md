@@ -862,3 +862,47 @@ Le paquet est prêt mais **n'a pas encore été envoyé à un tiers
 réellement indépendant** — même situation que P4-T.7 avant son premier
 envoi. Statut : `P4-U.1` non fermé, en attente d'une exécution externe
 réelle.
+
+---
+
+## 2026-09-23 — Précision de packaging : distinction explicite entre le commit des artefacts de benchmark et le commit du paquet documentaire
+
+### Point soulevé par le porteur du projet
+Le protocole de validation tierce a été ajouté dans `4f70d35`, alors que
+les artefacts de benchmark faisant foi (les 6 fichiers à hash gelé) ont
+été construits, calibrés et exécutés en aveugle au commit `3e3c21b`. Un
+validateur qui clonerait `3e3c21b` seul ne trouverait pas encore le
+protocole ; il fallait donc rendre explicite lequel des deux commits
+cloner, et prouver — pas seulement affirmer — que les fichiers gelés
+n'ont pas changé entre les deux.
+
+### Vérification directe
+```text
+git diff 3e3c21b 4f70d35 -- kernel2.py p4u1_unsupervised_pattern_discovery_v0_1.py \
+  p4u1_set_valued_replay_v0_1.py p4u1_locked_benchmark_cases_v0_1.py \
+  p4u1_locked_benchmark_witness_v0_1.py p4u1_locked_benchmark_runner_v0_1.py
+```
+→ **sortie vide** : les 6 fichiers sont strictement identiques entre les
+deux commits (`4f70d35` n'a touché que de la documentation, le journal,
+`release_manifest.json`, le manifeste de hashes global, les logs de
+régression, et les fichiers de prédictions horodatés — jamais l'un des
+6 fichiers gelés).
+
+### Correctif apporté au protocole
+`documentation/MetaHIA_ThirdParty_Validation_Protocol_P4U1_V0_1.md`
+précise désormais explicitement :
+- `3e3c21b` = commit de construction des artefacts de benchmark (celui
+  auquel les hashes et le résultat 7/7 se réfèrent) ;
+- `4f70d35` (ou tout commit ultérieur) = paquet documentaire / ce
+  protocole lui-même ;
+- cloner au commit du protocole lui-même (pas `3e3c21b` seul, qui ne
+  contient pas encore ce document) ;
+- la commande `git diff` ci-dessus, à exécuter par le validateur
+  lui-même si son commit de checkout est postérieur à `3e3c21b`, ajoutée
+  comme élément obligatoire du rapport attendu (Sec. « Required
+  report ») — jamais une simple affirmation à prendre pour acquise.
+
+### Décision réaffirmée
+Aucune modification de `discover_paths()` ni de la logique
+`position_groups` avant la validation tierce — l'expérience indépendante
+doit rester définie exactement comme elle l'est aujourd'hui.

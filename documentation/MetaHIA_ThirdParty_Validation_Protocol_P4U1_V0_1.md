@@ -14,7 +14,40 @@ see `MetaHIA_ThirdParty_Validation_Protocol_M6_V0_1.md`,
 `..._M6_NonDegenerate_V0_2.md`, `..._M7_V0_1.md`, and
 `..._P4T_V0_1.md`, all of which stay frozen and unaffected by this protocol.
 
-Commit shipped with this protocol: `3e3c21b83aec22e6ed852e862ece378f2f569df7`.
+**Two commits matter here, deliberately distinguished so you never
+validate a different benchmark state than the one these hashes were
+frozen from:**
+
+```text
+3e3c21b83aec22e6ed852e862ece378f2f569df7 = benchmark artifact commit
+    (the exact state of the 6 files hashed below: the locked benchmark
+    was built, calibrated, and run BLIND at this commit -- this is the
+    commit the "Frozen file hashes" table and the 7/7 result in
+    documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_3.md
+    Sec. 20 refer to)
+
+4f70d35... (and any later commit up to and including the one this file
+    ships in) = documentary package / this protocol itself, plus
+    governance-decision text, journal entries, and the repository-wide
+    hash manifest -- none of which touch any of the 6 frozen files.
+```
+
+**Clone at the commit this file itself ships in** (i.e. the current
+`HEAD` of the branch you fetched, which is `4f70d35` or later) — do
+**not** clone at `3e3c21b` alone, since that commit does not yet contain
+this protocol document. Verified directly, not merely asserted: the 6
+files in "Frozen file hashes" below are BYTE-IDENTICAL between
+`3e3c21b` and `4f70d35` (`git diff 3e3c21b 4f70d35 -- kernel2.py
+p4u1_unsupervised_pattern_discovery_v0_1.py p4u1_set_valued_replay_v0_1.py
+p4u1_locked_benchmark_cases_v0_1.py p4u1_locked_benchmark_witness_v0_1.py
+p4u1_locked_benchmark_runner_v0_1.py` produces zero output) — so cloning
+at the protocol's own commit and verifying the hashes below is exactly
+equivalent to verifying the benchmark's original construction commit.
+If you clone at any commit strictly between `3e3c21b` and the tip of
+`main`, re-run this same `git diff` check yourself before trusting the
+hashes below, since a later commit could in principle touch these
+files (none currently do, but this protocol does not ask you to take
+that on faith beyond this one check).
 
 ## What this protocol does NOT ask you to validate
 
@@ -181,7 +214,15 @@ The evaluator must verify that:
 
 - OS and Python version;
 - command executed;
-- git commit hash of the checkout;
+- git commit hash of the checkout (`git rev-parse HEAD`);
+- output of `git diff 3e3c21b83aec22e6ed852e862ece378f2f569df7 HEAD --
+  kernel2.py p4u1_unsupervised_pattern_discovery_v0_1.py
+  p4u1_set_valued_replay_v0_1.py p4u1_locked_benchmark_cases_v0_1.py
+  p4u1_locked_benchmark_witness_v0_1.py
+  p4u1_locked_benchmark_runner_v0_1.py` (expected: empty — confirms your
+  checkout's 6 frozen files match the benchmark's original construction
+  commit, not just this protocol's own commit, see "Required
+  environment" above);
 - raw test output for the critical suite (the 3-file command above) and
   the full suite;
 - PASS/FAIL per critical case (C01-C10);
