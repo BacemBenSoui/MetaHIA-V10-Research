@@ -26,25 +26,29 @@ frozen from:**
     documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_3.md
     Sec. 20 refer to)
 
-4f70d35... (and any later commit up to and including the one this file
-    ships in) = documentary package / this protocol itself, plus
-    governance-decision text, journal entries, and the repository-wide
-    hash manifest -- none of which touch any of the 6 frozen files.
+HEAD of the branch you cloned (any commit at or after 3e3c21b that
+    contains THIS FILE) = documentary package -- this protocol itself,
+    plus governance-decision text, journal entries, and the
+    repository-wide hash manifest, none of which touch any of the 6
+    frozen files. Several purely documentary commits sit between
+    3e3c21b and the tip of `main` (visible in `git log`); none of them
+    change the 6 files below -- verified below, not assumed.
 ```
 
-**Clone at the commit this file itself ships in** (i.e. the current
-`HEAD` of the branch you fetched, which is `4f70d35` or later) — do
-**not** clone at `3e3c21b` alone, since that commit does not yet contain
-this protocol document. Verified directly, not merely asserted: the 6
-files in "Frozen file hashes" below are BYTE-IDENTICAL between
-`3e3c21b` and `4f70d35` (`git diff 3e3c21b 4f70d35 -- kernel2.py
+**Clone at the tip of `main`** (or whatever commit your source hands
+you, as long as it contains this file) — do **not** clone at `3e3c21b`
+alone, since that commit does not yet contain this protocol document.
+Verified directly, not merely asserted, at the time this protocol was
+written: the 6 files in "Frozen file hashes" below are BYTE-IDENTICAL
+between `3e3c21b` and the commit you are reading this file from
+(`git diff 3e3c21b83aec22e6ed852e862ece378f2f569df7 HEAD -- kernel2.py
 p4u1_unsupervised_pattern_discovery_v0_1.py p4u1_set_valued_replay_v0_1.py
 p4u1_locked_benchmark_cases_v0_1.py p4u1_locked_benchmark_witness_v0_1.py
 p4u1_locked_benchmark_runner_v0_1.py` produces zero output) — so cloning
-at the protocol's own commit and verifying the hashes below is exactly
-equivalent to verifying the benchmark's original construction commit.
-If you clone at any commit strictly between `3e3c21b` and the tip of
-`main`, re-run this same `git diff` check yourself before trusting the
+at the tip and verifying the hashes below is exactly equivalent to
+verifying the benchmark's original construction commit. This is exactly
+the check required in your report (see "Required report" below) — run
+it yourself and confirm it is still empty for YOUR checkout before trusting the
 hashes below, since a later commit could in principle touch these
 files (none currently do, but this protocol does not ask you to take
 that on faith beyond this one check).
