@@ -950,3 +950,70 @@ Depuis l'archive extraite : suite critique = 46/46 PASS (~3 min) ; les 6
 hashes gelés restent conformes (le correctif ne touche aucun des 6
 fichiers gelés). Nouveau commit à produire pour le paquet final, puis
 nouvelle archive à reconstruire au commit corrigé.
+
+---
+
+## 2026-09-23 — Premier retour d'exécution P4-U.1 (tiers humain externe, confirmé par le porteur du projet)
+
+### Paquet envoyé
+`MetaHIA-V10-Research-P4U1-ThirdPartyValidation-7b47edb.zip`
+(`git archive --format=zip`, sans `.git`), commit `7b47edb`.
+
+### Point de vigilance soulevé et résolu avant d'enregistrer ce retour
+Le rapport reçu mentionne un chemin de sortie
+`/mnt/agents/output/P4U1_Validation_Report_2026-09-23.md`, qui évoque a
+priori un sandbox d'agent plutôt qu'un poste humain — signal identique à
+celui qui, pour P4-T.7, avait correspondu à une exécution NON
+indépendante (assistant auto-administré dans un environnement isolé).
+Question posée explicitement au porteur du projet avant tout
+enregistrement : qui/quoi a exécuté ce test ? **Réponse confirmée : un
+humain externe, d'une organisation tierce** (l'usage d'un agent/outil
+pour piloter les commandes n'enlève rien à l'indépendance de la personne
+qui a suivi le protocole).
+
+### Retour reçu
+- Environnement : Linux 5.10.134 (glibc 2.36), Python 3.11 + pytest
+  7.2.1 (le Python 3.12 par défaut du système n'avait pas `pytest`) —
+  distinct de l'environnement de développement (Windows).
+- Source : archive zip extraite dans un sandbox **sans accès réseau**
+  (aucun LLM/Ollama/service externe) — confirme directement que le
+  correctif du filtre `-k "not live"` (commit `5bbd6e3`/`7b47edb`) était
+  nécessaire et suffisant : la suite complète tourne bien sans réseau.
+- **6/6 hashes gelés conformes**, avant et après exécution.
+- Suite critique (3 fichiers) : **46/46 PASS en 97,36 s**.
+- Suite complète : **740 passed, 10 deselected en 124,29 s** — les 10
+  tests live M7 correctement désélectionnés via `-k "not live"`.
+- **10/10 cas critiques (C01-C10) PASS**, chacun rapporté nommément.
+- Aucun fichier source modifié ; seuls les JSON de prédictions ont été
+  régénérés (artefact de sortie explicitement autorisé par le
+  protocole) — `witness_module_imported_yet: false` confirmé pour
+  P4-U.1.
+
+### Écarts honnêtement signalés par le relecteur lui-même
+- Absence de `.git` dans l'archive (méthode `git archive` déjà annoncée
+  par ce protocole, Option A comme pour M7/P4-T.7 round 1) — impossible
+  de rapporter `git rev-parse HEAD` ou d'exécuter le `git diff` demandé
+  en Sec. « Required report » ; contrôle équivalent effectué à la
+  place : vérification SHA-256 des 6 fichiers gelés + comparaison
+  d'arborescence complète — même limitation méthodologique déjà
+  rencontrée et disclosed lors des rounds M7/P4-T.7 sur ZIP sans `.git`.
+- Python 3.11 utilisé au lieu de 3.12 (pytest absent de ce dernier) —
+  3.11+ est la version recommandée par le protocole, donc conforme.
+
+### État après ce retour
+`P4-U.1 = PASS_INDEPENDENT_SCOPE` (niveau mécanisme), confirmé par une
+première exécution véritablement externe. Conformément à la même
+discipline déjà appliquée à M6/M7/P4-T.7 (deux exécutions convergentes,
+dont au moins une réellement indépendante, avant toute décision de
+clôture) : **ce retour, seul, ne clôture pas le gate** — c'est au
+porteur du projet de décider s'il souhaite clôturer sur la base de cette
+unique exécution externe ou attendre une seconde exécution convergente,
+comme cela avait été fait pour M6/M7/P4-T.7. Décision non prise ici par
+cet assistant.
+
+### Clôture de l'étape
+**Non close.** Statut retenu inchangé :
+`P4-U.1 = MECHANISM VALIDATED ON LOCKED SELF-ADMINISTERED BENCHMARK /
+GENERALIZATION OPEN`, avec désormais une première confirmation externe
+réelle et positive. Décision de clôture : en attente du porteur du
+projet.
