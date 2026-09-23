@@ -1408,3 +1408,71 @@ P4-U.2 v0.3 : CADRÉ, TOUJOURS AUCUN CODE, TOUJOURS AUCUN PROTOCOLE
 Prochaine action : investigation empirique des candidats de
 représentation structurelle (Sec. 10 de la v0.3)
 ```
+
+---
+
+## 2026-09-23 — Investigation empirique des candidats de représentation structurelle pour P4-U.2
+
+### Méthode
+Corpus jouets construits avec des relations cachées connues du script
+de test uniquement, opérateurs masqués INDIVIDUELLEMENT (méthode gelée,
+v0.3 Sec. 5), signatures calculées uniquement à partir du graphe
+masqué, avec les primitives déjà existantes de `kernel2.py`/
+`e20d_rationalization_v0_1.py`, sans aucune modification. Vérité
+terrain utilisée seulement après coup pour juger la séparation.
+
+### Candidat 1 — `path_properties().branching_at_start/end` (kernel2.py, inchangé)
+- Test A (rôles topologiques réellement différents, hub à fort éventail
+  vs relation 1-à-1) : séparation parfaite par `branching_at_start`
+  seul (6 contre 1).
+- Test B (même degré de départ, continuation avale différente) :
+  séparation parfaite par `branching_at_end` seul (2 contre 1), alors
+  que `branching_at_start` est identique dans les deux groupes.
+- Test C, cas limite délibéré (rôle topologique local RIGOUREUSEMENT
+  identique dans les deux groupes) : signatures identiques confirmées
+  — **ce candidat ne peut pas, par construction, distinguer deux
+  relations partageant le même rôle local**. Exactement la frontière
+  que Gate I (v0.3 Sec. 2) doit détecter et rapporter comme
+  `INSUFFICIENT_STRUCTURAL_INFORMATION`, pas un défaut du candidat.
+
+### Candidat 2 — `ref_jaccard`/`structural_similarity` (e20d_rationalization_v0_1.py, vivant, inchangé)
+- Sur des entités totalement disjointes (style de corpus déjà utilisé
+  par P4-U.1) : aucun signal (0.0 dans tous les cas), qu'il s'agisse de
+  la même relation cachée ou non.
+- **Erreur de méthode trouvée et corrigée avant de conclure** : un
+  premier essai avait laissé les opérateurs NON masqués par erreur,
+  produisant un faux signal (0.2) dû au partage littéral de la
+  référence d'opérateur, pas à une similarité structurelle réelle —
+  refait avec le masquage correct, le signal disparaît entièrement.
+- Sur des entités PARTAGÉES (un « hub » réutilisé) : signal non nul
+  (0.2), mais réserve méthodologique importante confirmée : ce signal
+  mesure la CO-OCCURRENCE D'ENTITÉ, pas la similarité de TYPE de
+  relation — deux faits impliquant la même entité mais de relations
+  réellement différentes recevraient le même score. **`ref_jaccard` ne
+  doit donc jamais être réutilisé tel quel comme signature de
+  similarité de relation dans un futur protocole.**
+
+### Document produit
+`documentation/P4U2_Structural_Signature_Investigation_2026-09-23.md`
+— détail complet, résultats bruts, synthèse. Section 11 ajoutée à
+`documentation/P4U2_Autonomous_Relation_Discovery_V0_3.md` pointant
+vers ce résultat (le cadrage v0.3 lui-même n'est pas modifié dans ses
+décisions — cette investigation nourrit la question ouverte de la
+Sec. 8 étape 1, elle ne la referme pas).
+
+### Conclusion utile pour le futur protocole
+Aucune nouvelle primitive nécessaire : la représentation manquante
+peut vraisemblablement se construire en combinant `path_properties`/
+`discover_paths` à plusieurs profondeurs déjà existantes. La
+démonstration d'identifiabilité (Gate I) d'un futur cas verrouillé
+devrait concrètement consister à vérifier que les relations cachées du
+corpus produisent des signatures distinctes par cette combinaison — pas
+une assertion abstraite.
+
+### État après cette entrée
+```text
+P4-U.2 : cadrage v0.3 + investigation empirique complétée
+Toujours aucun protocole verrouillé, aucun code P4-U.2
+Prochaine étape : écriture du protocole formel v0.1, informée par
+cette investigation
+```

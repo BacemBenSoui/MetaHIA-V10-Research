@@ -247,3 +247,33 @@ uniquement sur les primitives K3 déjà existantes (`discover_paths`,
 ce qui est déjà mesurable. Cette investigation reste un exercice de
 lecture/mesure directe, pas une implémentation de P4-U.2 lui-même — son
 résultat conditionnera l'écriture du protocole v0.1 formel.
+
+## 11. Investigation empirique menée (2026-09-23) — résultat
+
+Faite, par exécution directe (jamais spéculée) — détail complet dans
+`documentation/P4U2_Structural_Signature_Investigation_2026-09-23.md`.
+Résumé :
+
+- `path_properties().branching_at_start/end` (kernel2.py, INCHANGÉ) est
+  un candidat réel : il sépare parfaitement deux relations cachées qui
+  diffèrent par leur rôle topologique local (éventail de sortie,
+  continuation avale), mais échoue **par construction, confirmé
+  empiriquement** quand deux relations cachées partagent exactement le
+  même rôle local — exactement la frontière que Gate I (Sec. 2) doit
+  détecter et rapporter comme `INSUFFICIENT_STRUCTURAL_INFORMATION`.
+- `ref_jaccard`/`structural_similarity` (`e20d_rationalization_v0_1.py`,
+  INCHANGÉ) s'est révélé **non informatif** pour la similarité de TYPE
+  de relation — il mesure la co-occurrence d'entité, un phénomène
+  différent, à ne jamais confondre dans un futur protocole. Une erreur
+  de test (opérateurs non masqués dans un premier essai) avait
+  d'abord suggéré un faux signal — corrigée avant toute conclusion,
+  pas après.
+- Aucune nouvelle primitive n'a été nécessaire : la représentation
+  manquante (Sec. 8, étape 1) peut vraisemblablement se construire en
+  combinant des mesures `path_properties`/`discover_paths` déjà
+  existantes à plusieurs profondeurs, pas en inventant un nouveau
+  mécanisme de bas niveau.
+
+Toujours aucun protocole verrouillé, aucun code P4-U.2 — cette
+investigation fournit une base empirique pour la question ouverte,
+elle ne la referme pas.
