@@ -673,3 +673,65 @@ Prochaine étape : écrire `p4u1_set_valued_replay_v0_1.py` avec ses
 tests déterministes (y compris un test de non-circularité explicite),
 avant de fixer les valeurs numériques et de construire le benchmark
 verrouillé.
+
+---
+
+## 2026-09-23 — Adaptateur `p4u1_set_valued_replay_v0_1.py` écrit et testé (13 tests) ; le hub résout bien la tension
+
+### Ce qui a été construit
+`p4u1_set_valued_replay_v0_1.py`, conforme à la Sec. 10 de la v0.3 :
+`skeleton_matching_paths_from_start` / `compatible_paths_from_start`
+(réutilisent `kernel2.discover_paths()` sans le modifier),
+`replay_set_valued` (décision `REPLICATED(start)` par existence),
+`replay_on_all_admissible_starts_set_valued` (agrégat, couverture
+redéfinie + nouveau diagnostic `mean_valid_continuations_per_replicating_start`),
+`evaluate_gate_c_set_valued` (mêmes trois conditions que l'ancienne
+Gate C, appliquées à la nouvelle statistique), et
+`legacy_unique_replay_status` (diagnostic secondaire, appelle
+`kernel2.replay_path_pattern_holdout()` non modifié). 13 nouveaux
+tests déterministes, tous passants ; suite complète : 729 passed / 10
+deselected (0 régression, +13 par rapport à l'entrée précédente).
+
+### La démonstration centrale
+Sur le même corpus (un nœud H avec trois branches
+`H --REL_A--> Ci --REL_B--> Gi`) :
+```text
+kernel2.replay_path_pattern_holdout() (non modifié) : AMBIGUOUS
+p4u1_set_valued_replay_v0_1 (nouveau)                : REPLICATED = True
+```
+Test `test_legacy_status_is_ambiguous_at_the_same_hub_where_the_adapter_says_replicated`
+— confirme, sur les mêmes données, exactement la divergence qui motivait
+cette révision : la même structure qui échouait Gate C sous la v0.2
+réussit maintenant Gate C sous la v0.3, sans que Gate B ni `kernel2`
+n'aient été modifiés.
+
+### Constat honnête trouvé en écrivant les tests, non anticipé par le protocole
+`kernel2.discover_paths()` interdit de revisiter un nœud déjà présent
+dans le chemin en cours — toute `PathRecord` qu'elle produit a donc des
+positions deux à deux distinctes. Conséquence : `position_groups`
+(le champ `structure` du `FrozenPattern`) ne peut jamais être non
+trivial pour un candidat issu du pipeline de découverte standard —
+la vérification de co-référence de Gate C
+(`_position_groups_satisfied`) reste appliquée uniformément mais sa
+branche de rejet est aujourd'hui inatteignable en pratique. `REPLICATED`
+se réduit donc, avec les données que ce pipeline peut produire
+aujourd'hui, à une pure question d'existence d'au moins un chemin de
+bon squelette — ce qui reste exactement la propriété recherchée et
+résout bien la tension, seulement sans le raffinement de co-référence
+que `structure` pourrait un jour apporter. Documenté en détail dans
+`documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_3.md`
+Sec. 10.7, et testé directement sur des `PathRecord` construits à la
+main (seule façon de l'exercer aujourd'hui).
+
+### État après cette entrée
+```text
+Protocole v0.3                                        : GELÉ
+Adaptateur p4u1_set_valued_replay_v0_1.py              : ÉCRIT, TESTÉ (13 tests)
+Cas verrouillés U1/U2/U3 (cases/witness/runner)        : PAS ÉCRITS
+Valeurs numériques de la checklist (Sec. 16, pts 2/7/8/11) : PAS FIGÉES
+Run réel                                               : PAS LANCÉ
+```
+
+Prochaine étape (séquence Sec. 16 de la v0.3) : fixer les valeurs
+numériques manquantes et construire le benchmark verrouillé U1/U2/U3,
+avant tout run réel.

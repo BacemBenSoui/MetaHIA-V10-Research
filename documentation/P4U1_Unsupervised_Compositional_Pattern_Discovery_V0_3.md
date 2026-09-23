@@ -401,6 +401,32 @@ inchangé, Sec. 10.3) :
      rejeu à candidat unique, jamais renommé dans kernel2 lui-même)
 ```
 
+### 10.7 Constat réel trouvé en écrivant les tests de l'adaptateur (2026-09-23) — la contrainte de co-référence est aujourd'hui un no-op
+
+`kernel2.discover_paths()` interdit structurellement de revisiter un
+nœud déjà présent dans le chemin en cours de construction (sa propre
+fonction `walk()`, vérifiée par lecture directe) — **toute**
+`PathRecord` qu'elle retourne a donc des positions deux à deux
+DISTINCTES dans son `node_sequence`. Conséquence directe, trouvée en
+écrivant les tests de `p4u1_set_valued_replay_v0_1.py`, pas anticipée
+par la Sec. 10.2 telle que rédigée ci-dessus : `generalize_path_pattern()`
+ne peut donc **jamais** produire un `position_groups` non trivial (une
+contrainte de co-référence réelle, taille >= 2) pour un candidat issu
+du pipeline de découverte standard — `_position_groups_satisfied` reste
+appliqué uniformément à chaque candidat (jamais ignoré silencieusement,
+puisque `position_groups` est un champ générique de `PathPattern`),
+mais sa branche de rejet est aujourd'hui inatteignable en pratique.
+`REPLICATED(start)` se réduit donc, avec les données que ce pipeline
+peut produire aujourd'hui, à une pure question d'existence d'AU MOINS
+UN chemin de bon squelette — ce qui reste exactement la propriété
+recherchée par cette révision (Sec. 10.1) et résout bien la tension de
+la v0.2, seulement sans le raffinement de co-référence que le champ
+`structure` du `FrozenPattern` pourrait un jour apporter si une future
+source de chemins (ou une évolution de `kernel2`) autorisait des
+positions répétées. Testé directement sur des `PathRecord` construits
+à la main (seule façon de l'exercer aujourd'hui) dans
+`tests/test_p4u1_set_valued_replay_v0_1.py`.
+
 ## 11. Points d'ancrage du rejeu et couverture — redéfinis
 
 ```text
