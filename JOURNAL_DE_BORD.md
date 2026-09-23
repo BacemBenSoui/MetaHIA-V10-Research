@@ -382,3 +382,62 @@ d'une exécution externe réelle, jamais une auto-déclaration de cet assistant.
 
 ### Clôture de l'étape
 **Non close.** Statut : paquet prêt, en attente d'un tiers réellement disponible.
+
+---
+
+## 2026-09-23 — Premier retour d'exécution P4-T.7 (environnement isolé, PAS un tiers pleinement indépendant)
+
+### Paquet envoyé
+- ZIP sans `.git`, produit par `git archive --format=zip` au commit
+  `98bb4477ce4a504f8e6056b336dd955816ee8992`, transmis par le porteur du
+  projet à un tiers de son choix (méthode « Option A » proposée dans la
+  session, mirroir du round 1 de M7).
+
+### Retour reçu
+- Environnement : `Linux localhost 6.18.44`, Python 3.13.5, git 2.47.3 — indépendant de
+  l'environnement de développement de cette session (sandbox Windows).
+- **11/11 hashes SHA-256 conformes** au protocole — **revérifiés indépendamment ici même** (les
+  11 fichiers du dépôt actuel produisent exactement les mêmes empreintes que celles rapportées),
+  confirmant que le contenu réellement évalué correspond bien au commit annoncé.
+- Suite critique (4 fichiers, commande exacte du protocole) : **63/63 PASS**, C01–C10 **10/10
+  PASS**, chacun avec sa propre justification (fuites de provenance, sondes anti-triche,
+  sélection d'hypothèses, correspondance witness v0.1 7/7 et v0.2 6/6, déterminisme, structure
+  émergente, ROI).
+- Suite complète : `-q` ne s'est pas terminé proprement dans son environnement (disclosure
+  honnête du relecteur — il ne présente pas de sortie `-q` qu'il n'a pas réellement obtenue) ;
+  rejoué immédiatement en `-vv` sans changement de code : **667 passed, 10 skipped, 38,61 s**,
+  les 10 `skipped` étant les démonstrations réseau/LLM optionnelles (Ollama/Kev LAN
+  indisponibles dans son environnement) — nombre **identique** à celui déjà obtenu dans cette
+  session (667 passed / 10 deselected), corroboration croisée réelle, pas seulement déclarée.
+- Aucune modification persistante : exécuté sur une copie jetable, les deux fichiers
+  `validation/p4t_locked_benchmark_predictions_v0_1/_v0_2.json` (régénérés par les runners,
+  comme prévu et documenté dans le protocole) et les `__pycache__` ont été restaurés/supprimés
+  avant contrôle final ; le ZIP source lui-même n'a jamais été modifié.
+- `git rev-parse HEAD` non disponible (pas de `.git` dans le ZIP, exactement le même
+  écueil méthodologique déjà rencontré et disclosé honnêtement au round 1 de M7) — la
+  référence de commit a été vérifiée par comparaison des hashes de fichiers, pas
+  cryptographiquement via git.
+
+### Réserve explicite, formulée par le relecteur lui-même, retenue telle quelle
+> « Je ne qualifierais pas cette exécution de véritable "tiers humain indépendant" : c'est une
+> exécution indépendante de l'environnement de développement, mais réalisée par cette même
+> session d'assistant. »
+
+Cette réserve est prise au sérieux, pas minimisée : elle signifie que ce round apporte une
+**confirmation croisée réelle du mécanisme dans un environnement matériellement indépendant**
+(OS, version Python, absence totale de code partagé avec la session de développement), mais ne
+satisfait **pas** le critère « tiers réellement indépendant » que ce projet exige pour clôturer
+un gate de validation tierce (même règle que M6/M7, et même leçon que le gate d'annotation P1 —
+voir `documentation/MetaHIA_ThirdParty_Validation_Protocol_P4T_V0_1.md`, section
+« Governance rule »).
+
+### État après ce retour
+`P4-T = PASS_INDEPENDENT_SCOPE` (niveau mécanisme) est confirmé une seconde fois, dans un
+environnement matériellement distinct — un signal réel, pas négligeable. Mais la clôture du
+gate de validation tierce reste, comme annoncé avant l'envoi du paquet, une décision du porteur
+du projet sur la base d'une exécution par un tiers **réellement** indépendant (humain ou
+organisation distincte, pas une session d'assistant) — non satisfaite par ce round.
+
+### Clôture de l'étape
+**Toujours non close.** Un round d'exécution supplémentaire dans un environnement isolé est
+enregistré ; le critère d'indépendance réelle reste ouvert.

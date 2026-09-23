@@ -427,10 +427,10 @@ vit dans les objets structurels dérivés »).
 | Critère E20-D | Ce que P4-T apporte | Ce qui manque |
 |---|---|---|
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
-| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un **tiers réellement externe** (paquet prêt depuis P4-T.7, `MetaHIA_ThirdParty_Validation_Protocol_P4T_V0_1.md`, mais pas encore exécuté par un tel tiers) |
+| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un **tiers réellement externe** (paquet exécuté une première fois dans un environnement isolé, 2026-09-23, 10/10 PASS, mais le relecteur précise lui-même que ce n'était pas un tiers pleinement indépendant — `JOURNAL_DE_BORD.md`) |
 | Relation → opération → structure | 🟢 fort pour transformations structurelles, **et structure explicitement vérifiée nouvelle contre un ensemble observé (P4-T.5, `SELECTION_MAPPING`)** | généralisation au-delà du langage actuel (projection/duplication/composition) ; P4-T.5 non étendu aux familles à base de motif/multi-source |
 | Coût/ROI | 🟢 mesure réelle (Porte G) + adaptateur ROI vers E20-D.19 (P4-T.6, Sec. 7.1) | `gain_attendu` reste fourni par l'appelant (comme dans E20-D.19 lui-même), jamais calculé automatiquement |
-| Non-circularité | 🟢 forte, **protocole de validation tierce écrit et auto-exécuté (P4-T.7)** | validation tierce **réellement externe** (auto-exécution seule ne ferme jamais ce gate, même règle que M6/M7) |
+| Non-circularité | 🟢 forte, **protocole de validation tierce écrit, auto-exécuté puis exécuté une seconde fois dans un environnement isolé (P4-T.7, 2026-09-22/23)** | validation tierce **réellement externe** (les deux exécutions à ce jour sont soit auto-administrées soit menées par une session d'assistant, jamais un tiers pleinement indépendant, même règle que M6/M7) |
 | Provenance (gel) | 🟢 maintenant réellement vérifié, deux passes (Sec. 6.1, Sec. 6.2) | — |
 | Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle, **et démontrée de bout en bout dans le benchmark verrouillé (P4-T.2 v0.2)** | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
 
@@ -518,11 +518,27 @@ explicite :
    porteur du projet sur la base d'une exécution externe réelle, jamais
    une auto-déclaration.
 
-Le paquet est maintenant prêt à être remis à un tiers réellement
-indépendant dès qu'un tel tiers sera disponible — ce n'était pas le cas
-avant ce document. P6/P7 (diversité de corpus M6) et JEV/Kev (M7)
-restent **explicitement séparés** de cette trajectoire — ni preuve de
-clôture E20-D, ni substitut à P4-T.2-P4-T.7.
+   **Premier retour d'exécution (2026-09-23)** : le porteur du projet a
+   transmis le paquet (ZIP sans `.git`, commit
+   `98bb4477ce4a504f8e6056b336dd955816ee8992`) à un tiers de son choix.
+   Résultat : 11/11 hashes conformes (revérifiés indépendamment de ce
+   côté), 63/63 cas critiques PASS, C01-C10 10/10 PASS, suite complète
+   667 passed/10 skipped (nombre identique à cette session — corroboration
+   croisée réelle dans un environnement matériellement distinct : Linux,
+   Python 3.13.5, aucun `.git`). **Mais le relecteur précise lui-même,
+   explicitement, ne pas être un « tiers humain indépendant » — l'exécution
+   a été menée par une session d'assistant, pas une tierce partie
+   pleinement externe.** Détail complet, y compris la citation exacte de
+   cette réserve : `JOURNAL_DE_BORD.md`, entrée du 2026-09-23. Ce round
+   confirme le mécanisme dans un environnement indépendant mais **ne
+   ferme pas le gate** — la règle énoncée dans le protocole lui-même
+   s'applique sans exception.
+
+Le paquet reste prêt à être remis à un tiers **réellement** indépendant
+(humain ou organisation distincte de toute session d'assistant) dès
+qu'un tel tiers sera disponible. P6/P7 (diversité de corpus M6) et
+JEV/Kev (M7) restent **explicitement séparés** de cette trajectoire —
+ni preuve de clôture E20-D, ni substitut à P4-T.2-P4-T.7.
 
 ## 10. Tests
 
