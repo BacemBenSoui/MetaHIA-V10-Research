@@ -441,3 +441,100 @@ organisation distincte, pas une session d'assistant) — non satisfaite par ce r
 ### Clôture de l'étape
 **Toujours non close.** Un round d'exécution supplémentaire dans un environnement isolé est
 enregistré ; le critère d'indépendance réelle reste ouvert.
+
+---
+
+## 2026-09-23 — Clôture du gate P4-T.7 : validation par tiers humain et porteur du projet
+
+### Paquet et procédure
+Un mode opératoire dédié à l'exécution humaine du protocole,
+`MetaHIA — Procédure de validation humaine P4-T.7.md` (dérivé du
+protocole de référence, `documentation/MetaHIA_ThirdParty_Validation_Protocol_P4T_V0_1.md`,
+même 10 cas critiques C01-C10, mêmes 11 hashes, même commit
+`98bb4477ce4a504f8e6056b336dd955816ee8992`, mêmes commandes exactes),
+a été rédigé pour guider une exécution manuelle pas à pas, avec fiche
+de validation structurée en fin de procédure (Sec. 17) et rappel
+explicite (Sec. 2) que l'exécution par le porteur du projet lui-même
+reste une auto-validation, pas une clôture tierce.
+
+### Deux exécutions indépendantes, résultats identiques
+1. **Porteur du projet (Bacem Ben Soui)** : a exécuté lui-même
+   l'intégralité de la procédure, au commit prescrit.
+2. **Ingénieur système, entreprise externe** : a suivi la même
+   procédure à la lettre, indépendamment, sur Linux Ubuntu Server
+   24 LTS.
+
+Les deux exécutions rapportent exactement le même résultat :
+
+```text
+Commit         : 98bb4477ce4a504f8e6056b336dd955816ee8992
+Hashes          : 11/11 conformes
+P4-T critique   : 63/63 PASS
+C01-C10         : PASS (chacun, y compris 7/7 pour C06 et 6/6 pour C07)
+Suite complète  : 677 passed, 0 failure
+Arbre git final : propre
+Modification de code : aucune
+```
+
+Le nombre « 677 passed » est vérifié ici comme cohérent avec l'état
+réel du dépôt à ce commit précis (confirmé indépendamment dans cette
+session : `98bb4477` est exactement le commit du diagnostic de
+transfert contextuel M6, avant les deux commits M6-INTERNAL suivants
+qui ont porté la suite à 687 puis 704 tests) — un signe convergent
+d'exécution réelle au bon commit, pas une coïncidence de chiffres
+arrondis.
+
+### Décision explicite du porteur du projet
+> « le protocole a été établi pour moi, le porteur du projet, mais il a
+> aussi été exécuté par un ingénieur système externe, je voulais
+> confirmer que nous avions les mêmes résultats et c'est le cas,
+> clôturez le gate. »
+
+Conformément à la règle de gouvernance déjà énoncée dans le protocole
+lui-même et dans ce journal (même principe que pour M6 et M7) : la
+clôture d'un gate de validation tierce est une décision réservée au
+porteur du projet, jamais une auto-déclaration de cet assistant. Cette
+décision est maintenant prise explicitement, sur la base d'une
+exécution par un tiers réellement externe (ingénieur système d'une
+entreprise extérieure, sans lien de subordination avec ce projet)
+confirmant exactement le résultat du porteur du projet lui-même — la
+même structure de preuve (deux exécutions convergentes, dont au moins
+une réellement indépendante, décision de clôture explicite du porteur
+du projet) qui a déjà fermé les gates M6 (2026-09-17) et M7
+(2026-09-18).
+
+### Portée exacte de la clôture — ce qui EST démontré
+```text
+P4-T (Gates A-G, benchmarks verrouillés v0.1/v0.2,
+      structure émergente P4-T.5, adaptateur ROI P4-T.6)
+= PASS_INDEPENDENT_SCOPE, tiers réellement indépendant confirmé
+= GATE FERMÉ
+```
+non circulaire, sans fuite de provenance, fail-closed face aux données
+adversariales, honnête dans la sélection d'hypothèses, aveugle dans ses
+benchmarks verrouillés (statique+dynamique), déterministe, capable de
+vérifier une structure émergente sans la fabriquer, honnête dans son
+calcul de ROI — dans le périmètre actuel de P4-T (familles
+REFERENCE-EQUALITY/PERMUTATION/RECURSIVE/SELECTION, transformation
+induite à partir de paires données).
+
+### Ce qui N'EST PAS démontré par cette clôture — répété explicitement, comme l'exige la procédure elle-même (Sec. 18)
+- **`E20-D` n'est pas fermé.** Cette clôture ferme la question de
+  savoir si le mécanisme P4-T est honnête et non circulaire dans son
+  périmètre actuel — elle ne ferme aucune des 4 conditions globales
+  d'E20-D par elle-même (voir la matrice de clôture,
+  `documentation/P4T_Structural_Transformation_Induction_V0_1.md`
+  Sec. 9.1, qui reste par ailleurs à jour : plusieurs cases restent
+  🟠/manquantes indépendamment de cette clôture).
+- **La découverte autonome générale d'une relation dans un graphe non
+  structuré (`P4-U`, discutée le même jour) n'est ni couverte ni
+  démontrée par ce protocole** — la procédure humaine elle-même le
+  précise explicitement en Sec. 1 et Sec. 19 : P4-T reste
+  « transformation induction » à partir de paires données, P4-U
+  (découverte structurelle autonome) reste une étape distincte,
+  explicitement non commencée.
+
+### Clôture de l'étape
+**FERMÉ (2026-09-23).** `P4-T.7 = CLOSED — validation par tiers humain
+et porteur du projet.` Décision du porteur du projet, sur la base de
+deux exécutions convergentes dont une réellement indépendante.

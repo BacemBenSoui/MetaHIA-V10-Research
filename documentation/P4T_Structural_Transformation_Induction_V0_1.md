@@ -410,13 +410,15 @@ absence d'historique).
 
 ## 9. Décision
 
-**P4-T = `STRONG_MICROSTRUCTURAL_CANDIDATE`.** Remplace P4-R comme voie
-principale vers E20-D. **E20-D reste `OPEN`** — ce document ne le
-prétend pas fermer, il ferme seulement la question de savoir si le
-mécanisme de génération d'une nouvelle structure à partir d'une
-transformation découverte est réel et non circulaire (il l'est,
-maintenant vérifié pour quatre familles et leur composition, et gelé sans
-fuite de provenance depuis le durcissement Sec. 6.1).
+**P4-T = `STRONG_MICROSTRUCTURAL_CANDIDATE`, validation tierce `CLOSED` (2026-09-23, Sec. 9.2 point 7).**
+Remplace P4-R comme voie principale vers E20-D. **E20-D reste `OPEN`** —
+ce document ne le prétend pas fermer, il ferme seulement la question de
+savoir si le mécanisme de génération d'une nouvelle structure à partir
+d'une transformation découverte est réel et non circulaire (il l'est,
+maintenant vérifié pour quatre familles et leur composition, gelé sans
+fuite de provenance depuis le durcissement Sec. 6.1, **et confirmé par
+un tiers réellement indépendant — Sec. 9.2 point 7, gate P4-T.7 fermé
+par décision explicite du porteur du projet**).
 
 Aucune modification de `kernel2.py`/`e20d_protocol.py` : architecture
 compatible avec la trajectoire M1 v0.4 (« M1 reste minimal ; la richesse
@@ -427,10 +429,10 @@ vit dans les objets structurels dérivés »).
 | Critère E20-D | Ce que P4-T apporte | Ce qui manque |
 |---|---|---|
 | Relation non fournie | 🟠 partiel | découverte sans paire cible explicitement donnée |
-| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis) | verrouillage par un **tiers réellement externe** (paquet exécuté une première fois dans un environnement isolé, 2026-09-23, 10/10 PASS, mais le relecteur précise lui-même que ce n'était pas un tiers pleinement indépendant — `JOURNAL_DE_BORD.md`) |
+| Holdout aveugle | 🟢 mécanisme + verrouillage structurel auto-administré, **et la sélection d'hypothèses (P4-T.3) tourne désormais réellement à l'intérieur du protocole verrouillé** (P4-T.2 v0.2, `documentation/P4T2_Locked_Benchmark_V0_1.md` Sec. 6bis), **verrouillage confirmé par un tiers réellement externe (2026-09-23, gate P4-T.7 fermé — `JOURNAL_DE_BORD.md`)** | — |
 | Relation → opération → structure | 🟢 fort pour transformations structurelles, **et structure explicitement vérifiée nouvelle contre un ensemble observé (P4-T.5, `SELECTION_MAPPING`)** | généralisation au-delà du langage actuel (projection/duplication/composition) ; P4-T.5 non étendu aux familles à base de motif/multi-source |
 | Coût/ROI | 🟢 mesure réelle (Porte G) + adaptateur ROI vers E20-D.19 (P4-T.6, Sec. 7.1) | `gain_attendu` reste fourni par l'appelant (comme dans E20-D.19 lui-même), jamais calculé automatiquement |
-| Non-circularité | 🟢 forte, **protocole de validation tierce écrit, auto-exécuté puis exécuté une seconde fois dans un environnement isolé (P4-T.7, 2026-09-22/23)** | validation tierce **réellement externe** (les deux exécutions à ce jour sont soit auto-administrées soit menées par une session d'assistant, jamais un tiers pleinement indépendant, même règle que M6/M7) |
+| Non-circularité | 🟢 forte, **validation tierce (P4-T.7) FERMÉE le 2026-09-23** — deux exécutions convergentes (porteur du projet + ingénieur système d'une entreprise externe, résultats identiques), décision de clôture explicite du porteur du projet, voir `JOURNAL_DE_BORD.md` | — |
 | Provenance (gel) | 🟢 maintenant réellement vérifié, deux passes (Sec. 6.1, Sec. 6.2) | — |
 | Sélection d'hypothèses | 🟢 FAIT (Sec. 8.1) — rasoir d'Occam + corroboration E20-D.6 optionnelle, **et démontrée de bout en bout dans le benchmark verrouillé (P4-T.2 v0.2)** | sélection encore purement structurelle (aucune pondération par coût/ROI, en attente de P4-T.6) |
 
@@ -518,25 +520,44 @@ explicite :
    porteur du projet sur la base d'une exécution externe réelle, jamais
    une auto-déclaration.
 
-   **Premier retour d'exécution (2026-09-23)** : le porteur du projet a
-   transmis le paquet (ZIP sans `.git`, commit
+   **Round 1 (2026-09-23)** : le porteur du projet a transmis le
+   paquet (ZIP sans `.git`, commit
    `98bb4477ce4a504f8e6056b336dd955816ee8992`) à un tiers de son choix.
-   Résultat : 11/11 hashes conformes (revérifiés indépendamment de ce
-   côté), 63/63 cas critiques PASS, C01-C10 10/10 PASS, suite complète
-   667 passed/10 skipped (nombre identique à cette session — corroboration
-   croisée réelle dans un environnement matériellement distinct : Linux,
-   Python 3.13.5, aucun `.git`). **Mais le relecteur précise lui-même,
-   explicitement, ne pas être un « tiers humain indépendant » — l'exécution
-   a été menée par une session d'assistant, pas une tierce partie
-   pleinement externe.** Détail complet, y compris la citation exacte de
-   cette réserve : `JOURNAL_DE_BORD.md`, entrée du 2026-09-23. Ce round
-   confirme le mécanisme dans un environnement indépendant mais **ne
-   ferme pas le gate** — la règle énoncée dans le protocole lui-même
-   s'applique sans exception.
+   Résultat : 11/11 hashes conformes, 63/63 cas critiques PASS, C01-C10
+   10/10 PASS, suite complète 667 passed/10 skipped (nombre identique à
+   cette session — corroboration croisée réelle dans un environnement
+   matériellement distinct : Linux, Python 3.13.5, aucun `.git`). Mais
+   le relecteur précise lui-même, explicitement, ne pas être un
+   « tiers humain indépendant » — exécution menée par une session
+   d'assistant, pas une tierce partie pleinement externe. Ce round ne
+   ferme pas le gate.
 
-Le paquet reste prêt à être remis à un tiers **réellement** indépendant
-(humain ou organisation distincte de toute session d'assistant) dès
-qu'un tel tiers sera disponible. P6/P7 (diversité de corpus M6) et
+   **Round 2 (2026-09-23) — GATE FERMÉ.** Un mode opératoire dédié à
+   l'exécution humaine (`MetaHIA — Procédure de validation humaine
+   P4-T.7.md`, même commit, mêmes hashes, mêmes 10 cas critiques) a été
+   exécuté deux fois indépendamment : par le porteur du projet lui-même,
+   ET par un ingénieur système d'une entreprise externe (Linux Ubuntu
+   Server 24 LTS), suivant la procédure à la lettre. **Résultats
+   identiques dans les deux cas** : 11/11 hashes, 63/63 critique,
+   C01-C10 PASS (7/7 pour C06, 6/6 pour C07), suite complète 677 passed
+   / 0 failure, arbre git propre, aucune modification de fichier — et
+   « 677 passed » est exactement le nombre réel de ce commit précis
+   (vérifié indépendamment ici), pas une coïncidence. **Le porteur du
+   projet a explicitement prononcé la clôture du gate** sur cette base
+   — même structure de preuve que la clôture des gates M6 (2026-09-17)
+   et M7 (2026-09-18) : deux exécutions convergentes, dont une
+   réellement indépendante, décision de clôture explicite du porteur du
+   projet. Détail complet : `JOURNAL_DE_BORD.md`, entrée « Clôture du
+   gate P4-T.7 : validation par tiers humain et porteur du projet ».
+
+**`P4-T.7 = CLOSED` (2026-09-23).** Comme le rappelle la procédure
+humaine elle-même (Sec. 18) et comme cette clôture le répète ici sans
+l'atténuer : elle ferme la question de l'honnêteté et de la
+non-circularité du mécanisme P4-T dans son périmètre actuel — elle ne
+ferme ni `E20-D` (les 4 conditions globales restent à traiter, matrice
+Sec. 9.1) ni la question de la découverte structurelle autonome
+générale (`P4-U`, discutée le même jour, explicitement hors périmètre
+de ce protocole dès sa Sec. 1). P6/P7 (diversité de corpus M6) et
 JEV/Kev (M7) restent **explicitement séparés** de cette trajectoire —
 ni preuve de clôture E20-D, ni substitut à P4-T.2-P4-T.7.
 
