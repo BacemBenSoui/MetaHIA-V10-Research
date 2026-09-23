@@ -818,3 +818,47 @@ Valeurs numériques de la checklist                     : FIGÉES (voir calibrat
 Run réel                                               : LANCÉ -- conforme au témoin sur 7/7 candidats
 Validation tierce                                      : NON commencée
 ```
+
+---
+
+## 2026-09-23 — Décision de gouvernance P4-U.1 : statut retenu, P4-U.2 en attente, paquet de validation tierce préparé
+
+### Décision explicite du porteur du projet, sur la base du résultat 7/7 ci-dessus
+Après revue méthodologique du résultat, le statut suivant est
+explicitement retenu — pas `CLOSED` :
+```text
+P4-U.1 = MECHANISM VALIDATED ON LOCKED SELF-ADMINISTERED BENCHMARK
+         / GENERALIZATION OPEN
+```
+Raison, non plus technique mais expérimentale : les seuils numériques
+et les témoins ont été calibrés puis gelés dans le même environnement
+qui les a ensuite vérifiés — un résultat 7/7 est une preuve d'intégrité
+du protocole, pas une preuve d'indépendance vis-à-vis de son propre
+constructeur. Même principe de gouvernance déjà appliqué à M6, M7 et
+P4-T.7 avant leurs clôtures tierces respectives.
+
+### Décisions explicites associées
+- **`P4-U.2` (découverte autonome de relations inconnues) reste en
+  attente** — ne pas commencer avant la validation tierce de P4-U.1.
+- **`position_groups` (Sec. 10.7) reste ouvert mais non bloquant** — ne
+  pas modifier `kernel2.discover_paths()` pour le rendre atteignable ;
+  un tel changement serait une évolution nouvelle du mécanisme, à
+  traiter et justifier séparément.
+
+### Paquet préparé
+`documentation/MetaHIA_ThirdParty_Validation_Protocol_P4U1_V0_1.md`, au
+commit `3e3c21b83aec22e6ed852e862ece378f2f569df7`, même format que les
+protocoles M6/M7/P4-T.7 : 10 cas critiques (C01-C10), 6 fichiers à hash
+gelé (`kernel2.py` + les 5 modules P4-U.1), commande exacte de suite
+critique (3 fichiers de tests), avertissement explicite sur le temps
+d'exécution réel (~2,5-3 min, calcul statistique réel, pas un blocage),
+limitations déjà divulguées reprises explicitement (périmètre
+composition-sur-graphe-déjà-étiqueté, non-discriminance actuelle de
+`position_groups`, calibration dans le même environnement que la
+vérification).
+
+### État après cette préparation
+Le paquet est prêt mais **n'a pas encore été envoyé à un tiers
+réellement indépendant** — même situation que P4-T.7 avant son premier
+envoi. Statut : `P4-U.1` non fermé, en attente d'une exécution externe
+réelle.

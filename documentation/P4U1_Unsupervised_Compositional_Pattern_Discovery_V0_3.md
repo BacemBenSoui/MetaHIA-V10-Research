@@ -676,3 +676,45 @@ seuils précis — pas que ces seuils généralisent à un graphe réel de
 provenance inconnue, ni que P4-U.1 est prêt pour une quelconque
 utilisation en production. Décision de clôture (validation tierce,
 extension à `P4-U.2`, ou autre) : réservée au porteur du projet.
+
+## 21. Décision de gouvernance du porteur du projet (2026-09-23) — statut retenu et prochaine étape
+
+Après revue méthodologique du résultat 7/7 ci-dessus, le porteur du
+projet a explicitement tranché le statut à retenir :
+
+```text
+P4-U.1 = MECHANISM VALIDATED ON LOCKED SELF-ADMINISTERED BENCHMARK
+         / GENERALIZATION OPEN
+```
+
+**Explicitement pas `CLOSED`.** Raison, non plus technique mais
+expérimentale : les seuils numériques et les témoins ont été calibrés
+puis gelés dans le même environnement expérimental que celui qui les a
+ensuite vérifiés — le résultat 7/7 est une excellente preuve
+d'intégrité du protocole (aucune incohérence interne trouvée), mais ne
+mesure pas l'indépendance vis-à-vis du constructeur du benchmark. Les
+deux corrections documentées en Sec. 20 et dans le document de
+calibration (changement de géométrie du hub, plafond `max_paths=1000`)
+sont légitimes mais sont précisément le type de choix qu'un
+validateur indépendant doit pouvoir examiner sans toucher au
+protocole.
+
+**Décision explicite** : ne pas commencer `P4-U.2` à ce stade. Prochaine
+étape retenue : un protocole de validation tierce dédié, sur le modèle
+de P4-T.7 — voir
+`documentation/MetaHIA_ThirdParty_Validation_Protocol_P4U1_V0_1.md`
+(commit `3e3c21b`, dépôt propre, hashes gelés, 10 cas critiques C01-C10,
+aucune modification du corpus/seuils/code autorisée). Ce protocole peut
+transformer le résultat actuel (« le mécanisme fonctionne sur son
+propre benchmark ») en (« le protocole est reproductible
+indépendamment sur un dépôt frais ») — sans, à lui seul, établir la
+généralisation à un graphe réel de provenance inconnue.
+
+**Point scientifique explicitement maintenu ouvert mais non
+bloquant** : la Sec. 10.7 (non-discriminance pratique de
+`position_groups` sous `kernel2.discover_paths()`) reste en l'état.
+Décision explicite du porteur du projet : ne pas modifier
+`discover_paths()` pour rendre ce test atteignable — un tel changement
+serait une évolution nouvelle du mécanisme, à traiter et à justifier
+séparément, jamais comme un correctif silencieux motivé par un seul
+test.
