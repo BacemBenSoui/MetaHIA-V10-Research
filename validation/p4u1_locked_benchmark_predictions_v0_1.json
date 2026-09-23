@@ -1,0 +1,93 @@
+{
+  "committed_at_utc": "2026-09-23T10:56:31Z",
+  "witness_module_imported_yet": false,
+  "gate_params": {
+    "min_depth": 2,
+    "max_depth": 3,
+    "max_paths": 1000,
+    "n_null": 200,
+    "null_percentile": 99.0,
+    "s_min": 15,
+    "k_min": 15,
+    "coverage_min": 0.1
+  },
+  "predictions": [
+    {
+      "case_id": "U1",
+      "label": "REAL_MOTIF",
+      "gate_a": "DISCOVERED",
+      "gate_b": "RETAINED",
+      "gate_b_rejection_reason": null,
+      "gate_c": "REPLICATED",
+      "support_train": 64,
+      "support_holdout": 25,
+      "coverage": 0.17123287671232876
+    },
+    {
+      "case_id": "U1",
+      "label": "DECOY_SUB_SEUIL",
+      "gate_a": "DISCOVERED",
+      "gate_b": "REJECTED",
+      "gate_b_rejection_reason": "SUB_THRESHOLD",
+      "gate_c": "NOT_APPLICABLE",
+      "support_train": 4,
+      "support_holdout": null,
+      "coverage": null
+    },
+    {
+      "case_id": "U1",
+      "label": "DECOY_DEPTH1",
+      "gate_a": "NOT_DISCOVERED",
+      "gate_b": null,
+      "gate_b_rejection_reason": null,
+      "gate_c": null,
+      "support_train": null,
+      "support_holdout": null,
+      "coverage": null
+    },
+    {
+      "case_id": "U1",
+      "label": "DECOY_TRAIN_ONLY",
+      "gate_a": "DISCOVERED",
+      "gate_b": "RETAINED",
+      "gate_b_rejection_reason": null,
+      "gate_c": "FAILED",
+      "support_train": 64,
+      "support_holdout": 0,
+      "coverage": 0.0
+    },
+    {
+      "case_id": "U2",
+      "label": "REAL_MOTIF",
+      "gate_a": "DISCOVERED",
+      "gate_b": "RETAINED",
+      "gate_b_rejection_reason": null,
+      "gate_c": "FAILED",
+      "support_train": 64,
+      "support_holdout": 0,
+      "coverage": 0.0
+    },
+    {
+      "case_id": "U3",
+      "label": "NULL_CANDIDATE_FORWARD",
+      "gate_a": "DISCOVERED",
+      "gate_b": "REJECTED",
+      "gate_b_rejection_reason": "NOT_NULL_SIGNIFICANT",
+      "gate_c": "NOT_APPLICABLE",
+      "support_train": 37,
+      "support_holdout": null,
+      "coverage": null
+    },
+    {
+      "case_id": "U3",
+      "label": "NULL_CANDIDATE_REVERSE",
+      "gate_a": "DISCOVERED",
+      "gate_b": "REJECTED",
+      "gate_b_rejection_reason": "NOT_NULL_SIGNIFICANT",
+      "gate_c": "NOT_APPLICABLE",
+      "support_train": 37,
+      "support_holdout": null,
+      "coverage": null
+    }
+  ]
+}

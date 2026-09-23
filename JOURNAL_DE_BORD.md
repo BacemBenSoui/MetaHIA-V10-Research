@@ -735,3 +735,86 @@ Run réel                                               : PAS LANCÉ
 Prochaine étape (séquence Sec. 16 de la v0.3) : fixer les valeurs
 numériques manquantes et construire le benchmark verrouillé U1/U2/U3,
 avant tout run réel.
+
+---
+
+## 2026-09-23 — Benchmark verrouillé U1/U2/U3 construit et exécuté ; run réel conforme au témoin sur les 7 candidats déclarés
+
+### Calibration numérique (avant tout code de benchmark verrouillé)
+Valeurs numériques manquantes de la checklist v0.3 (Sec. 16, pts
+2/7/8/11) fixées par calibration directe sur des corpus JETABLES,
+jamais sur le fichier de cas verrouillé lui-même — enregistrement
+complet dans
+`documentation/P4U1_Locked_Benchmark_Numeric_Calibration_2026-09-23.md`.
+Deux corrections réelles trouvées pendant cette calibration, avant de
+rien figer :
+1. Une première structure « hub multi-branches » (plusieurs branches de
+   degré 1 partageant une origine) s'est révélée être exactement la
+   structure « plate » déjà prouvée invariante face au modèle nul
+   (v0.2 Sec. 20 / v0.3 Sec. 10.7) — le null-max mesuré dépassait même
+   parfois le signal réel. Corrigée par une structure « pont unique »
+   (P parents convergeant vers UN nœud, Q enfants en divergeant,
+   support = P×Q) — la vraie source de séparation statistique de Gate B.
+2. `max_paths=None` (recommandation par défaut de la Sec. 13) s'est
+   révélé prohibitivement lent (jusqu'à ~60 s par distribution nulle à
+   200 réplicats) dès qu'un réplicat concentre du degré par hasard —
+   remplacé par la limite fixe que la Sec. 13 prévoit elle-même en
+   repli, `max_paths=1000`, appliquée uniformément partout.
+
+Valeurs retenues : `N_null=200`, `S_min=15`, `K_min=15`,
+`coverage_min=0.10`, `max_paths=1000`, `null_percentile=99.0` — chacune
+choisie avec une marge réelle mesurée (jamais un seuil à la limite),
+détaillée dans le document de calibration cité ci-dessus.
+
+### Benchmark construit
+`p4u1_locked_benchmark_cases_v0_1.py` (train+holdout, sans vérité),
+`p4u1_locked_benchmark_witness_v0_1.py` (vérité seule, séparée),
+`p4u1_locked_benchmark_runner_v0_1.py` (même discipline mécanique
+d'ordre d'import que P4-T : preuve dynamique via `sys.modules`, pas
+seulement textuelle). Optimisation trouvée pendant l'écriture du
+runner : la distribution du maximum nul côté holdout ne doit être
+calculée qu'UNE FOIS par cas, jamais une fois par candidat partageant
+le même `G_holdout` — réduit le temps du run complet de 160 s à 106 s.
+`tests/test_p4u1_locked_benchmark_v0_1.py` : vérifications statiques
+(aucune mention du module témoin dans les fonctions de découverte/
+commit) et dynamiques (`sys.modules`), plus un test de déterminisme
+(deux exécutions complètes, prédictions identiques hors horodatage).
+
+### Résultat du run réel (auto-administré, PAS une validation tierce)
+Les 7 candidats déclarés correspondent TOUS aux 3 gates attendus par
+le témoin, sans aucune divergence :
+```text
+U1 REAL_MOTIF       : DISCOVERED, RETAINED, REPLICATED
+U1 DECOY_SUB_SEUIL  : DISCOVERED, REJECTED (SUB_THRESHOLD), NOT_APPLICABLE
+U1 DECOY_DEPTH1     : NOT_DISCOVERED
+U1 DECOY_TRAIN_ONLY : DISCOVERED, RETAINED, FAILED
+U2 REAL_MOTIF       : DISCOVERED, RETAINED, FAILED
+U3 (2 candidats)    : DISCOVERED, REJECTED (NOT_NULL_SIGNIFICANT), NOT_APPLICABLE
+```
+Démonstration empirique complète de la séparation recherchée : Gate B
+(inchangée) sépare les structures concentrées des trop petites/trop
+peu profondes ; Gate C (redéfinie, set-valued) sépare ensuite, parmi
+les structures concentrées, celle qui existe réellement dans le
+holdout (REAL_MOTIF) de celle qui n'existe qu'en train (DECOY_TRAIN_ONLY,
+U2) ; U3 confirme qu'un graphe sans régularité ne dépasse jamais son
+propre seuil statistique.
+
+### Portée exacte — ce qui N'EST PAS établi
+Exécution auto-administrée par cet assistant, pas une validation par
+un tiers indépendant (même distinction que pour tous les gates M6/M7/
+P4-T avant leur clôture tierce). Établit l'honnêteté et la
+non-circularité du mécanisme SUR CE benchmark et CES seuils précis —
+n'établit ni la généralisation à un graphe réel de provenance inconnue,
+ni une quelconque readiness de production. Décision de clôture
+(validation tierce, extension vers `P4-U.2`, ou autre) : réservée au
+porteur du projet.
+
+### État après cette entrée
+```text
+Protocole v0.3                                        : GELÉ
+Adaptateur p4u1_set_valued_replay_v0_1.py              : ÉCRIT, TESTÉ (13 tests)
+Cas verrouillés U1/U2/U3 (cases/witness/runner)        : ÉCRITS, TESTÉS
+Valeurs numériques de la checklist                     : FIGÉES (voir calibration)
+Run réel                                               : LANCÉ -- conforme au témoin sur 7/7 candidats
+Validation tierce                                      : NON commencée
+```

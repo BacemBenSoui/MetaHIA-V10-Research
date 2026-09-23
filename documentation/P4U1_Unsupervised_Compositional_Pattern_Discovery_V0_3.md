@@ -609,3 +609,70 @@ déterministes, PUIS fixer les valeurs numériques de la checklist
 (Sec. 16, points 2/7/8/11) et construire le benchmark verrouillé
 U1/U2/U3, PUIS lancer le run réel. **Ce document ne code toujours
 rien.**
+
+## 20. Séquence complétée (2026-09-23) — valeurs numériques figées, benchmark verrouillé construit et exécuté
+
+La séquence de la Sec. 19 est maintenant intégralement exécutée :
+
+1. **`p4u1_set_valued_replay_v0_1.py` écrit et testé** (13 tests, voir
+   `JOURNAL_DE_BORD.md` et `release_manifest.json` pour le détail).
+2. **Valeurs numériques figées AVANT toute comparaison contre un
+   résultat de holdout verrouillé**, par calibration directe sur des
+   corpus jetables (jamais sur le benchmark verrouillé lui-même) :
+   voir `documentation/P4U1_Locked_Benchmark_Numeric_Calibration_2026-09-23.md`
+   pour l'enregistrement complet, y compris un renoncement corrigé
+   (une première structure « hub multi-branches » s'est révélée être
+   la même structure « plate » déjà prouvée invariante en Sec. 6/10.7,
+   remplacée par une structure « pont unique » où la concentration
+   porte sur le produit `in_degree × out_degree` d'UN nœud) et un
+   changement de `max_paths` (de `None`, prohibitivement lent en
+   pratique par mesure directe, à une limite fixe de 1000, appliquée
+   uniformément partout par la Sec. 13). Valeurs retenues :
+   `N_null=200`, `S_min=15`, `K_min=15`, `coverage_min=0.10`,
+   `max_paths=1000`, `null_percentile=99.0`.
+3. **Benchmark verrouillé U1/U2/U3 construit** :
+   `p4u1_locked_benchmark_cases_v0_1.py` (train + holdout, aucune
+   vérité), `p4u1_locked_benchmark_witness_v0_1.py` (vérité seule,
+   jamais importé avant le commit des prédictions),
+   `p4u1_locked_benchmark_runner_v0_1.py` (même discipline mécanique
+   d'ordre d'import que `p4t_locked_benchmark_runner_v0_1.py` :
+   preuve dynamique via `sys.modules`, pas seulement une promesse).
+4. **Tests déterministes écrits et passants**
+   (`tests/test_p4u1_locked_benchmark_v0_1.py`), y compris la
+   vérification statique/dynamique de non-circularité et un test de
+   déterminisme (deux exécutions complètes produisent des prédictions
+   identiques, horodatage excepté).
+5. **Run réel exécuté** : les 7 candidats déclarés (4 pour U1, 1 pour
+   U2, 2 pour U3) correspondent TOUS aux 3 gates (A/B/C) attendus par
+   le témoin :
+
+```text
+U1 REAL_MOTIF       : DISCOVERED, RETAINED, REPLICATED
+U1 DECOY_SUB_SEUIL  : DISCOVERED, REJECTED (SUB_THRESHOLD), NOT_APPLICABLE
+U1 DECOY_DEPTH1     : NOT_DISCOVERED
+U1 DECOY_TRAIN_ONLY : DISCOVERED, RETAINED, FAILED
+U2 REAL_MOTIF       : DISCOVERED, RETAINED, FAILED
+U3 NULL_CANDIDATE_FORWARD/REVERSE : DISCOVERED, REJECTED (NOT_NULL_SIGNIFICANT), NOT_APPLICABLE
+```
+
+C'est la démonstration empirique complète, sur un benchmark verrouillé
+(aveugle, aux seuils pré-enregistrés), de la séparation que ce
+protocole a été conçu pour produire : Gate B (inchangée) distingue les
+structures concentrées (REAL_MOTIF, DECOY_TRAIN_ONLY) des structures
+trop petites (DECOY_SUB_SEUIL) ou de mauvaise profondeur (DECOY_DEPTH1)
+; Gate C (redéfinie, Sec. 10) distingue ensuite, parmi les structures
+concentrées, celle qui existe réellement dans le holdout (REAL_MOTIF)
+de celle qui n'existe que dans le train (DECOY_TRAIN_ONLY et U2) ; et
+U3 confirme qu'un graphe sans régularité injectée ne dépasse jamais son
+propre seuil de significativité statistique.
+
+**Portée exacte de cette démonstration — ce qui n'est PAS établi** :
+comme pour P4-T.7 avant sa clôture tierce, ceci est une exécution
+auto-administrée (par cet assistant), pas une validation par un tiers
+indépendant. Elle établit que le mécanisme (Gates A-C, modèle nul,
+correction multi-comparaisons, rejeu à valeur d'ensemble) fonctionne de
+façon honnête et non circulaire sur CE benchmark précis, avec CES
+seuils précis — pas que ces seuils généralisent à un graphe réel de
+provenance inconnue, ni que P4-U.1 est prêt pour une quelconque
+utilisation en production. Décision de clôture (validation tierce,
+extension à `P4-U.2`, ou autre) : réservée au porteur du projet.
