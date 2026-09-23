@@ -718,3 +718,57 @@ Décision explicite du porteur du projet : ne pas modifier
 serait une évolution nouvelle du mécanisme, à traiter et à justifier
 séparément, jamais comme un correctif silencieux motivé par un seul
 test.
+
+## 22. Clôture du gate de validation tierce P4-U.1 (2026-09-23)
+
+Le protocole tiers (Sec. 21) a été exécuté par un tiers humain externe
+(entreprise extérieure), sur le paquet
+`MetaHIA-V10-Research-P4U1-ThirdPartyValidation-7b47edb.zip`
+(`git archive`, sans `.git`, commit `7b47edb`, dont les 6 fichiers gelés
+sont vérifiés byte-identiques au commit de construction `3e3c21b`).
+Résultat : environnement Linux 5.10.134/Python 3.11/pytest 7.2.1, sans
+accès réseau, 6/6 hashes conformes, suite critique 46/46 PASS en
+97,36 s, suite complète 740 passed/10 deselected en 124,29 s (0
+régression), 10/10 cas critiques (C01-C10) PASS, aucun fichier source
+modifié.
+
+Un second retour reçu le même jour, exécuté par une IA et non par un
+humain, a été explicitement écarté de cette clôture (règle de
+gouvernance déjà en vigueur) après investigation directe de son
+signal de blocage rapporté sur le test de déterminisme (C10) — non
+reproduit ni sur la machine de référence (3 exécutions consécutives
+dans le même interpréteur, 81,5 s / 62,0 s / 65,8 s, aucune
+dégradation) ni dans l'exécution humaine elle-même, qui exerçait déjà
+le même chemin de code avec succès. Détail complet :
+`JOURNAL_DE_BORD.md`, entrées du 2026-09-23.
+
+**Décision explicite du porteur du projet** : « Clôturez le gate sur la
+base de ce seul retour humain. » Écart assumé par rapport au précédent
+M6/M7/P4-T.7 (deux exécutions convergentes avant clôture) : ici, une
+seule exécution externe humaine, jugée suffisante par le porteur du
+projet — décision de gouvernance qui lui revient pleinement.
+
+```text
+P4-U.1 (discover -> Gate B (inchangée) -> freeze -> set-valued replay
+        -> Gate C (redéfinie) -> commit -> reveal, benchmark verrouillé
+        U1/U2/U3)
+= PASS_INDEPENDENT_SCOPE, tiers humain externe confirmé
+= GATE DE VALIDATION TIERCE FERMÉ
+```
+
+**Ce qui n'est pas établi par cette clôture** — répété explicitement,
+comme l'exige le protocole lui-même (« Scientific non-closure ») :
+la généralisation des seuils gelés (`GATE_PARAMS`) à un graphe réel de
+provenance inconnue reste ouverte ; `P4-U.2` reste hors périmètre et
+non cadré ; le point Sec. 10.7 (`position_groups`) reste non résolu,
+`kernel2.py` reste non modifié ; aucune readiness de production.
+
+**Statut retenu** :
+```text
+P4-U.1 = MECHANISM VALIDATED (THIRD-PARTY CONFIRMED, HUMAN, SINGLE ROUND)
+         / GENERALIZATION OPEN
+```
+Le gate de validation tierce est FERMÉ. Le statut de généralisation
+reste OUVERT — deux questions distinctes, jamais confondues. Prochaine
+étape possible, distincte de cette clôture : cadrage explicite de
+`P4-U.2`, réservé au porteur du projet.
