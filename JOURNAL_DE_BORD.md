@@ -1343,3 +1343,68 @@ Question centrale non résolue, déférée au futur protocole v0.1 :
   quelle représentation structurelle capture un comportement
   d'opérateur indépendant de son identité nominale ?
 ```
+
+---
+
+## 2026-09-23 — Cadrage P4-U.2 v0.3 : Gate I formelle, hiérarchie structure/hypothèse/relation, exclusions gelées
+
+### Raffinements apportés par la seconde revue du porteur du projet
+1. **Gate I — Identifiability**, élevée du statut de simple critère
+   (v0.2) à celui de gate formelle et nommée, au même rang que les
+   Gates A/B/C de P4-U.1 — vérifiée AVANT toute tentative de
+   regroupement. `Gate I = FAIL` produit obligatoirement
+   `INSUFFICIENT_STRUCTURAL_INFORMATION`, jamais un échec à corriger.
+   Règle ajoutée : un cas de contrôle délibérément non identifiable
+   doit exister dans tout futur benchmark verrouillé (même rôle que U3
+   pour P4-U.1) — sinon risque de démonstration circulaire.
+2. **Hiérarchie structure/hypothèse/relation, jamais confondues** :
+   correction de la formulation « plusieurs observations → hypothèse
+   d'une relation inconnue » (v0.2), jugée trop directe. Chaîne
+   obligatoire en trois étapes distinctes :
+   ```text
+   similarité -> structure commune -> hypothèse de classe structurale
+   -> validation -> ÉVENTUELLE relation découverte
+   ```
+   Une classe structurale validée n'est PAS encore une relation ; la
+   « relation découverte » est une interprétation opérationnelle
+   produite séparément, jamais un renommage automatique de
+   l'hypothèse. `RELATION_HYPOTHESIS` (v0.2) renommé
+   `STRUCTURAL_CLASS_HYPOTHESIS` en conséquence — aucun champ
+   `relation_name`/`relation_id` sur cet objet, délibérément.
+3. **Exclusions gelées en liste explicite** (remplace la formulation
+   dispersée de la v0.2) : sélection intelligente du pool,
+   dictionnaire sémantique, relation cible fournie, ancrage à la
+   vérité terrain pendant la découverte, synthèse d'opération
+   (`e20d_operation_synthesis_v0_1.py`), et — ajout explicite — la
+   découverte de composition P4-U.1 elle-même (orthogonale, jamais
+   tentée simultanément).
+4. **Modèle nul** : principe précisé — casser la cohérence
+   inter-observations qui permet le regroupement, tout en conservant
+   les propriétés marginales pertinentes du corpus. Reconnu
+   explicitement comme un risque accru par rapport à P4-U.1 : la
+   statistique de cohésion à comparer au modèle nul reste entièrement
+   à déterminer, pas une simple adaptation du maximum-statistique déjà
+   éprouvé pour les squelettes de composition.
+
+### Document produit
+`documentation/P4U2_Autonomous_Relation_Discovery_V0_3.md` remplace
+intégralement la v0.2 (bandeau `SUPERSEDED` ajouté à la v0.2). La
+reformulation de l'objectif et les décisions Q1/Q2/Q3 de la v0.2
+restent valides, reprises sans changement.
+
+### Prochaine étape explicitement demandée par le porteur du projet
+Avant tout protocole expérimental : investigation empirique directe du
+dépôt existant pour déterminer quelles informations structurelles
+peuvent réellement différencier deux opérateurs opaques — en
+s'appuyant uniquement sur les primitives K3 déjà existantes
+(`discover_paths`, `group_by_skeleton`, `ref_jaccard`/
+`structural_similarity`, `path_properties`), sans en inventer une
+nouvelle avant d'avoir vérifié ce qui est déjà mesurable. Un exercice
+de lecture/mesure directe, pas encore une implémentation de P4-U.2.
+
+### État après cette entrée
+```text
+P4-U.2 v0.3 : CADRÉ, TOUJOURS AUCUN CODE, TOUJOURS AUCUN PROTOCOLE
+Prochaine action : investigation empirique des candidats de
+représentation structurelle (Sec. 10 de la v0.3)
+```

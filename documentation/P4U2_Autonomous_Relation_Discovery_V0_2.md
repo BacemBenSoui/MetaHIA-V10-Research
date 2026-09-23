@@ -1,5 +1,16 @@
 # MetaHIA V10 — P4-U.2 : cadrage v0.2 (Autonomous Structural Relation Discovery) — aucun code, aucun protocole verrouillé
 
+> **SUPERSEDED (2026-09-23).** Une seconde revue du porteur du projet a
+> affiné trois points avant tout protocole formel : l'identifiabilité
+> devient une gate formelle nommée (Gate I) ; la chaîne
+> « similarité → relation » est cassée en une hiérarchie à trois
+> niveaux (structure/hypothèse/relation, jamais confondus) ; les
+> exclusions du premier incrément sont gelées comme liste explicite.
+> Remplacé intégralement par
+> `documentation/P4U2_Autonomous_Relation_Discovery_V0_3.md`. La
+> reformulation de l'objectif et les décisions Q1/Q2/Q3 de ce document
+> restent valides et reprises telles quelles dans la v0.3.
+
 ## 0. Statut et rapport à la v0.1
 
 Remplace intégralement
