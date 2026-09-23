@@ -906,3 +906,47 @@ précise désormais explicitement :
 Aucune modification de `discover_paths()` ni de la logique
 `position_groups` avant la validation tierce — l'expérience indépendante
 doit rester définie exactement comme elle l'est aujourd'hui.
+
+---
+
+## 2026-09-23 — Bug réel trouvé en préparant le paquet zip du tiers : la commande « suite complète » n'excluait pas les tests live M7
+
+### Contexte
+Demande du porteur du projet : préparer le paquet zip à envoyer au tiers
+pour P4-U.1. Avant tout envoi, vérification directe du paquet lui-même
+(pas seulement du dépôt de travail) : `git archive --format=zip HEAD`
+(commit `be25f79`), extraction dans un dossier propre, sans `.git`,
+recalcul des 6 hashes gelés (conformes) et **exécution réelle** des deux
+commandes du protocole depuis l'archive extraite.
+
+### Constat
+La suite critique (3 fichiers) passe bien en ~3 min, sans réseau. Mais la
+commande « suite complète » du protocole, telle qu'écrite,
+`python -m pytest -q` (sans filtre), a collecté et exécuté les 10 tests
+`tests/test_m7_*_live_demo_v0_1.py` — des démonstrations LLM/Ollama en
+direct, entièrement étrangères à P4-U.1 — et a pris **28 minutes** dans
+cet environnement (qui a pu joindre un backend LLM). Dans un
+environnement sans accès réseau ou sans backend joignable, ces mêmes
+tests risqueraient fortement de bloquer beaucoup plus longtemps sur des
+timeouts de connexion plutôt que d'échouer proprement. Ceci contredisait
+directement l'affirmation du protocole lui-même (« No network access...
+is required or used anywhere in this protocol ») — une vraie
+incohérence, trouvée par exécution réelle du paquet avant envoi, pas
+supposée.
+
+### Correctif
+`documentation/MetaHIA_ThirdParty_Validation_Protocol_P4U1_V0_1.md`
+corrigé : la commande de suite complète devient
+`python -m pytest -q -k "not live"` (même filtre déjà utilisé partout
+ailleurs dans ce dépôt pour les runs de régression), avec une explication
+explicite du pourquoi (les 10 tests M7 live, leur non-pertinence pour
+P4-U.1, et le résultat réel du premier essai sans filtre : 28 minutes).
+Même discipline déjà appliquée par les protocoles M6/M7/P4-T.7 pour leur
+propre suite critique — ici corrigée après coup, sur le paquet destiné au
+tiers, avant tout envoi.
+
+### Reconfirmation après correctif
+Depuis l'archive extraite : suite critique = 46/46 PASS (~3 min) ; les 6
+hashes gelés restent conformes (le correctif ne touche aucun des 6
+fichiers gelés). Nouveau commit à produire pour le paquet final, puis
+nouvelle archive à reconstruire au commit corrigé.

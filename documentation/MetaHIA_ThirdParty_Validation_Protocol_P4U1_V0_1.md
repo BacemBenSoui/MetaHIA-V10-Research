@@ -80,11 +80,28 @@ an unknown graph.
   required or used anywhere in this protocol.** Every mechanism under test
   here is deterministic Python with no I/O beyond writing one JSON
   prediction file (`validation/p4u1_locked_benchmark_predictions_v0_1.json`).
+  This claim covers ONLY the two commands below, both of which pass
+  `-k "not live"` deliberately — the repository also contains 10 unrelated
+  M7 tests (`tests/test_m7_*_live_demo_v0_1.py`) that attempt real
+  Ollama/LAN calls; they have nothing to do with P4-U.1 and are excluded
+  by this filter, exactly like every other locked-benchmark protocol in
+  this project (M6/M7/P4-T.7) already does for its own critical suite. Do
+  **not** drop `-k "not live"` — a first verification pass of this exact
+  package, done directly by this session before sending it, found that
+  running the bare `python -m pytest -q` (no filter) collects those 10
+  live tests too and took **28 minutes** in an environment that happened
+  to reach a reachable LLM backend; in an environment without one, they
+  would very plausibly hang far longer on connection timeouts instead of
+  failing fast. Their outcome (pass, fail, or hang) says nothing about
+  P4-U.1 either way.
 - **Runtime warning, disclosed explicitly so you do not mistake it for a
   hang**: the locked-benchmark test file computes a real 200-replicate
   null-max distribution for TRAIN and HOLDOUT across all three cases — on
-  the development machine this took **~2.5-3 minutes**. This is a genuine,
-  measured computation cost (see
+  the development machine this took **~2.5-3 minutes** for the critical
+  suite alone, and about the same again for the full suite (both commands
+  below re-run the locked benchmark from a clean `sys.modules` state, per
+  its own test fixture design). This is a genuine, measured computation
+  cost (see
   `documentation/P4U1_Locked_Benchmark_Numeric_Calibration_2026-09-23.md`
   Sec. 3 for why `max_paths` is capped at 1000 rather than left unbounded),
   not an infinite loop.
@@ -94,11 +111,12 @@ an unknown graph.
 python -m pytest -q tests/test_p4u1_unsupervised_pattern_discovery_v0_1.py tests/test_p4u1_set_valued_replay_v0_1.py tests/test_p4u1_locked_benchmark_v0_1.py
 ```
 
-Then, for full-suite zero-regression confirmation (also several minutes,
-for the same reason):
+Then, for full-suite zero-regression confirmation (~3 minutes, same
+reason — and note the same `-k "not live"` filter, for the reason
+explained above):
 
 ```text
-python -m pytest -q
+python -m pytest -q -k "not live"
 ```
 
 ## Frozen file hashes (SHA-256)
@@ -227,7 +245,8 @@ The evaluator must verify that:
   the full suite;
 - PASS/FAIL per critical case (C01-C10);
 - confirmation of no file modification;
-- confirmation that `python -m pytest -q` (full suite) is zero-regression;
+- confirmation that `python -m pytest -q -k "not live"` (full suite) is
+  zero-regression;
 - any discrepancy with this document.
 
 ## Known, already-disclosed limitations (not discrepancies to (re)discover)
