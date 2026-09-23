@@ -7,8 +7,11 @@
 - M3 : PASS_INDEPENDENT_SCOPE
 - M4 : PASS_INDEPENDENT_SCOPE
 - M5 : PASS_INDEPENDENT_SCOPE
-- M6 : **VALIDATED** (2026-09-17, clôturé explicitement par le porteur du projet sur preuves
-  d'exécution externes — voir Sec. 6 et `JOURNAL_DE_BORD.md`)
+- M6 : **MECHANISM_STATUS = VALIDATED** (2026-09-17, clôturé explicitement par le porteur du
+  projet sur preuves d'exécution externes — voir Sec. 6 et `JOURNAL_DE_BORD.md`). Depuis
+  2026-09-23, une dimension distincte **LEARNING_PERFORMANCE** est suivie séparément (M6-TRANSFER
+  / M6-INTERNAL, non `VALIDATED`, caractérisation honnête en cours puis gelée — voir Sec. 14) :
+  le mécanisme est validé, sa capacité d'apprentissage utile ne l'est pas encore.
 - Kernel `kernel2.py` : inchangé par ce module (M6 ne fait qu'importer `structural_signature` et le vocabulaire de M4)
 
 ## 2. Objectif
@@ -574,3 +577,146 @@ ne prétend fermer aucun gate.
 687 tests collectés (0 régression). Voir
 `scripts/run_m6_internal_learning_diagnosis_v0_1.py` pour reproduire
 l'expérience complète.
+
+## 14. Diagnostic de régularisation M6-INTERNAL (2026-09-23) — la régularisation aide beaucoup, ne suffit pas partout, M6-INTERNAL est désormais gelé
+
+Suite directe à la Sec. 13, avec une nuance importante ajoutée par le
+porteur du projet et retenue explicitement : le défaut identifié n'est
+pas seulement « absence de lissage », c'est la **conjonction** de (A) un
+support statistique aussi faible que 1 et (B) une réelle incohérence
+d'issue intra-règle (mesurée, pas supposée) — même un excellent lissage
+ne peut pas fabriquer une confiance qu'une seule observation ne
+justifie pas. La vraie question devient : combien d'observations
+faut-il pour estimer correctement la distribution d'une règle non
+déterministe ?
+
+**Protocole** (`m6_internal_regularized_diagnosis_v0_1.py`, adaptateur
+parallèle, `StructuralLearningPolicy` non modifié) — deux mesures
+séparées, comme demandé explicitement, jamais confondues :
+
+- **Mesure A** : cinq politiques comparées sur le même split
+  `split_within_rule()` (Sec. 13) que le diagnostic précédent —
+  `GLOBAL_ONLY` (référence déjà utilisée), `M6_RAW` (reproduction
+  vérifiée bit à bit de la vraie `StructuralLearningPolicy` — test
+  dédié comparant les deux sur un vrai corpus, exact), `M6_LAPLACE_A1`,
+  `M6_LAPLACE_A0.5` (lissage de Laplace), `M6_SUPPORT_WEIGHTED_K1`
+  (repli additif vers le prior global, pondéré par
+  `poids = support/(support + 1)`, la formule demandée : confiance
+  modérée à support=1, dominée par l'estimation locale à support
+  élevé).
+- **Mesure B** : un banc de convergence synthétique contrôlé — 3
+  distributions vraies connues (90/10, 50/50, 70/30) × 5 niveaux de
+  support (1, 2, 5, 10, 20), 500 tirages indépendants par cellule,
+  scorés contre la **distribution vraie directement** (jamais contre un
+  seul tirage de holdout bruité) — isole le comportement de
+  l'estimateur de tout artefact d'un corpus réel à petite échelle.
+
+**17 tests déterministes**
+(`tests/test_m6_internal_regularized_diagnosis_v0_1.py`) : **trois vrais
+bugs trouvés avant tout run réel** — (1) `raw_smoothing` provoquait une
+division par zéro sur le cas `UNIFORM_NO_DATA` (aucune donnée du tout),
+corrigé en traitant ce cas séparément, exactement comme le fait la
+vraie `StructuralLearningPolicy` elle-même ; (2) le premier banc
+synthétique n'utilisait qu'une seule règle testée sans aucune autre
+règle en arrière-plan, rendant `_rule_counts` et `_global_counts`
+**identiques** par construction — `M6_SUPPORT_WEIGHTED` se repliait
+alors sur lui-même (aucun lissage réel), corrigé en ajoutant un
+arrière-plan fixe de 10 règles équilibrées 50/50, jamais réglé en
+fonction de la distribution testée ; (3) import manquant
+(`SUPPORTED`/`CONTRADICTED`).
+
+### Résultat réel, Mesure A (`validation/m6_internal_regularized_diagnosis_v0_1_results_2026-09-23.json`, 10 seeds × 5 configurations × 5 politiques)
+
+| Domaine | Incohérence intra-règle (Sec. 13) | Δ M6_RAW | Δ Laplace α=1 | Δ Laplace α=0,5 | Δ support-pondéré | Victoires (support-pondéré) |
+|---|---:|---:|---:|---:|---:|---:|
+| family | 100 % | +1,449 | +0,324 | +0,489 | +0,590 | 0/10 |
+| organization | 50 % | +0,554 | +0,179 | +0,194 | +0,191 | 0/10 |
+| supply_chain | 25 % | +0,086 | +0,086 | +0,026 | **−0,066** | **10/10** |
+| library | 30 % | +0,196 | +0,121 | +0,076 | **+0,005** | 8/10 |
+| combiné | — | +0,461 | +0,161 | +0,161 | +0,128 | 0/10 |
+
+**Lecture honnête, sans lissage du résultat lui-même :**
+
+1. **La régularisation réduit massivement le dommage partout** — le
+   lissage de Laplace divise le Δ par 2 à 5 selon le domaine par
+   rapport à `M6_RAW`. Ce n'est pas un effet marginal.
+2. **Mais elle ne renverse le signe (bat `GLOBAL_ONLY`) que là où
+   l'incohérence intra-règle est la plus faible** : `supply_chain`
+   (25 %) — le seul domaine où le lissage pondéré par le support
+   gagne, et gagne **systématiquement** (10/10 seeds) ; `library`
+   (30 %) s'en approche fortement (8/10 victoires, Δ quasi nul,
+   +0,005). Sur `family` (100 % d'incohérence) et `organization`
+   (50 %), **aucune régularisation testée ne renverse jamais le
+   résultat** — confirmation directe de la nuance du porteur du
+   projet : le lissage ne peut pas compenser une règle authentiquement
+   non déterministe.
+3. **Le lissage pondéré par le support (la formule demandée
+   explicitement) est la meilleure ou la meilleure ex-æquo des trois
+   régularisations testées dans 3 domaines sur 4** (tous sauf
+   `family`, où Laplace α=1 fait mieux) — cohérent avec l'intuition
+   qu'une pondération qui croît avec le support réel est mieux motivée
+   qu'une constante de Laplace fixe.
+
+### Résultat réel, Mesure B (500 tirages par cellule)
+
+| Distribution vraie | support=1 | support=2 | support=5 | support=10 | support=20 |
+|---|---|---|---|---|---|
+| 90/10 (loin de l'arrière-plan 50/50) | support-pondéré meilleur (0,132) | support-pondéré meilleur (0,079) | support-pondéré meilleur (0,035) | support-pondéré meilleur (0,018) | support-pondéré meilleur (0,009) |
+| 50/50 (identique à l'arrière-plan) | `GLOBAL_ONLY` meilleur (0,004) | `GLOBAL_ONLY` meilleur | `GLOBAL_ONLY` meilleur | `GLOBAL_ONLY` meilleur | `GLOBAL_ONLY` meilleur |
+| 70/30 (proche de l'arrière-plan) | `GLOBAL_ONLY` meilleur à tous les niveaux testés (jusqu'à support=20) | | | | |
+
+**Deux lectures, aucune arrondie :**
+
+1. **Pour une règle fortement asymétrique (90/10, loin du prior neutre),
+   le lissage pondéré par le support est le meilleur estimateur à
+   presque tous les niveaux de support testés** — une preuve directe,
+   sur données synthétiques à vérité connue, que l'approche est bien
+   fondée et convergente.
+2. **Limite méthodologique du banc lui-même, disclosed honnêtement, pas
+   cachée** : l'arrière-plan fixe (10 enregistrements, 50/50) est
+   regroupé dans le dénominateur de `GLOBAL_ONLY`, qui inclut aussi les
+   tirages de la règle testée elle-même — cela donne à `GLOBAL_ONLY`
+   des échantillons supplémentaires « gratuits » et non biaisés dès que
+   la distribution vraie n'est pas trop éloignée de 50/50, ce qui
+   explique pourquoi `GLOBAL_ONLY` reste compétitif ou gagnant pour
+   70/30 et 50/50 même à support=20. **Ce n'est pas un résultat
+   invalide, c'est une limite de conception de ce banc précis** — la
+   question de convergence reste tranchée uniquement pour le cas
+   fortement asymétrique testé ici, pas de façon universelle.
+
+### Décision de gouvernance M6 (demandée explicitement, adoptée)
+
+`VALIDATED` reste inchangé, mais concerne désormais explicitement le
+**mécanisme**, pas la performance d'apprentissage :
+
+```text
+M6
+├── MECHANISM_STATUS : VALIDATED (2026-09-17, inchangé, Sec. 6/10)
+│
+└── LEARNING_PERFORMANCE (nouveau, 2026-09-23)
+    ├── M6-TRANSFER  : signal contextuel réel mais non universel,
+    │                   dépendant du domaine (Sec. 12)
+    └── M6-INTERNAL  : négatif sans régularisation (Sec. 13) ;
+                        avec régularisation, aide fortement partout,
+                        ne bat la base globale que sur les domaines à
+                        faible incohérence intra-règle (cette section) —
+                        **gelé, caractérisé, pas un chantier actif**
+```
+
+**`M6-INTERNAL` est désormais considéré suffisamment caractérisé et
+gelé, quel que soit le résultat mitigé** — décision explicite du
+porteur du projet, pour éviter que M6 ne devienne à son tour une boucle
+d'ablations sans fin. Aucune nouvelle variante de lissage
+supplémentaire n'est prévue. Piste ouverte mais non entreprise :
+appliquer la même mesure B à un arrière-plan plus large et plus neutre
+pour lever la limite méthodologique du point 2 ci-dessus — pas urgent,
+à décider explicitement avant de reprendre.
+
+**Ce que cela ne remet pas en cause** : `MECHANISM_STATUS = VALIDATED`
+reste inchangé — ce diagnostic, comme les Sec. 12/13, est un adaptateur
+parallèle qui ne modifie jamais `StructuralLearningPolicy` et ne
+prétend fermer aucun gate.
+
+704 tests collectés (0 régression). Voir
+`scripts/run_m6_internal_regularized_diagnosis_v0_1.py` pour reproduire
+l'expérience complète (Mesure A + Mesure B).
