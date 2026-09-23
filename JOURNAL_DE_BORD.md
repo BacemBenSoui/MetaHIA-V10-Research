@@ -1017,3 +1017,87 @@ cet assistant.
 GENERALIZATION OPEN`, avec désormais une première confirmation externe
 réelle et positive. Décision de clôture : en attente du porteur du
 projet.
+
+---
+
+## 2026-09-23 — Second retour d'exécution P4-U.1, par une IA (pas un tiers humain) : échec rapporté sur C10, non reproduit par investigation directe
+
+### Nature de ce retour
+Le porteur du projet a lui-même qualifié ce second retour de
+« confirmation par une IA », pas par un humain. Conséquence de
+gouvernance immédiate, indépendante de tout résultat technique : une
+exécution par une IA **ne compte pas** comme validation tierce
+indépendante au sens de ce projet (même règle déjà énoncée pour M6/M7/
+P4-T.7 — « no simulated or self-administered "external" run counts »).
+Ce retour est donc examiné pour sa valeur diagnostique, jamais comme un
+second round de validation tierce à comptabiliser.
+
+### Le rapport reçu, en résumé
+Rapport technique très détaillé et honnête (traces `faulthandler`,
+recherche binaire sur la suite complète, isolation précise du test
+bloquant) :
+- C01-C09 : PASS (45/46 tests critiques hors C10).
+- **C10 (`test_committed_predictions_file_is_deterministic_across_runs`)
+  : TIMEOUT** — la seconde invocation de `run_locked_benchmark()` dans
+  le MÊME interpréteur Python (le fixture en fait une première fois,
+  puis ce test lui-même en refait une seconde) ne serait jamais revenue
+  en 10 minutes, avec une pile d'appel bloquée dans
+  `null_max_support_distribution() -> discover_candidates() ->
+  kernel2.discover_paths()`.
+- Suite complète (`-k "not live"`) : n'aurait pas terminé non plus,
+  avec un second indice indépendant (le 501e test collecté, un test M7
+  sans rapport avec P4-U.1, ferait bloquer l'exécution cumulative alors
+  qu'il passe seul).
+- Vérification complémentaire honnête du relecteur : deux invocations
+  du runner dans des process Python **séparés** (pas le même
+  interpréteur) produisent bien des prédictions identiques.
+
+### Investigation directe menée avant toute conclusion (discipline du projet : ne jamais accepter un rapport sans vérification)
+1. Recherche de tout état mutable partagé au niveau module dans
+   `kernel2.py` et les modules P4-U.1 (caches, compteurs globaux,
+   arguments par défaut mutables) : **aucun trouvé**.
+2. Reproduction directe, dans CE dépôt, du scénario exact décrit : trois
+   appels consécutifs de `run_locked_benchmark()` dans le MÊME
+   interpréteur Python, avec heartbeat et `faulthandler` actifs :
+   ```text
+   1er appel : 81,51 s
+   2e appel (même interpréteur) : 61,99 s
+   3e appel (même interpréteur) : 65,82 s
+   ```
+   **Aucun blocage, aucune dégradation cumulative** — le 2e et le 3e
+   appel sont, si quoi que ce soit, légèrement plus rapides que le 1er.
+3. Le PREMIER retour externe (2026-09-23, tiers humain confirmé) avait
+   déjà, par la conception même du test C10, exécuté exactement ce même
+   scénario (fixture + second appel dans le même process) avec succès
+   en 97,36 s pour la suite critique entière — la « condition de
+   réentrance » rapportée par le second retour ne s'est donc PAS
+   manifestée non plus lors de la seule exécution humaine confirmée
+   dont ce projet dispose à ce jour.
+
+### Conclusion honnête de cette investigation
+Aucune reproduction du blocage rapporté, ni sur cette machine de
+référence (3 exécutions consécutives), ni dans l'exécution humaine
+externe déjà confirmée (qui exerçait déjà ce même chemin de code avec
+succès). Cause la plus plausible, non certaine : un phénomène propre à
+l'environnement d'exécution du second rapport (sandbox d'agent
+fortement contraint en CPU/quota — un phénomène d'infrastructure
+courant dans ce type d'environnement, connu pour transformer un calcul
+Python CPU-intensif normalement rapide en blocage apparent), plutôt
+qu'un défaut réel de réentrance dans le code. **Ce point reste
+néanmoins consigné honnêtement comme non totalement résolu** — l'écart
+entre les deux rapports externes n'a pas de cause root confirmée à
+100 %, seulement une explication plausible et une non-reproduction
+robuste.
+
+### Ce que cette investigation ne change PAS
+- Le retour n'étant pas humain, il ne compte de toute façon pas pour la
+  clôture du gate, indépendamment de son résultat technique.
+- Aucune modification de code n'a été faite à partir de ce rapport — ni
+  au runner, ni à `kernel2.py`, ni aux seuils — conformément à la
+  décision déjà prise de ne rien changer avant une validation tierce
+  humaine complète.
+- Le statut retenu reste inchangé :
+  `P4-U.1 = MECHANISM VALIDATED ON LOCKED SELF-ADMINISTERED BENCHMARK /
+  GENERALIZATION OPEN`, avec une confirmation humaine externe positive
+  (premier retour) et ce second signal diagnostique (IA, non
+  reproduit) consigné pour mémoire.
