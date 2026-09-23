@@ -1,5 +1,15 @@
 # MetaHIA V10 — P4-U.1 v0.2 : découverte non supervisée de compositions structurelles (protocole verrouillé, avant tout code)
 
+> **SUPERSEDED (2026-09-23).** La Sec. 20 ci-dessous documente une
+> tension bloquante réelle entre Gate B et Gate C, trouvée en calibrant
+> les seuils numériques de ce document sur l'implémentation minimale.
+> Résolue par
+> `documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_3.md`
+> (Gate C redéfinie en rejeu à valeur d'ensemble ; Gate B et `kernel2`
+> inchangés). Ce document reste l'historique exact de la revue
+> méthodologique et du diagnostic — non implémentable tel quel au-delà
+> de sa Sec. 20.
+
 ## 0. Statut et rapport à la v0.1
 
 ```text

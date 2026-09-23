@@ -616,3 +616,60 @@ Run réel                                                      : PAS LANCÉ
 
 **Implémentation en pause.** Décision requise du porteur du projet
 avant de reprendre la construction du premier benchmark verrouillé.
+
+---
+
+## 2026-09-23 — P4-U.1 v0.3 : résolution Gate B / Gate C par une revue méthodologique du porteur du projet
+
+### Décision explicite du porteur du projet
+Après une revue détaillée en 13 points de la tension trouvée dans la
+v0.2 (Sec. 20), le porteur du projet a tranché explicitement, en
+rejetant les options 2 et 3 (« je ne choisirais pas l'option 2 en
+première intention [...] Je ne choisirais absolument pas l'option 3 »)
+et en reformulant l'option 1 plus rigoureusement plutôt que de
+l'accepter telle quelle (« pas comme simple "au moins une continuation
+correspond" [...] Transformer Gate C en un rejeu structurel à valeur
+d'ensemble »).
+
+### Ce qui a été décidé
+```text
+Gate B      : INCHANGÉE
+kernel2     : INCHANGÉ (replay_path_pattern_holdout conservé comme
+              diagnostic secondaire, jamais comme critère principal)
+Gate C      : REDÉFINIE -- rejeu à valeur d'ensemble (existence d'au
+              moins une continuation compatible avec FrozenPattern,
+              jamais unicité)
+Nouveau     : p4u1_set_valued_replay_v0_1.py (adaptateur séparé, pas
+              encore écrit -- réutilise les primitives kernel2 sans
+              les modifier)
+```
+
+Point de discipline explicitement rappelé par le porteur du projet et
+repris tel quel dans le protocole : le témoin ne doit jamais servir à
+choisir une branche de rejeu pendant l'exécution du mécanisme (aucune
+sélection `witness dit B → choisir B`) — seulement à scorer la
+décision après coup, exactement la même discipline d'aveuglement que
+P4-T.
+
+Rédigé intégralement dans
+`documentation/P4U1_Unsupervised_Compositional_Pattern_Discovery_V0_3.md`
+(Sec. 10 pour la nouvelle sémantique de Gate C, Sec. 10.5 pour la règle
+anti-circularité, Sec. 11 pour la couverture redéfinie et le nouveau
+diagnostic `mean_valid_continuations_per_replicating_start`, Sec. 16
+pour la séquence de travail mise à jour). La v0.2 reste comme
+historique de la revue et du diagnostic (bandeau `SUPERSEDED` ajouté en
+tête du document, même convention que v0.1 → v0.2).
+
+### État après cette entrée
+```text
+Protocole v0.3                                        : GELÉ
+Adaptateur p4u1_set_valued_replay_v0_1.py              : PAS ENCORE ÉCRIT
+Cas verrouillés U1/U2/U3 (cases/witness/runner)        : PAS ÉCRITS
+Valeurs numériques de la checklist (Sec. 16, pts 2/7/8/11) : PAS FIGÉES
+Run réel                                               : PAS LANCÉ
+```
+
+Prochaine étape : écrire `p4u1_set_valued_replay_v0_1.py` avec ses
+tests déterministes (y compris un test de non-circularité explicite),
+avant de fixer les valeurs numériques et de construire le benchmark
+verrouillé.
