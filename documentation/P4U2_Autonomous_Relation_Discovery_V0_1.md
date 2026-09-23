@@ -1,5 +1,15 @@
 # MetaHIA V10 — P4-U.2 : cadrage (découverte autonome de relations INCONNUES) — aucun code, aucun protocole verrouillé
 
+> **SUPERSEDED (2026-09-23).** Une revue méthodologique du porteur du
+> projet a identifié une faille de non-identifiabilité dans le cadrage
+> ci-dessous (Sec. 4 : « comparer des arêtes après avoir ignoré leur
+> opérateur » collapse naïvement toutes les relations binaires
+> ensemble). Remplacé intégralement par
+> `documentation/P4U2_Autonomous_Relation_Discovery_V0_2.md`. Ce
+> document reste l'historique exact de la revue initiale (inventaire
+> réutilisable toujours valide) — non implémentable tel quel au-delà de
+> son propre inventaire (Sec. 3).
+
 ## 0. Statut
 
 ```text

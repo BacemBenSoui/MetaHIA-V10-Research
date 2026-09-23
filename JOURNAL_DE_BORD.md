@@ -1259,3 +1259,87 @@ P4-U.2 : CADRÉ (ce document), PAS ENCORE PROTOCOLE, PAS DE CODE
 Décision du porteur du projet requise sur 3 questions ouvertes (Sec. 9)
 avant toute écriture de protocole v0.1
 ```
+
+---
+
+## 2026-09-23 — Cadrage P4-U.2 v0.2 : correction d'une faille de non-identifiabilité dans le cadrage v0.1
+
+### La faille identifiée par la revue du porteur du projet
+Le cadrage v0.1 formulait le vide à combler comme « comparer deux
+arêtes après avoir ignoré/masqué leur opérateur ». Faille : deux
+observations binaires `op1(a,b)` et `op2(c,d)`, une fois l'opérateur
+ignoré, deviennent presque identiques du point de vue de la forme K3
+locale (`BINARY(source,target)` dans les deux cas) — un algorithme
+naïf regrouperait alors TOUTES les relations binaires entre elles,
+simplement parce qu'elles partagent la même forme. Un problème de
+non-identifiabilité structurelle, pas une découverte.
+
+### Reformulation retenue
+```text
+P4-U.2 n'est PAS : comparer des arêtes après avoir ignoré leur opérateur.
+P4-U.2 EST       : découvrir des classes d'opérateurs partageant un
+                    comportement structurel OBSERVABLE, indépendant de
+                    leur identité nominale.
+```
+La représentation utilisée pour comparer deux arêtes ne peut donc pas
+être leur forme locale nue — elle doit capturer un comportement
+(contextes de composition, autres relations avec lesquelles l'opérateur
+apparaît, etc.). La construction exacte de cette représentation reste
+délibérément non résolue par le cadrage — question centrale déférée au
+futur protocole v0.1.
+
+### Point ajouté, plus fondamental que les 3 questions ouvertes de la v0.1
+Critère d'identifiabilité préalable : il faut démontrer, avant toute
+exécution, qu'un corpus donné contient réellement un signal structurel
+distinguant les classes. Vocabulaire de sortie enrichi en conséquence :
+`DISCOVERED` / `AMBIGUOUS` / `INSUFFICIENT_STRUCTURAL_INFORMATION` /
+`REJECTED` — un résultat `INSUFFICIENT_STRUCTURAL_INFORMATION` est un
+résultat scientifique légitime, jamais un bug à corriger.
+
+### Les 3 questions de la v0.1, tranchées explicitement par le porteur du projet
+1. **Masquage** : identité d'opérateur masquée INDIVIDUELLEMENT par
+   observation (`OP#001`, `OP#002`, ... jamais partagée entre
+   observations de la même relation d'origine — sinon le masquage
+   laisserait filtrer l'information à découvrir), vérité terrain cachée
+   réservée à l'évaluation post-hoc. Explicitement rejeté : un
+   opérateur `UNKNOWN_RELATION` unique et partagé (donnerait une
+   catégorie déjà prête).
+2. **Pool** : sélection différée. P4-U.2.1 se limite à un pool défini
+   par des critères STRUCTURELS objectifs uniquement (observation
+   binaire valide, profondeur admissible) — jamais une sélection
+   sémantique/intelligente, différée à un incrément ultérieur, pour ne
+   jamais mélanger « quelles arêtes comparer » et « lesquelles
+   représentent la même relation ».
+3. **`e20d_operation_synthesis_v0_1.py`** : PAS réactivé — son contrat
+   (IDENTIFIED_EXISTING/CREATED_NEW/AMBIGUOUS) synthétise une opération
+   à partir d'une relation DÉJÀ découverte, un problème différent.
+   Nouveau contrat dédié retenu : `RELATION_HYPOTHESIS`
+   (hypothesis_id, member_edge_ids, structural_signature, support,
+   contradiction_support, status=UNKNOWN par défaut, provenance) —
+   jamais de promotion automatique « cluster cohérent ⇒ relation
+   identifiée ».
+
+### Risque `O(n²)` (similarité par paire) — confirmé, optimisation différée
+Ordre de résolution retenu explicitement : (1) représentation
+invariante-à-l'identité, (2) identifiabilité, (3) modèle nul, (4)
+clusterisation, (5) seulement ensuite optimisation du coût — ne jamais
+optimiser un objet scientifique mal défini.
+
+### Document produit
+`documentation/P4U2_Autonomous_Relation_Discovery_V0_2.md` remplace
+intégralement la v0.1 (bandeau `SUPERSEDED` ajouté à la v0.1, même
+convention que pour P4-U.1). Objectif retenu et gelé : « P4-U.2 —
+Autonomous Structural Relation Discovery ». Verrou scientifique
+central explicité : P4-U.2 doit démontrer qu'une relation inconnue est
+IDENTIFIABLE à partir de sa structure observable — pas simplement
+qu'un algorithme sait clusteriser des objets auxquels on a
+artificiellement retiré leur nom.
+
+### État après cette entrée
+```text
+P4-U.2 v0.2 : CADRÉ (avec correction méthodologique), TOUJOURS PAS
+              DE PROTOCOLE, TOUJOURS AUCUN CODE
+Question centrale non résolue, déférée au futur protocole v0.1 :
+  quelle représentation structurelle capture un comportement
+  d'opérateur indépendant de son identité nominale ?
+```
