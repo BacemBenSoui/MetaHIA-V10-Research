@@ -1530,3 +1530,66 @@ Toujours aucun protocole verrouillé, aucun code P4-U.2
 Prochaine étape : écriture du protocole formel P4-U.2 v0.1, avec Gate I
 intégrant une comparaison statistique de groupe dès sa première version
 ```
+
+---
+
+## 2026-09-23 — Protocole P4-U.2 v0.1 écrit — toujours aucun code
+
+### Demande explicite
+« Écrivez le protocole P4-U.2 v0.1 » — dernière étape de la séquence
+fixée par le porteur du projet (cadrage → investigation → expérience
+d'identifiabilité → protocole).
+
+### Document produit
+`documentation/P4U2_Protocol_V0_1.md` — nouveau document, distinct de
+la lignée de cadrage (`P4U2_Autonomous_Relation_Discovery_V0_*.md`),
+même convention de séparation que pour P4-T (document de conception vs
+protocole de validation tierce, deux lignées distinctes). Formalise,
+sans les rouvrir, toutes les décisions déjà gelées par la v0.3 du
+cadrage :
+- Objectif, entrée/interdits, masquage individuel, portée du pool
+  P4-U.2.1, exclusions — repris tels quels.
+- Signature structurelle candidate (profondeurs 1/2/3 via
+  `discover_paths`, INCHANGÉ) — retenue comme hypothèse de travail pour
+  le premier benchmark, explicitement pas comme définition close ;
+  révision du protocole prévue si le futur benchmark la montre
+  insuffisante.
+- **Gate I formalisée avec le changement non négociable imposé par
+  l'expérience d'identifiabilité** : comparaison d'une statistique de
+  COHÉSION DE GROUPE contre un modèle nul (N_null réplicats,
+  percentile, correction multi-comparaisons si plusieurs candidats) —
+  jamais une égalité de signature par observation, avec la preuve
+  empirique déjà établie (z=3,79 sur le cas de chevauchement partiel)
+  citée comme justification directe.
+- **Gate H, nouvelle, distincte de Gate I** : valide qu'une
+  `STRUCTURAL_CLASS_HYPOTHESIS` n'est pas contredite (support vs
+  contradiction_support, même discipline que `Hypothesis.status` de
+  kernel2.py) — jamais fusionnée avec la significativité statistique de
+  Gate I.
+- Modèle nul : principe gelé repris, mais **la procédure exacte de
+  randomisation reste explicitement non résolue** — contrairement à
+  P4-U.1, aucun pool par étiquette n'existe à permuter puisque les
+  opérateurs sont masqués individuellement ; deux pistes proposées
+  (permuter le graphe entier vs permuter l'assignation aux candidats),
+  non tranchées, à décider par calibration.
+- **Quatre cas verrouillés spécifiés** (V1-V4, un par résultat de
+  sortie possible) : V1 (régularité nette, DISCOVERED attendu), V2
+  (rôle topologique rigoureusement identique, INSUFFICIENT attendu),
+  V3 (contrôle nul pur), et **V4, ajouté spécifiquement** — reproduction
+  exacte du cas de chevauchement partiel ayant révélé la faille
+  méthodologique de l'expérience d'identifiabilité, pour garantir que
+  toute implémentation future ne régresse jamais vers la vérification
+  naïve déjà prouvée fausse.
+- Checklist de pré-enregistrement (7 points) — toutes les valeurs
+  numériques explicitement marquées « À FIXER », jamais avant
+  calibration, jamais après avoir vu un résultat de holdout.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 ÉCRIT ET GELÉ
+Toujours aucun code de production, aucune valeur numérique fixée,
+aucun benchmark verrouillé construit
+Prochaine étape : calibration jetable des valeurs numériques
+manquantes (Sec. 13 du protocole), jamais sur le futur benchmark
+verrouillé lui-même
+```
