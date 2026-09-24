@@ -2416,3 +2416,50 @@ Prochaine étape : décision explicite du porteur du projet sur la
 poursuite de la campagne 8 (réduire la grille, optimiser davantage, ou
 reconsidérer la statistique elle-même)
 ```
+
+---
+
+## 2026-09-24 — Campagne 8.1 : diagnostic encourageant pour le support (T=max_s|G_s|) sous null procédural complet — le signal préoccupant de la campagne 8 était du bruit d'échantillonnage
+
+Exécute le protocole C8.1 pré-enregistré par le porteur du projet :
+calibration ciblée du support sous sélection complète, phase diagnostic
+seulement (30-50 graines), aucune modification du module de production.
+Rapport complet :
+`documentation/P4U2_Campaign8_1_Support_Statistic_Diagnostic_2026-09-24.md`.
+
+- **Bruit pur (40 graines, N_null=50)** : FPR=5,0 % (2/40), IC de Wilson
+  à 95 % = [1,4 % ; 16,5 %], distribution des percentiles
+  approximativement uniforme (moyenne=50,5, proche de la valeur
+  attendue 50) — exactement le comportement d'un test correctement
+  calibré sous absence de signal.
+- **Signal injecté (25 graines, N_null=50, 15 chaînes à 2 sauts noyées
+  dans 80 arêtes de fond)** : TPR=80,0 % (20/25), IC de Wilson à 95 % =
+  [60,9 % ; 91,1 %], distribution des percentiles nettement concentrée
+  (80 à 100, aucune valeur en dessous de 80) — clairement distincte de
+  la distribution quasi-uniforme du bruit pur.
+- **Confirmation directe de la mise en garde statistique du porteur du
+  projet** : les taux préoccupants de la campagne 8 (20 %/10 % sur
+  seulement 10 graines, IC de Wilson [5,7-51,0 %] et [1,8-40,4 %], tous
+  deux compatibles avec 5 %) ne se reproduisent PAS à résolution
+  suffisante (40 graines) — c'était du bruit d'échantillonnage à petite
+  résolution, pas un défaut réel de l'Approche A+B.
+- **Le couple support + null procédural complet + correction de
+  sélection globale répond aux deux exigences du critère de succès** :
+  le bruit pur échoue réellement (FPR≈nominal), le signal injecté est
+  distingué (TPR=80 %), sans que la génération de candidats ne fournisse
+  mécaniquement la réponse.
+
+### État après cette entrée
+```text
+C8 STATUS
+Cohesion_B : INVALIDÉE pour ce générateur de candidats
+Support (T=max_s|G_s|) : DIAGNOSTIC POSITIF (phase 30-50 graines)
+Null procédural complet : VALIDÉ comme cadre de test
+FPR/TPR calibrés finement : PAS ENCORE (confirmation 100+ optionnelle)
+V1-V4 : TOUJOURS GELÉS
+Production code : INCHANGÉ
+Architecture : AUCUNE décision prise
+Prochaine étape : décision explicite du porteur du projet -- lancer une
+confirmation à plus grande échelle, ou passer à l'intégration du
+support comme statistique candidate (décision architecturale distincte)
+```
