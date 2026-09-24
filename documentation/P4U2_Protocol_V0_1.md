@@ -301,6 +301,20 @@ Détail exact de ce qui constitue une « contradiction non triviale » —
 à spécifier avec des données réelles de calibration (Sec. 13, point
 3), pas ici.
 
+> **Mise à jour (2026-09-24) : GELÉE.** La calibration prévue ci-dessus
+> a été exécutée (campagnes C4→C7,
+> `documentation/P4U2_Calibration_Campaign4_2026-09-24.md` à
+> `documentation/P4U2_Calibration_Campaign7_VoletC_RealCorpus_2026-09-24.md`)
+> et Gate H est maintenant spécifiée et gelée en v1.0 dans
+> `documentation/P4U2_Gate_H_V1_0_Frozen_2026-09-24.md` : percentile
+> ≥95 %, correction multi-comparaisons par maximum, enveloppe de
+> calibration `k≥8` / `group_size∈[20,40]`, `CALIBRATION_INSUFFICIENT`
+> (jamais `DISCOVERY`) hors de cette enveloppe. **Enveloppe empirique
+> opérationnelle, pas une loi universelle** — voir ce document pour les
+> réserves explicites (notamment : comportement non établi hors de
+> l'enveloppe, taux de faux positifs cohérent avec le niveau nominal
+> mais non prouvé exactement à 5 %).
+
 ### 10.3 Interprétation opérationnelle — relation découverte
 
 Une `STRUCTURAL_CLASS_HYPOTHESIS` ayant passé Gate I ET Gate H peut
@@ -336,17 +350,30 @@ REJECTED                            -- Gate H FAIL (contradiction) ou échec
 1.  profondeur maximale de la signature (D, Sec. 7)      -- valeur déjà
     proposée (D=3), à confirmer ou ajuster par calibration
 2.  procédure exacte du modèle nul (Sec. 9, piste 1/2/
-    combinaison)                                          -- À FIXER
+    combinaison)                                          -- GELÉ
+    (2026-09-24) : group-resample-only CORRIGÉ (reproduction complète
+    de la procédure de sélection sous le null, campagne 5) --
+    topology-only invalidé (campagne 5, faux positif net sur un corpus
+    homogène) -- voir P4U2_Gate_H_V1_0_Frozen_2026-09-24.md
 3.  définition exacte de "contradiction non triviale"
-    (Gate H, Sec. 10.2)                                   -- À FIXER
+    (Gate H, Sec. 10.2)                                   -- GELÉ
+    (2026-09-24) en v1.0 (percentile≥95% + enveloppe k≥8/
+    group_size∈[20,40] ; CALIBRATION_INSUFFICIENT hors enveloppe) --
+    voir P4U2_Gate_H_V1_0_Frozen_2026-09-24.md
 4.  statistique de cohésion de groupe exacte (Sec. 8,
     point 1 -- ex. fraction de trait partagé, distance
-    moyenne de signature, autre)                          -- À FIXER
-5.  N_null, seuil de percentile (Sec. 8, point 3)          -- À FIXER
+    moyenne de signature, autre)                          -- Cohesion_B
+    (distance intra-groupe moyenne) retenue et validée par toute la
+    chaîne de calibration C5-C7 ; choix final entre les 3 candidats
+    (A/B/C) reste ouvert mais non bloquant
+5.  N_null, seuil de percentile (Sec. 8, point 3)          -- percentile
+    ≥95% GELÉ pour Gate H (v1.0) ; N_null=200-300 confirmé stable
+    (campagne 2 Partie 2C) mais pas formellement gelé pour Gate I
 6.  correction multi-comparaisons si plusieurs candidats
-    testés simultanément                                  -- forme à
-    fixer, principe déjà retenu (max-statistique, comme
-    P4-U.1)
+    testés simultanément                                  -- GELÉ :
+    max-statistique (comme P4-U.1), nécessité démontrée (campagne 4
+    Partie 3, 33% de faux positifs sans correction) et robustesse
+    confirmée sur 20 graines (campagne 4 Partie 2)
 7.  seuils numériques du benchmark verrouillé (Sec. 14)    -- À FIXER
     par calibration sur des corpus JETABLES, jamais sur
     le benchmark verrouillé lui-même (même discipline que

@@ -2045,3 +2045,58 @@ aucun benchmark verrouillé construit
 Prochaine étape : décision explicite du porteur du projet -- geler
 Gate H v1.0, ou prolonger encore la calibration
 ```
+
+---
+
+## 2026-09-24 — Gate H v1.0 GELÉE, calibration C4→C7 close, Road Map centrale synchronisée — et une correction factuelle importante sur le set-valued replay de P4-U.1
+
+Le porteur du projet a explicitement demandé de geler Gate H v1.0 sur la
+base des résultats C5-C7, de clore la campagne de calibration (pas de
+C8), et de synchroniser `MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md`
+avec l'état réel du projet.
+
+- **Gate H v1.0 gelée** : `documentation/P4U2_Gate_H_V1_0_Frozen_2026-09-24.md`
+  — percentile≥95 %, correction multi-comparaisons par maximum,
+  enveloppe de calibration `k≥8`/`group_size∈[20,40]`,
+  `CALIBRATION_INSUFFICIENT` (jamais `DISCOVERY`) hors enveloppe.
+  Explicitement documenté comme enveloppe empirique opérationnelle, pas
+  une loi universelle, avec la réserve demandée par le porteur du projet
+  noir sur blanc : le taux de faux positifs est cohérent avec le niveau
+  nominal de 5 %, jamais prouvé exactement égal à 5 % (20-30 répétitions
+  externes par cellule ne le permettent pas). Bannière de renvoi ajoutée
+  dans `P4U2_Protocol_V0_1.md` Sec. 10.2 et checklist Sec. 13 mise à jour
+  (items 2/3/6 gelés, item 5 partiellement, item 1/4/7 inchangés).
+- **Campagne de calibration C4→C7 close** : aucune campagne C8 prévue,
+  documenté explicitement dans le document de gel.
+- **Correction factuelle importante, trouvée AVANT d'écrire la mise à
+  jour de la Road Map, pas acceptée sur récit** : le porteur du projet a
+  caractérisé le "set-valued replay" de P4-U.1
+  (`p4u1_set_valued_replay_v0_1.py`) comme un chantier encore
+  expérimental/documentaire à implémenter. Vérification directe (lecture
+  du code, absence de toute bannière "expérimental", ré-exécution de sa
+  suite de tests dédiée) : **ce module est déjà implémenté, testé (13/13
+  PASS) et intégré dans `p4u1_locked_benchmark_runner_v0_1.py`, le
+  runner exact du benchmark verrouillé P4-U.1 déjà validé par un tiers
+  externe et clos.** P4-U.1 n'a donc AUCUNE implémentation en attente —
+  contrairement à ce que suggérait la caractérisation reçue. Corrigé
+  explicitement dans la mise à jour de la Road Map (Sec. 15.1/15.3) avant
+  de la committer, et signalé au porteur du projet dans la réponse.
+- **Road Map centrale synchronisée** (`MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md`
+  Sec. 15, nouvelle) : P4-T.7 CLOSED, P4-U.1 THIRD-PARTY GATE CLOSED (set-valued
+  replay inclus, déjà fait), P4-U.2 cadrage/protocole/calibration C1-C7
+  ARCHIVÉS, Gate H v1.0 GELÉE, E20-D toujours OPEN sans changement. Vraie
+  prochaine étape identifiée : implémentation minimale de P4-U.2
+  (protocole Sec. 17) puis construction du futur benchmark verrouillé
+  V1-V4 — jamais une réimplémentation du set-valued replay de P4-U.1.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, GATE H v1.0 GELÉE, CALIBRATION C1-C7 CLOSE
+P4-U.1 : THIRD-PARTY GATE CLOSED, AUCUNE IMPLÉMENTATION EN ATTENTE
+P4-T   : THIRD-PARTY GATE CLOSED
+E20-D  : OPEN, sans changement
+Toujours aucun code de production P4-U.2, aucun benchmark verrouillé
+V1-V4 construit
+Prochaine étape : décision explicite du porteur du projet -- démarrer
+l'implémentation minimale de P4-U.2, ou autre priorité
+```

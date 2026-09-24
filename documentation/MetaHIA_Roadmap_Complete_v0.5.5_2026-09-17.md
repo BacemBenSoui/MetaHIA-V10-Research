@@ -561,3 +561,103 @@ dès que l'infrastructure Ollama/LAN promise par l'utilisateur est disponible ;
 réellement disponible, non le cas dans cette session). Aucune de ces trois n'est
 urgente ; à décider explicitement avant de commencer, comme pour chaque étape précédente
 de ce chantier.
+
+---
+
+## 15. Mise à jour — état au 24 septembre 2026 (synchronisation demandée par le porteur du projet)
+
+Ce document était en retard sur l'état réel du dépôt depuis le 17/09. Mise à
+jour de synchronisation uniquement — aucun des constats des sections 1-14
+n'est modifié ou réévalué ici ; **E20-D reste `OPEN`**, sans changement de
+statut (section 5).
+
+### 15.1 État vérifié des chantiers ouverts depuis le 17/09
+
+```text
+P4-T.7 (validation tierce de P4-T)      ✅ CLOSED   (2026-09-23)
+P4-U.1 (découverte compositionnelle
+        supervisée, relations déjà
+        étiquetées)                     ✅ THIRD-PARTY GATE CLOSED (2026-09-23)
+P4-U.2 (découverte autonome de
+        relations inconnues)             🟠 OPEN_RESEARCH, protocole gelé,
+                                             calibration close (voir 15.2)
+E20-D                                    🔴 OPEN, sans changement
+```
+
+**P4-T.7** — clos par le porteur du projet sur la base de deux
+exécutions convergentes (auto-administrée + un ingénieur systèmes
+réellement externe, Linux Ubuntu Server 24 LTS), résultats identiques
+au commit `98bb4477`. Voir `release_manifest.json` clé `p4t_status` et
+`documentation/P4T_Structural_Transformation_Induction_V0_1.md` Sec. 9.
+
+**P4-U.1** — gate de validation tierce clos par le porteur du projet
+sur la base d'une seule exécution humaine véritablement externe
+(départ explicite et assumé du précédent M6/M7/P4-T.7 qui exigeait deux
+exécutions convergentes). **Le pipeline complet, y compris le
+« set-valued replay » (`p4u1_set_valued_replay_v0_1.py`, Gate C
+redéfinie comme propriété d'EXISTENCE plutôt que d'UNICITÉ pour gérer
+les nœuds-hub à plusieurs continuations légitimes), est déjà implémenté,
+testé (13 tests dédiés, `tests/test_p4u1_set_valued_replay_v0_1.py`) et
+intégré dans `p4u1_locked_benchmark_runner_v0_1.py`, le runner exact du
+benchmark verrouillé validé par le tiers externe.** Ce point corrige
+explicitement une caractérisation erronée reçue du porteur du projet
+lors de cette synchronisation (« set-valued replay reste un chantier
+expérimental/documentaire, à implémenter ») — vérifié directement par
+lecture du code et par ré-exécution de la suite dédiée (13/13 PASS)
+avant d'écrire cette section, pas accepté sur récit. **P4-U.1 n'a donc
+aucune implémentation en attente** ; ce qui reste ouvert pour P4-U.1
+est uniquement la question de généralisation déjà actée
+(`GENERALIZATION OPEN`, non rouverte ici) et la clôture non-bloquante de
+la non-discriminance de `position_groups` (v0.3 Sec. 10.7). Voir
+`release_manifest.json` clé `p4u1_status`.
+
+### 15.2 P4-U.2 — protocole et calibration
+
+```text
+Cadrage v0.1 → v0.2 → v0.3                         ✅ FAIT
+Protocole v0.1 (Gate I/Gate H formalisées)          ✅ GELÉ (f6a96b2)
+Calibration C1 (statistique × modèle nul × Gate H)  ✅ ARCHIVÉE (854b32e)
+Calibration C2 (puissance Gate I)                   ✅ ARCHIVÉE (97981f0)
+Calibration C3 (Gate H mini-campagne)               ✅ ARCHIVÉE (38b1f74)
+Calibration C4 (partition R1, null raccourci)       ❌ INVALIDÉ PAR C5
+Calibration C5 (null CORRIGÉ, baseline)             ✅ ARCHIVÉE (56803a8)
+Calibration C6 (petits k, robustesse pool)          ✅ ARCHIVÉE (177e64e)
+Calibration C7 / Volet C (validation corpus réel)   ✅ ARCHIVÉE (8dcf415)
+Gate H v1.0                                          ✅ GELÉE (2026-09-24)
+```
+
+**Gate H v1.0** : percentile≥95 %, correction multi-comparaisons par
+maximum, enveloppe de calibration `k≥8` / `group_size∈[20,40]`,
+`CALIBRATION_INSUFFICIENT` (jamais `DISCOVERY`) hors de cette enveloppe.
+**Ceci est une enveloppe de calibration empirique opérationnelle,
+validée sur quatre pools de fond indépendants (trois synthétiques
+pré-enregistrés + un dérivé de données structurelles réelles du dépôt),
+pas une loi universelle sur tous les futurs corpus de MetaHIA** — voir
+`documentation/P4U2_Gate_H_V1_0_Frozen_2026-09-24.md` pour la
+spécification complète et ses réserves explicites (notamment : le taux
+de faux positifs est cohérent avec le niveau nominal de 5 %, jamais
+prouvé exactement égal à 5 %). Aucune campagne de calibration C8 n'est
+prévue.
+
+### 15.3 Ce qui reste réellement ouvert (corrigé après vérification directe)
+
+```text
+P4-U.2 implémentation minimale       🟠 NEXT  (signature, Gate I, Gate H,
+                                              module minimal -- protocole
+                                              Sec. 17, jamais commencé)
+P4-U.2 benchmark verrouillé V1-V4    🟠 APRÈS l'implémentation minimale
+                                              (seuils numériques du
+                                              benchmark, checklist
+                                              Sec. 13 point 7, encore
+                                              À FIXER)
+P4-U.1 set-valued replay             ✅ DÉJÀ FAIT -- pas une étape
+                                              future (voir 15.1)
+E20-D                                  🔴 OPEN, sans changement
+```
+
+**Décision de trajectoire, à confirmer explicitement par le porteur du
+projet avant de commencer** : la prochaine étape concrète de ce
+chantier est l'implémentation minimale de P4-U.2 (protocole Sec. 17) et
+la construction du futur benchmark verrouillé V1-V4 — pas une
+réimplémentation du set-valued replay de P4-U.1, qui est un mécanisme
+distinct, déjà achevé et déjà validé par tiers.
