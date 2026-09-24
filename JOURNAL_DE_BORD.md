@@ -1666,3 +1666,68 @@ Prochaine étape : décision du porteur du projet -- gel numérique, ou
 prolongation de la calibration (statistique combinée / correction
 multi-comparaisons / tolérance Gate H)
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : calibration jetable, campagne 2 (puissance de Gate I, correction multi-comparaisons démontrée nécessaire, Gate H sweep fin) — toujours aucun code
+
+Suite directe à la critique du porteur du projet sur `854b32e` : ce
+premier résultat n'était pas suffisant pour un gel, ayant isolé
+`group-resample-only` sur un seul corpus (TWIN) et laissé ouvertes trois
+questions. Campagne 2 exécutée, script jetable non committé (même
+discipline). Rapport complet :
+`documentation/P4U2_Calibration_Campaign2_2026-09-24.md`.
+
+- **Puissance de Gate I — question centrale de la campagne 1 tranchée
+  par exécution directe** : balayage de force de signal (p_group de 0.5
+  à 1.0, taille fixe 20) donne une croissance strictement monotone du
+  z-score pour les trois statistiques de cohésion, sans irrégularité.
+  Balayage de taille d'échantillon (signal fixe 80/20, taille de 10 à
+  80) montre qu'augmenter uniquement la taille augmente nettement la
+  puissance (dès taille 40, le signal 80/20 franchit largement le seuil
+  conventionnel). Balayage de `N_null` (200 à 2000, signal et taille
+  fixes) montre un percentile/z stable. **Conclusion directe : le
+  résultat limite du cas PARTIAL en campagne 1 est un effet de TAILLE
+  D'ÉCHANTILLON démontré, pas un défaut de statistique de cohésion ni un
+  modèle nul trop conservateur** — les deux autres hypothèses sont
+  explicitement écartées par exécution, pas par supposition.
+- **Correction multi-comparaisons — testée pour la première fois,
+  démontrée nécessaire et suffisante** : corpus à 1 vrai groupe (90 % de
+  prolongement) + 9 candidats sans signal réel, tirés d'un fond
+  purement aléatoire. Le seuil corrigé (95ᵉ percentile du maximum de la
+  statistique sur 10 groupes simultanés, discipline reprise de
+  P4-U.1 mais testée ici plutôt que supposée acquise) donne **0/9 faux
+  positifs pour les trois statistiques**, tout en détectant
+  correctement le vrai groupe. **Sans correction, `Cohesion_A` laisse
+  passer 3 candidats sur 9 sans aucun signal réel** (33 % de fausse
+  découverte sur cette exécution) — un risque concret et démontré,
+  écarté uniquement par la correction. Réserve : une seule graine
+  aléatoire, pas encore une calibration multi-graines.
+- **Gate H — sweep fin, comportement confirmé mais question du porteur
+  du projet toujours non résolue** : remplacement par pas de 5 % de 0 %
+  à 50 % confirme la linéarité déjà observée en campagne 1, sans
+  irrégularité. **Ce balayage ne distingue toujours pas les deux
+  frontières demandées séparément** (bruit de mesure naturel sur un
+  groupe réellement cohérent vs rejet d'un groupe manifestement
+  hétérogène) — il ne fait varier qu'une seule dimension (fraction
+  injectée). Explicitement laissé ouvert, pas présenté comme résolu.
+- **Modèle nul `group-resample-only`** : confirmé sur un balayage complet
+  de force de signal et de taille d'échantillon, pas seulement sur
+  TWIN — l'évidence en sa faveur s'élargit sans se répéter à l'identique,
+  toujours pas formellement gelé.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, CALIBRATION #1 ET #2 EXÉCUTÉES
+Acquis : puissance de Gate I comprise (effet de taille d'échantillon,
+pas de statistique ni de null) ; correction multi-comparaisons
+démontrée nécessaire et suffisante (0/9 vs jusqu'à 3/9 faux positifs)
+Ouvert : taille du futur benchmark verrouillé (tension conception vs
+puissance), N_null/percentile à formellement geler, frontière
+d'acceptation de Gate H face au bruit naturel (corpus dédié requis),
+choix final de la statistique de cohésion, calibration multi-graines
+de la correction multi-comparaisons
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision du porteur du projet
+```
