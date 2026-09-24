@@ -1903,3 +1903,40 @@ Toujours aucun code de production, aucune valeur numérique gelée,
 aucun benchmark verrouillé construit
 Prochaine étape : décision du porteur du projet
 ```
+
+---
+
+## 2026-09-24 — Push vers GitHub + correction d'un bug systématique de régénération des hashes, trouvé en auditant `56803a8` avant archivage comme baseline
+
+Le porteur du projet a demandé d'archiver formellement la campagne 5
+comme baseline avant toute nouvelle expérience — première étape :
+vérifier le commit sur GitHub et la cohérence manifest/journal/hashes.
+
+- **22 commits locaux non poussés découverts et poussés** (`33f3082..56803a8`,
+  fast-forward propre, aucune divergence avec `origin/main`).
+- **Bug systématique trouvé en auditant les hashes** : `clean_package_hashes_sha256.json`
+  committé dans `56803a8` ne contenait PAS les hashes de ses propres deux
+  nouveaux fichiers (le rapport de campagne 5 et son log de régression).
+  Cause racine : la régénération des hashes s'exécute via `git ls-files`
+  AVANT le `git add` des nouveaux fichiers du commit en cours — `git
+  ls-files` ne liste que les fichiers déjà suivis/indexés, donc les
+  fichiers tout juste créés en sont silencieusement absents. **Ce bug est
+  systématique, pas spécifique à la campagne 5** : chaque commit de
+  campagne de cette session a probablement expédié un fichier de hashes
+  manquant exactement ses 2 nouveaux fichiers, corrigé silencieusement au
+  commit suivant dès que la prochaine régénération les voyait enfin comme
+  suivis. Visible seulement maintenant car `56803a8` est le HEAD actuel,
+  sans commit suivant pour masquer l'écart.
+- **Corrigé** (`5991e5a`) : régénération complète contre l'arbre actuel
+  (373 fichiers suivis, 0 incohérence, 0 manquant, 0 en trop, vérifié
+  octet par octet). Workflow ajusté pour la suite : indexer les nouveaux
+  fichiers avant de régénérer les hashes, pas après.
+
+### État après cette entrée
+```text
+Campagne 5 (56803a8) officiellement archivée comme baseline de référence
+GitHub synchronisé (origin/main = HEAD local)
+Fichier de hashes intégralement corrigé et vérifié (5991e5a)
+k_min≈9-10 (campagne 4) reste INVALIDÉ -- ne pas le réintroduire
+implicitement dans une future campagne
+```
