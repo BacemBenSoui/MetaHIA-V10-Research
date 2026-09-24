@@ -2356,3 +2356,63 @@ le comportement de Gate I sur des candidats group_by_signature() (piste
 A, B, ou combinaison) sur des corpus jetables, avant toute reprise de
 la construction de V1-V4
 ```
+
+---
+
+## 2026-09-24 — Campagne 8 (candidate-generation / Gate-I) : rapport intermédiaire — deux obstacles réels trouvés, calibration NON terminée
+
+Exécute la campagne demandée par le porteur du projet après la
+découverte de circularité (`90bed8b`) : tester empiriquement l'Approche
+A (support) + Approche B (null procédural complet) avant toute décision
+architecturale. Rapport complet :
+`documentation/P4U2_Campaign8_CandidateGeneration_GateI_Interim_2026-09-24.md`.
+**Calibration non terminée — deux obstacles réels trouvés en cours de
+route, rapportés honnêtement plutôt que masqués.**
+
+- **Confirmation préalable** : `Cohesion_B` reste dégénérée
+  (cohésion=1,0 exactement) même sous un null procédural complet
+  (reconstruire le graphe, ré-exécuter `group_by_signature()`,
+  recalculer la cohésion des buckets nuls) — vérifié directement, pas
+  seulement sous le null naïf déjà testé au commit précédent.
+- **Obstacle 1, performance** : un premier test de faisabilité (Approche
+  A+B, N_null=30, 3 configurations, 20 graines) a mis 93 minutes à
+  s'exécuter. Cause trouvée par mesure directe :
+  `compute_signatures()` appelle `discover_paths()` une fois PAR ARÊTE
+  au lieu de mutualiser par nœud source. Version optimisée écrite pour
+  cette campagne jetable (le module de production n'est pas modifié),
+  vérifiée identique bit à bit à l'original, gain ~2× — insuffisant
+  pour la grille complète demandée dans un temps raisonnable.
+- **Obstacle 2, un vrai bug de construction du pool nul trouvé et
+  vérifié** : le premier script tirait le pool de ré-échantillonnage
+  nul depuis les seuls nœuds ayant effectivement apparu dans le corpus
+  original, pas depuis l'univers complet de nœuds utilisé pour le
+  construire. Comparaison directe sur le même graphe : les deux
+  constructions donnent des verdicts DIFFÉRENTS (pool observé :
+  distribution nulle [8..14], observé=12, non significatif ; pool
+  univers complet : [11..18], observé=12, encore moins significatif).
+- **Résultat avec la correction appliquée, toujours préoccupant** : taux
+  de faux positifs sur bruit pur, 10 graines par configuration (sacrifiée
+  ici pour un coût de calcul cette fois maîtrisé) : 20 % (petit pool,
+  100 arêtes) et 10 % (grand pool, 600 arêtes) — au-dessus du niveau
+  nominal de 5 % aux deux échelles, avec un renversement de direction
+  par rapport au premier essai bugué (5 %->30 % avant correction,
+  20 %->10 % après). Réserve statistique habituelle (10 répétitions
+  insuffisantes pour une calibration fine), mais le signal est cohérent
+  dans le sens « au-dessus du nominal » aux deux échelles.
+- **Grille complète demandée (comptes de classes, tailles, comparaison
+  A/B systématique, sensibilité au nombre de classes) non exécutée**,
+  pour la raison de coût de calcul ci-dessus.
+
+### État après cette entrée
+```text
+Cohesion_B : confirmé dégénéré sous les deux constructions de null
+Approche A+B (support + null procédural) : FPR au-dessus du nominal aux
+deux échelles testées, avec seulement 10 répétitions -- pas encore
+exploitable pour un gel
+Deux obstacles pratiques documentés : coût de calcul, construction du
+pool nul (piège méthodologique réel, maintenant documenté)
+Corpus V1-V4 : toujours NON CONSTRUITS
+Prochaine étape : décision explicite du porteur du projet sur la
+poursuite de la campagne 8 (réduire la grille, optimiser davantage, ou
+reconsidérer la statistique elle-même)
+```
