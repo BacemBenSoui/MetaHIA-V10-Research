@@ -1791,3 +1791,58 @@ Toujours aucun code de production, aucune valeur numérique gelée,
 aucun benchmark verrouillé construit
 Prochaine étape : décision du porteur du projet
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : mini-campagne Gate H (campagne 4) — résultat négatif honnête sur les seuils fixes, architecture null-comparison proposée à la place
+
+Exécute la mini-campagne Gate H exclusivement demandée par le porteur du
+projet après la campagne 3 (`38b1f74`) : trois décisions demandées (règle
+de partition, seuil de contradiction, seuil de cohésion), sans choisir
+arbitrairement des nombres ronds. Rapport complet :
+`documentation/P4U2_Calibration_Campaign4_2026-09-24.md`.
+
+- **Règle R1 (partition par vote majoritaire sur un vecteur de traits
+  déjà gelé, jamais recherché)** : spécifiée et utilisée partout, sans
+  exception — répond directement au risque de circularité soulevé par le
+  porteur du projet (aucune optimisation de partition n'a lieu).
+- **Résultat inattendu, trouvé avant toute conclusion** : à petits
+  effectifs de dissidents (2 à 6), le bruit naturel peut, par pure
+  coïncidence, atteindre une cohésion de minorité parfaite (1,000) —
+  le modèle de bruit synthétique n'a que trois modes d'échec discrets.
+  Conséquence vérifiée par exécution : `max(cohésion sous bruit) = 1,0000`
+  touche exactement `min(cohésion sous hétérogénéité) = 1,0000` sur la
+  grille testée — **aucun seuil fixe unique ne sépare les deux causes.**
+- **Une comparaison à un modèle nul (à la Gate I) a été testée
+  directement, pas supposée** : à petits effectifs (k≈5-6), elle NE
+  RÉSOUT PAS le problème (coïncidence de bruit à percentile 97,2 contre
+  99,0 pour la vraie hétérogénéité — presque indiscernables). À grands
+  effectifs (k≈18), elle fonctionne parfaitement (0 % de faux positifs
+  sur 20 répétitions de bruit, contre percentile 100 %/z=14,8 pour
+  l'hétérogénéité). **La frontière de fiabilité a été localisée entre
+  k≈7 et k≈10** (taux de faux positifs 7,1 %/6,7 % en dessous, 0,0 % à
+  partir de k≈9,7).
+- **Réponse réelle aux trois décisions demandées** : la décision 1 est
+  résolue (Règle R1). Les décisions 2 et 3 ne sont PAS deux nombres
+  isolés — reformulées en un plancher d'effectif absolu de dissidents
+  (~9-10, pas une fraction fixe) et une comparaison à un modèle nul
+  (pas un seuil fixe sur la cohésion, prouvé dangereux). **Conséquence
+  d'architecture** : Gate H devrait être structurée comme Gate I
+  (statistique de groupe contre modèle nul, avec un plancher d'effectif
+  sous lequel elle échoue proprement en INSUFFICIENT_STRUCTURAL_INFORMATION),
+  pas avec des seuils fixes — proposition issue de cette calibration, pas
+  encore endossée.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, CALIBRATION #1/#2/#3/#4 EXÉCUTÉES
+Acquis : règle de partition de Gate H résolue (R1) ; seuils fixes sur la
+cohésion de minorité démontrés dangereux ; comparaison à un modèle nul
+validée au-delà d'un plancher d'effectif (~9-10), pas en-deçà
+Ouvert : localisation précise du plancher, protocole exact du modèle nul
+pour ce sous-test, robustesse à d'autres modèles de bruit, endossement
+de l'architecture proposée pour Gate H
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision du porteur du projet
+```
