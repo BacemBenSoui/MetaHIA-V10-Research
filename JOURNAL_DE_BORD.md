@@ -1731,3 +1731,63 @@ Toujours aucun code de production, aucune valeur numérique gelée,
 aucun benchmark verrouillé construit
 Prochaine étape : décision du porteur du projet
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : calibration jetable, campagne 3 (Gate H bruit vs hétérogénéité, robustesse multi-graines, taille finale) — toujours aucun code
+
+Exécute la campagne ciblée en trois points explicitement demandée par le
+porteur du projet après lecture de la campagne 2 (`97981f0`). Script
+jetable non committé, même discipline. Rapport complet :
+`documentation/P4U2_Calibration_Campaign3_2026-09-24.md`.
+
+- **Gate H — résultat décisif, généralisation nécessaire de
+  `contradiction_support`** : deux corpus construits pour représenter
+  deux CAUSES différentes du même désaccord — bruit naturel (une seule
+  relation réelle, échecs idiosyncrasiques par tirage de Bernoulli,
+  30 répétitions par niveau) vs hétérogénéité manifeste (deux vraies
+  classes internes uniformes mélangées). **À un niveau de
+  `contradiction_support` quasiment identique (~0,10), les deux causes
+  sont numériquement indiscernables sur cette seule mesure (0,105 vs
+  0,100) mais nettement séparées sur la cohésion interne du sous-groupe
+  dissident (0,537 vs 1,000 exactement)** — le bruit naturel produit une
+  minorité dispersée qui se dégrade encore avec le niveau de bruit
+  (0,772 → 0,406), l'hétérogénéité manifeste produit systématiquement
+  une cohésion de minorité parfaite. **Conséquence proposée, pas encore
+  endossée** : Gate H devrait exiger conjointement `contradiction_support`
+  au-dessus d'un seuil ET une cohésion interne élevée de la minorité —
+  un raffinement issu de cette calibration, à valider explicitement par
+  le porteur du projet avant toute écriture dans le protocole.
+- **Correction multi-comparaisons — robustesse confirmée sur 20
+  graines**, répétant le scénario 1-vrai-groupe + 9-candidats-nuls de la
+  campagne 2 : taux de faux positifs corrigé toujours nettement sous le
+  seuil nominal de 5 % pour les trois statistiques (1,7 %/0,6 %/0,0 %),
+  vrai signal détecté sur les 20 graines et les trois statistiques sans
+  exception. `Cohesion_A` reste, sur 20 graines, la plus vulnérable sans
+  correction (16,7 % en moyenne — même ordre de grandeur que le 33 % à
+  une seule graine de la campagne 2, pas un hasard de graine).
+- **Taille finale de groupe — proposition concrète et justifiée** :
+  balayage de taille (20 à 60) sur V1 (p=0,9) et V4/PARTIAL (p=0,8)
+  simultanément. `group_size=40` est la plus petite taille testée où le
+  cas difficile franchit le seuil conventionnel avec une marge réelle
+  (z=2,18, pas seulement 1,96) pour les trois statistiques, tandis que
+  V1 reste très largement significatif et le contrôle négatif (p=0,5)
+  reste toujours nettement non significatif sans dérive avec la taille.
+  Les tailles 20/30 (utilisées implicitement en campagnes 1-2) sont
+  maintenant démontrées insuffisantes pour éloigner V4 de la frontière
+  de puissance.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, CALIBRATION #1/#2/#3 EXÉCUTÉES
+Acquis : correction multi-comparaisons robuste sur 20 graines ; taille
+de groupe proposée (40) avec marge de puissance démontrée ; limite de
+contradiction_support seul démontrée pour Gate H, avec un raffinement
+proposé (cohésion de minorité) non encore endossé
+Ouvert : endosser ou rejeter le raffinement de Gate H, geler ses seuils
+numériques, geler formellement group_size=40, choix final de la
+statistique de cohésion
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision du porteur du projet
+```
