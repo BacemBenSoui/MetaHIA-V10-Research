@@ -2246,3 +2246,54 @@ verrouillé
 Prochaine étape : décision explicite du porteur du projet -- construire
 le benchmark verrouillé V1-V4 (protocole Sec. 14), ou autre priorité
 ```
+
+---
+
+## 2026-09-24 — Cadrage du benchmark verrouillé V1-V4 — lacune de circularité formalisée en exigence de construction
+
+Répond à la demande explicite « Cadrez le benchmark verrouillé V1-V4 »,
+l'étape suivante de la séquence gelée du protocole après le module
+minimal (`2174d00`). Document produit :
+`documentation/P4U2_V1V4_Locked_Benchmark_Scope_V0_1.md`. **Aucun
+corpus, aucun code, aucune valeur verrouillée** — cadrage seul.
+
+- **Cinq décisions numériques nouvelles**, chacune reliée explicitement
+  à une preuve déjà produite par C1-C7 (jamais inventée ici) : seuil de
+  percentile de Gate I pour ce benchmark (proposition 95 %, cohérence
+  avec Gate H + toute l'analyse de puissance des campagnes 2-3 a été
+  conduite à ce seuil) ; profondeur de signature D=3 retenue mais
+  explicitement disclosed comme jamais testée par ablation (D=2/D=4) ;
+  taille de groupe par cas (40 pour V1/V4, justifié par la marge de
+  puissance de la campagne 3 ; 20 pour V2/V3, contrôles négatifs sans
+  exigence de puissance) ; N_null=300 ; correction multi-comparaisons
+  nécessitant des candidats-leurres réalistes dans chaque corpus, pas
+  seulement le groupe cible isolé.
+- **Architecture d'orchestration requise, absente du module minimal
+  par construction** : un futur `p4u2_locked_benchmark_runner_v0_1.py`
+  en miroir exact de celui de P4-U.1 (`run_discovery_and_gates` ->
+  `commit_predictions` avec vérification statique+dynamique du témoin
+  -> `reveal_and_compare` -> `run_locked_benchmark`).
+- **Exigence anti-circularité formalisée, trouvée en préparant ce
+  cadrage** : aucune campagne C1-C7 n'a jamais fait tourner
+  `group_by_signature()` sur un corpus complet en laissant le pipeline
+  choisir lui-même quel bucket tester — chaque test recevait toujours
+  un groupe déjà choisi avec vérité terrain connue. **Le benchmark
+  verrouillé est donc le premier test réel de la chaîne complète
+  signature -> candidats -> Gate I -> Gate H**, pas une répétition de la
+  calibration — chaque cas V1-V4 doit être construit comme un corpus
+  complet avec des buckets-leurres réalistes, jamais comme « le groupe
+  cible plus son étiquette ».
+- **Spécification des quatre cas**, reprise du protocole Sec. 14 et
+  complétée des paramètres ci-dessus, chacun avec son exigence de
+  démonstration d'identifiabilité pré-registrée avant tout run.
+- **Discipline anti-fuite** reprise de P4-T/P4-U.1 : `G_train`/`G_holdout`/
+  `G_negative` disjoints, futur `FrozenPatternU2` anticipé sans fuite
+  d'identité d'entraînement, témoin jamais importé avant commit.
+
+### État après cette entrée
+```text
+P4-U.2 : CADRAGE DU BENCHMARK VERROUILLÉ V1-V4 PRODUIT
+Toujours aucun corpus construit, aucun code de runner écrit
+Prochaine étape : décision explicite du porteur du projet -- construire
+les corpus V1-V4, écrire FrozenPatternU2 et le runner, run réel
+```
