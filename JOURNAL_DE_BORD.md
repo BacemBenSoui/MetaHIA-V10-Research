@@ -1989,3 +1989,59 @@ aucun benchmark verrouillé construit
 Prochaine étape : décision du porteur du projet (gel provisoire
 HYPOTHESIS_ONLY de Gate H, Volet C, ou calibration fine)
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : campagne 7 (Volet C) — le plancher k≥8 de Gate H confirmé contre un corpus structurel réel, indépendamment du pool synthétique
+
+Exécute le Volet C, pré-enregistré avant exécution exactement comme
+spécifié par le porteur du projet : `n_null=500`, tailles de groupe
+20/30/40, k cibles 5-6-7-8-9-10-12, même règle R1 et même modèle nul
+corrigé que les campagnes 5/6, sans aucune modification. Rapport
+complet :
+`documentation/P4U2_Calibration_Campaign7_VoletC_RealCorpus_2026-09-24.md`.
+
+- **Pool de fond réel, jamais ajusté** : union brute des
+  `discovery_facts`/`evidence_facts` de quatre corpus de faits déjà
+  utilisés dans les expériences M6/M7 de ce dépôt (organisation, chaîne
+  d'approvisionnement, bibliothèque, arbre généalogique — 134 faits au
+  total). Composition réelle très différente des pools synthétiques des
+  campagnes 5-6 : 72 % de chaînes profondes (has_depth2=1,has_depth3=1),
+  15 % d'impasses, 13 % à un seul saut.
+- **Résultat central : le plancher k≥8 trouvé en campagne 6 sur pools
+  synthétiques SURVIT sur ce corpus réel** — sur les trois tailles
+  testées (20, 30, 40), une transition nette apparaît entre k=7 (taux de
+  faux positifs 6,7-20,7 % selon la taille) et k=8 (taux chutant à
+  3,3-3,4 % partout). La dépendance à la taille du groupe trouvée en
+  campagne 6 se confirme aussi : à k=5-7, taille 20 donne des taux
+  nettement plus bas (6,7-7,7 %) que tailles 30/40 (13,8-20,7 %) — la
+  même relation `(k, taille) → comportement du null`, sur des données
+  totalement indépendantes du pool synthétique.
+- **Réserve explicite maintenue** : 30 graines ne suffisent pas à
+  distinguer un taux réellement nul d'un taux simplement non observé ;
+  les signaux à 13,8-20,7 % sont crédibles par leur cohérence avec la
+  campagne 6, pas encore calibrés avec précision. Le pool réel (134
+  arêtes) est plus petit que les pools synthétiques (270), impliquant un
+  recouvrement non négligeable entre réplicats nuls aux tailles de
+  groupe les plus grandes — limite des données réelles disponibles, pas
+  un choix de conception.
+- **Conclusion pour la gouvernance** : l'enveloppe `k≥8` (tailles 20-40)
+  est maintenant validée sur QUATRE pools de fond indépendants (3
+  synthétiques pré-enregistrés + 1 réel). L'hétérogénéité manifeste
+  reste toujours nettement séparée (97,2 à 100,0 selon la taille) sur
+  les 21 cellules testées.
+
+### État après cette entrée
+```text
+P4-U.2 : CALIBRATION #1 À #7 (VOLET C) EXÉCUTÉES
+Acquis : enveloppe k≥8 (tailles 20-40) validée sur 4 pools de fond
+indépendants (3 synthétiques + 1 réel) -- plus solide que la seule
+robustesse au pool synthétique de la campagne 6
+Ouvert : gel formel de Gate H (fail-closed, proposé par le porteur du
+projet -- percentile≥95%, correction multi-comparaisons, enveloppe k≥8,
+CALIBRATION_INSUFFICIENT hors enveloppe), non encore décidé
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision explicite du porteur du projet -- geler
+Gate H v1.0, ou prolonger encore la calibration
+```
