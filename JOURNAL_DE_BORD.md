@@ -1940,3 +1940,52 @@ Fichier de hashes intégralement corrigé et vérifié (5991e5a)
 k_min≈9-10 (campagne 4) reste INVALIDÉ -- ne pas le réintroduire
 implicitement dans une future campagne
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : campagne 6, Volets A/B — une vraie dégradation aux petits k réapparaît, avec des preuves méthodologiquement solides cette fois (résolution + robustesse au pool)
+
+Exécute les Volets A et B de la campagne demandée par le porteur du
+projet après l'archivage de la campagne 5 comme baseline. Le Volet C
+(pool dérivé d'un corpus réel), de priorité plus basse, n'est pas tenté
+dans cette passe. Rapport complet :
+`documentation/P4U2_Calibration_Campaign6_2026-09-24.md`.
+
+- **Volet A (k=3 à 7, 200 graines/cellule, contre 20 en campagne 5)** :
+  révèle, avec une résolution que 20 graines ne permettaient pas, une
+  vraie dégradation MONOTONE du taux de faux positifs — 25,0 % à k=3,
+  19,7 % à k=4, 8,0 % à k=5, 7,1 % à k=6, 4,0 % à k=7 (niveau nominal).
+  Ce n'était pas visible dans la plage testée par la campagne 5 (k≥7).
+- **Volet B (robustesse à 3 pools pré-enregistrés : 150/80/40 baseline,
+  120/90/60, 90/90/90 — jamais choisis après avoir vu le résultat)** :
+  comportement qualitatif remarquablement stable sur les trois
+  compositions à chaque niveau de k (7 à 15) — le bon comportement n'est
+  pas fabriqué par le choix spécifique du pool 150/80/40. Hétérogénéité
+  manifeste toujours séparée parfaitement (percentile 100,0) sur les 18
+  cellules testées, sans exception.
+- **Constat combiné, distinct de la campagne 4** : un plancher réel
+  existe bien aux petits effectifs, mais il n'est PAS une fonction de k
+  seul — la cellule k=7 se comporte différemment selon que le groupe
+  candidat fait 20 (Volet A, FP=4,0 %) ou 40 observations (Volet B,
+  FP=13,8 %, stable sur les 3 pools) à contamination ajustée pour le
+  même k moyen. Ceci confirme le point conceptuel du porteur du projet :
+  la bonne abstraction est la cohésion comparée à sa distribution nulle
+  propre, pas un simple seuil `k < X → invalide` — mais un plancher
+  approximatif reste pratiquement nécessaire (k≈8-10 apparaît
+  systématiquement sûr sur toutes les configurations testées).
+
+### État après cette entrée
+```text
+P4-U.2 : CALIBRATION #1 À #6 (VOLETS A/B) EXÉCUTÉES
+Acquis : dégradation aux petits k confirmée avec résolution et
+robustesse au pool (pas un artefact d'une seule composition) ; k≈8-10
+systématiquement sûr sur toutes les configurations testées ; k=7 zone
+frontière dépendant de la taille du groupe, pas seulement de k
+Ouvert : Volet C (pool dérivé d'un corpus réel, priorité plus basse) ;
+calibration fine du taux de FP à k=8-10 ; comportement à des tailles de
+groupe intermédiaires (20-40) non testées
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision du porteur du projet (gel provisoire
+HYPOTHESIS_ONLY de Gate H, Volet C, ou calibration fine)
+```
