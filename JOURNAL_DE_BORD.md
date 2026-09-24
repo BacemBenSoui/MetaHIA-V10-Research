@@ -2100,3 +2100,58 @@ V1-V4 construit
 Prochaine étape : décision explicite du porteur du projet -- démarrer
 l'implémentation minimale de P4-U.2, ou autre priorité
 ```
+
+---
+
+## 2026-09-24 — Cadrage de l'implémentation minimale de P4-U.2 — deux lacunes trouvées et rendues explicites avant tout code
+
+Répond à la demande explicite « Cadrez l'implémentation minimale de
+P4-U.2 ». Document produit :
+`documentation/P4U2_Minimal_Implementation_Scope_V0_1.md`. **Aucun code
+de production écrit** — cadrage seul, même discipline que pour P4-T et
+P4-U.1.
+
+- **Récapitulatif de ce que C1-C7 ont réellement figé** : signature
+  (Sec. 7, hypothèse de travail), `Cohesion_B` (seule statistique
+  validée de bout en bout), modèle nul `group-resample-only` CORRIGÉ
+  (piste 2, topology-only explicitement invalidé comme mécanisme
+  principal), correction multi-comparaisons par maximum, règle de
+  partition R1, Gate H v1.0 gelée.
+- **Deux lacunes trouvées en préparant ce cadrage, non résolues par la
+  calibration** :
+  1. Le seuil de percentile de Gate I lui-même n'a JAMAIS été
+     formellement gelé (contrairement à Gate H) — décision de cadrage :
+     paramètre obligatoire dans la future fonction d'évaluation,
+     jamais une valeur par défaut silencieuse.
+  2. Aucun document gelé ne spécifie comment un candidat de
+     regroupement C est proposé avant Gate I (le protocole démarre
+     directement à « candidat C » en entrée de Gate I). Proposition de
+     cadrage : regroupement par égalité exacte de signature complète
+     (même mécanique que `group_by_skeleton()` de P4-U.1), explicitement
+     documentée comme une décision NOUVELLE et non calibrée, jamais
+     testée par C1-C7 (qui ont toujours évalué Gate I/Gate H sur des
+     groupes déjà construits avec vérité terrain connue).
+- **Structure de module proposée** : un seul fichier
+  `p4u2_autonomous_relation_discovery_v0_1.py`, sept fonctions/classes
+  couvrant signature/candidats/cohésion/modèle nul/Gate I/R1+hypothèse/
+  Gate H, aucune fonction d'orchestration de bout en bout (réservée au
+  futur runner de benchmark, mirroir de la séparation P4-U.1). Sept
+  tests déterministes proposés, chacun reproduisant en test de
+  régression permanent un résultat déjà établi par une campagne de
+  calibration précise (TWIN, chevauchement partiel z=3,79,
+  multi-comparaisons, enveloppe Gate H, bruit vs hétérogénéité,
+  absence de vérité terrain).
+- **Explicitement exclu du module minimal** : `Cohesion_A`/`Cohesion_C`
+  (non validées de bout en bout), le modèle nul `topology-only`
+  (prouvé dangereux seul), la sélection intelligente du pool (P4-U.2.2,
+  hors cadrage), toute réactivation de `e20d_*`.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, GATE H v1.0 GELÉE, CADRAGE
+D'IMPLÉMENTATION PRODUIT (ce document)
+Toujours aucun code de production P4-U.2 écrit
+Prochaine étape : décision explicite du porteur du projet -- valider ce
+cadrage (notamment les deux lacunes identifiées) puis écrire le module
+et sa suite de tests
+```
