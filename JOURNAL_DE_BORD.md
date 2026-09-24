@@ -2297,3 +2297,62 @@ Toujours aucun corpus construit, aucun code de runner écrit
 Prochaine étape : décision explicite du porteur du projet -- construire
 les corpus V1-V4, écrire FrozenPatternU2 et le runner, run réel
 ```
+
+---
+
+## 2026-09-24 — Découverte bloquante en préparant V1-V4 : Gate I toujours PASS sur les candidats de group_by_signature() — aucun corpus construit
+
+Réponse à « Validez ce cadrage, construisez les corpus V1-V4 ». Le
+protocole (Sec. 14) exige une démonstration d'identifiabilité avant
+tout run — cette vérification, faite par exécution directe avant toute
+construction, **a révélé un défaut de mécanisme bloquant**. Rapport
+complet :
+`documentation/P4U2_Candidate_Generation_Gate_I_Circularity_Finding_2026-09-24.md`.
+**Aucun corpus V1-V4 construit.**
+
+- **Le test** : 3 classes de signature arbitraires, aucune régularité
+  injectée (40 arêtes à 1 saut, 40 à 2 sauts, 40 impasses). Les TROIS
+  buckets trouvés par `group_by_signature()` franchissent Gate I à
+  percentile=100,0 — reproduit une seconde fois sur un corpus à 2
+  classes (même résultat). Systématique, pas un cas limite.
+- **Cause racine** : `group_by_signature()` regroupe par ÉGALITÉ EXACTE
+  — tout bucket produit est donc parfaitement homogène par
+  construction, donnant `Cohesion_B=1,0` TOUJOURS, quel que soit le
+  contenu. Un ré-échantillonnage nul depuis un pool à plusieurs classes
+  ne donne presque jamais une cohésion parfaite — donc n'importe quel
+  bucket, y compris purement arbitraire, paraît « exceptionnellement
+  cohérent ». Mécanique, pas statistique.
+- **Conséquence sur V1-V4** : V1 (les leurres passeraient tous), V2
+  (le bucket TWIN, censé échouer, passerait — l'exact opposé de
+  l'attendu), V3 (même défaut sur les buckets internes du modèle nul).
+  Construire ces corpus maintenant verrouillerait un benchmark qui ne
+  peut structurellement jamais échouer — sans valeur scientifique.
+- **P4-U.1 avait déjà évité ce piège, pas par accident** :
+  `group_by_skeleton()` regroupe aussi par égalité exacte, mais son
+  Gate B teste le SUPPORT (un compte), jamais une cohésion interne —
+  précisément parce qu'une cohésion interne à une classe déjà égalée
+  exactement est triviale. P4-U.2 a réutilisé `Cohesion_B` (calibrée par
+  C1-C7 sur des groupes construits à la main, jamais produits par
+  égalité exacte) sans que cette combinaison spécifique n'ait jamais été
+  testée — exactement la réserve de circularité déjà signalée dans le
+  cadrage d'implémentation (Sec. 2.2), confirmée plus sévère qu'énoncée
+  initialement.
+- **Rien de remis en cause** : le module et ses 7 tests restent valides
+  pour leur usage calibré (aucun ne combine `group_by_signature()` avec
+  `evaluate_gate_i()`). Deux pistes de correction proposées, ni l'une ni
+  l'autre décidée : (A) statistique de SUPPORT au lieu de cohésion,
+  mirroir direct de P4-U.1 ; (B) modèle nul de Gate I reproduisant la
+  procédure complète de génération de candidat, mirroir de la correction
+  déjà appliquée à Gate H en campagne 5.
+
+### État après cette entrée
+```text
+p4u2_autonomous_relation_discovery_v0_1.py : INCHANGÉ, toujours valide
+Cadrage V1-V4 : PARTIELLEMENT INVALIDÉ (Sec. 5, spécification des 4 cas,
+ne peut pas être construite telle quelle)
+Corpus V1-V4 : NON CONSTRUITS
+Prochaine étape : décision explicite du porteur du projet -- calibrer
+le comportement de Gate I sur des candidats group_by_signature() (piste
+A, B, ou combinaison) sur des corpus jetables, avant toute reprise de
+la construction de V1-V4
+```
