@@ -2194,3 +2194,55 @@ Toujours aucun code de production P4-U.2 écrit
 Prochaine étape : décision explicite du porteur du projet -- écrire le
 module p4u2_autonomous_relation_discovery_v0_1.py et sa suite de tests
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : premier code de production écrit — module minimal + 7 tests, tous reproduisant un résultat déjà établi par C1-C7
+
+Répond à la demande explicite « Écrivez le module et sa suite de
+tests ». **Premier code de production de la lignée P4-U.2**, exactement
+selon le cadrage révisé (`documentation/P4U2_Minimal_Implementation_Scope_V0_1.md`).
+
+- **`p4u2_autonomous_relation_discovery_v0_1.py`** : signature (Sec. 7,
+  identique aux scripts jetables), `group_by_signature()` (génération de
+  candidats par égalité exacte, qualifiée *candidate-generation
+  heuristic* dans sa propre docstring), `Cohesion_B` seule, modèle nul
+  `group-resample-only` corrigé (piste 1 topology-only délibérément
+  absente du fichier), `evaluate_gate_i()` (`percentile_threshold`
+  obligatoire, aucun défaut), `gate_i_family_threshold()`
+  (max-statistique), `partition_by_majority_trait()` (Règle R1),
+  `contradiction_support_v2()`, `StructuralClassHypothesis`,
+  `evaluate_gate_h()` (Gate H v1.0 gelée : percentile≥95 % codé en dur
+  comme constante `GATE_H_PERCENTILE_THRESHOLD`, enveloppe
+  `k>=8`/`group_size∈[20,40]` vérifiée AVANT tout calcul, `n_null`
+  obligatoire sans défaut, `CALIBRATION_INSUFFICIENT` hors enveloppe,
+  `PASS` immédiat si 0 dissident sans toucher au modèle nul).
+- **Chaque fonction vérifiée par exécution directe avant d'écrire un
+  seul test** (même discipline que les campagnes de calibration) :
+  reproduction exacte du corpus TWIN (percentile=50,0 exact), du cas
+  PARTIAL à taille 40 (PASS, percentile=99,3), du scénario 1 vrai groupe
+  + 9 candidats nuls (0/9 faux positifs), de l'enveloppe Gate H (taille
+  10 -> `CALIBRATION_INSUFFICIENT`).
+- **Un bug de test trouvé et corrigé avant de committer, pas après** :
+  le premier jeu de graines choisi pour le test bruit-vs-hétérogénéité
+  (seed=5000) tombait par hasard sous le plancher `k>=8` de l'enveloppe
+  (seulement 4 dissidents), faisant échouer l'assertion — corrigé en
+  balayant 30 graines et en choisissant une (seed=5001) confirmée par
+  exécution directe comme tombant dans l'enveloppe et donnant `FAIL` de
+  façon reproductible.
+- **7 tests déterministes**, tous PASS, chacun correspondant exactement
+  au plan du cadrage (Sec. 4) : signature, TWIN, PARTIAL à taille 40,
+  multi-comparaisons, enveloppe Gate H, bruit vs hétérogénéité, absence
+  statique de vérité terrain (vérification par lecture du code source
+  + inspection de la signature de `group_by_signature`).
+- 747 tests dans la suite complète (740 + 7 nouveaux), 0 régression.
+
+### État après cette entrée
+```text
+P4-U.2 : PREMIER CODE DE PRODUCTION ÉCRIT
+p4u2_autonomous_relation_discovery_v0_1.py + 7 tests, 747/0 régression
+Toujours aucun cas V1-V4 construit, aucun run réel contre un benchmark
+verrouillé
+Prochaine étape : décision explicite du porteur du projet -- construire
+le benchmark verrouillé V1-V4 (protocole Sec. 14), ou autre priorité
+```
