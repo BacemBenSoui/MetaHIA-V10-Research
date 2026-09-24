@@ -1846,3 +1846,60 @@ Toujours aucun code de production, aucune valeur numérique gelée,
 aucun benchmark verrouillé construit
 Prochaine étape : décision du porteur du projet
 ```
+
+---
+
+## 2026-09-24 — P4-U.2 : campagne 5 — le modèle nul de Gate H corrigé (procédure complète reproduite) révise à la baisse le plancher trouvé en campagne 4
+
+Répond à l'unique question méthodologique posée par le porteur du projet
+après la campagne 4 (`32bb49d`) : le modèle nul de la campagne 4
+ré-échantillonnait directement un sous-ensemble de taille `k`, sans
+reproduire la vraie procédure de sélection (traits gelés → règle R1 →
+dissident émergent → sa cohésion), avec un risque de sous-estimer le
+taux de faux positifs. Rapport complet :
+`documentation/P4U2_Calibration_Campaign5_2026-09-24.md`.
+
+- **Modèle nul corrigé, construit et testé** : pool de fond réaliste et
+  diversifié (270 arêtes, trois classes structurelles réellement
+  différentes en proportions 80/150/40, aucune ne dominant au point de
+  fixer d'avance la majorité d'un tirage nul) ; pour chaque réplicat,
+  tirer un groupe nul de même taille, appliquer les mêmes traits gelés
+  et la même règle R1, prendre la cohésion du dissident qui émerge
+  NATURELLEMENT de ce tirage — jamais un raccourci ré-échantillonnant
+  directement `k` éléments.
+- **Résultat décisif, révise directement la campagne 4** : sous ce
+  modèle nul corrigé, balayage k∈{7,8,9,10,12,15}, 20 graines par
+  niveau — le taux de faux positifs du bruit reste proche du niveau
+  nominal de 5 % sur TOUTE la plage testée (0 %/5 %/10 %, sans tendance
+  monotone, cohérent avec un simple bruit d'échantillonnage à 20
+  graines), tandis que l'hétérogénéité manifeste reste séparée de façon
+  parfaite (percentile 100,0 exactement) à chaque niveau. **Le plancher
+  `k_min≈9-10` trouvé en campagne 4 n'est PAS confirmé** — il provenait
+  très probablement du défaut du modèle nul raccourci de la campagne 4
+  (pool mélangeant arêtes membres et arêtes de continuation structurelle,
+  jamais elles-mêmes des candidates), pas d'une propriété fondamentale
+  des petits effectifs de dissidents.
+- **Réserves honnêtes explicitement non résolues** : la plage `k<7` (où
+  la campagne 4 avait trouvé sa coïncidence la plus nette) n'a pas été
+  retestée sous ce null corrigé ; 20 graines par cellule restent
+  insuffisantes pour une calibration fine d'un taux proche de 5 %
+  (anticipé par le porteur du projet lui-même) ; la composition exacte
+  du pool de fond reste un choix de conception, non validé contre un
+  corpus réel.
+- **Proposition de seuil, pas gelée** : percentile ≥ 95 % (même
+  convention que Gate I), avec une marge possible à 97,5-99 % étant
+  donné que l'hétérogénéité atteint systématiquement 100,0.
+
+### État après cette entrée
+```text
+P4-U.2 : PROTOCOLE v0.1 GELÉ, CALIBRATION #1/#2/#3/#4/#5 EXÉCUTÉES
+Acquis : procédure du null Gate H corrigée et validée sur k=7-15 (taux
+de faux positifs proche du nominal, hétérogénéité toujours séparée
+parfaitement) ; le plancher de la campagne 4 révisé, non confirmé
+Ouvert : comportement du null corrigé pour k<7, calibration fine du
+taux de faux positifs (plus de graines), composition du pool de fond
+validée contre un corpus réel, seuil statistique exact de Gate H
+Toujours aucun code de production, aucune valeur numérique gelée,
+aucun benchmark verrouillé construit
+Prochaine étape : décision du porteur du projet
+```
