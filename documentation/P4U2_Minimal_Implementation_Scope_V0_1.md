@@ -12,12 +12,27 @@ Protocole v0.1 (gelé, f6a96b2)
         ↓
 Calibration C1-C7 -> Gate H v1.0 GELÉE (1211bab)
         ↓
-CE CADRAGE                              <- ce document
+CE CADRAGE (v0.1, commit 28ece87)       <- révisé ci-dessous
         ↓
 implémentation (pas commencée)
         ↓
 construction du benchmark verrouillé V1-V4 (pas commencée)
 ```
+
+**Révision (2026-09-24), après relecture du porteur du projet sur
+`28ece87`** — deux corrections apportées avant tout code, aucune
+réouverture du fond du cadrage :
+1. **Réserve de circularité ajoutée** à la Sec. 2.2 : la génération de
+   candidats par égalité exacte de signature, suivie d'une mesure de
+   cohésion sur cette MÊME signature, impose mécaniquement une cohésion
+   interne élevée au groupe ainsi construit — qualification explicite en
+   *candidate-generation heuristic*, jamais une preuve d'identifiabilité
+   en soi, à charge du futur benchmark V1-V4 de le démontrer.
+2. **`evaluate_gate_h` corrigé** (Sec. 3) : `N_null` n'a jamais été gelé
+   comme valeur normative par Gate H v1.0 (seulement « confirmé stable »
+   en calibration) — retiré tout défaut implicite (`n_null=300`),
+   devenu un paramètre obligatoire, même discipline que
+   `percentile_threshold` de Gate I.
 
 ## 1. Ce que la calibration a réellement figé — prêt pour l'implémentation
 
@@ -101,6 +116,26 @@ par C1-C7 (qui ont toujours évalué Gate I/Gate H sur des groupes déjà
 construits avec vérité terrain connue)** — à documenter comme telle
 dans le code, pas présentée comme déjà validée.
 
+**Réserve méthodologique supplémentaire, à ne jamais perdre de vue** :
+si le candidat est construit par égalité exacte de la MÊME signature
+que celle ensuite mesurée par `Cohesion_B`, la chaîne
+
+```text
+signature -> égalité exacte -> groupe candidat -> Cohesion_B
+```
+
+impose nécessairement une cohésion interne très élevée au groupe ainsi
+construit — une partie de ce que Gate I « mesure » est en réalité déjà
+imposée par la procédure de génération du candidat, pas découverte par
+elle. Ceci ne rend pas la proposition inutilisable (Gate I compare
+toujours cette cohésion à un modèle nul, pas à elle-même en isolation),
+mais elle doit être qualifiée explicitement, dans le code et sa
+documentation, de **candidate-generation heuristic** — jamais présentée
+comme une preuve d'identifiabilité en soi. Le futur benchmark verrouillé
+V1-V4 devra démontrer que cette mécanique ne transforme pas simplement
+sa propre définition de candidat en une « découverte » circulaire — un
+critère de conception du futur benchmark, pas encore résolu ici.
+
 ### 2.3 Ce qui est délibérément exclu du module minimal
 
 ```text
@@ -176,8 +211,14 @@ GateHResult                        = dataclass(status, dissenting_count,
                                        minority_cohesion, percentile,
                                        envelope_ok)
 evaluate_gate_h(candidate_sigs,
-    pool_sigs, *, n_null=300,
+    pool_sigs, *, n_null,           # OBLIGATOIRE, pas de défaut --
     seed_base)                      -> GateHResult
+    -- Gate H v1.0 gèle percentile>=95%/k>=8/group_size dans [20,40],
+       JAMAIS N_null lui-même (seulement "confirmé stable" à 200-300 en
+       calibration, jamais gelé comme valeur normative) -- même
+       discipline que percentile_threshold de Gate I (Sec. 2.1) : un
+       appelant doit écrire N_null explicitement, jamais en hériter
+       d'un défaut caché
     -- applique R1, vérifie l'enveloppe (group_size dans [20,40] ET
        k>=8) AVANT tout calcul de percentile ; hors enveloppe ->
        CALIBRATION_INSUFFICIENT immédiat, jamais un calcul silencieux

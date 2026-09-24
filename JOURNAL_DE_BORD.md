@@ -2155,3 +2155,42 @@ Prochaine étape : décision explicite du porteur du projet -- valider ce
 cadrage (notamment les deux lacunes identifiées) puis écrire le module
 et sa suite de tests
 ```
+
+---
+
+## 2026-09-24 — Trois corrections au cadrage d'implémentation, trouvées par le porteur du projet en relisant `28ece87`, appliquées avant tout code
+
+- **`roadmap_version`/`update_date`/`update_label` de `release_manifest.json`
+  restaient à `0.5.5`/`2026-09-17`** malgré la synchronisation de la Road
+  Map (Sec. 15, commit `1211bab`). Vérifié par `git log -p` sur ce
+  fichier : ces trois champs ont été posés UNE SEULE FOIS à la création
+  du dépôt (« V10.0-update-1 ») et jamais retouchés depuis, à travers
+  des dizaines de commits — un marqueur de checkpoint de release, pas un
+  champ mis à jour à chaque commit. Les bumper maintenant inventerait
+  une cadence de versionnement jamais utilisée dans ce fichier.
+  **Conformément à la caractérisation du porteur du projet lui-même**
+  (`1211bab` = synchronisation de contenu, pas une nouvelle version
+  formelle de la Road Map), ceci est maintenant documenté explicitement
+  dans le manifeste plutôt que laissé comme un écart non expliqué.
+- **Réserve de circularité ajoutée** à la Sec. 2.2 du cadrage : générer
+  les candidats par égalité exacte de signature puis mesurer `Cohesion_B`
+  sur cette MÊME signature impose mécaniquement une cohésion interne
+  élevée au groupe ainsi construit. Ne rend pas la proposition
+  inutilisable (Gate I compare toujours contre un modèle nul, jamais la
+  cohésion brute en isolation), mais doit être qualifiée explicitement
+  de *candidate-generation heuristic*, jamais une preuve d'identifiabilité
+  en soi — à charge du futur benchmark V1-V4 de le démontrer.
+- **`evaluate_gate_h` corrigé** : `n_null=300` retiré comme défaut
+  implicite — Gate H v1.0 n'a jamais gelé `N_null` comme valeur
+  normative (seulement « confirmé stable » en calibration), seulement
+  percentile≥95 %/enveloppe k≥8/group_size∈[20,40]. `n_null` devient un
+  paramètre obligatoire, même discipline que `percentile_threshold` de
+  Gate I.
+
+### État après cette entrée
+```text
+P4-U.2 : CADRAGE D'IMPLÉMENTATION RÉVISÉ (trois corrections appliquées)
+Toujours aucun code de production P4-U.2 écrit
+Prochaine étape : décision explicite du porteur du projet -- écrire le
+module p4u2_autonomous_relation_discovery_v0_1.py et sa suite de tests
+```
