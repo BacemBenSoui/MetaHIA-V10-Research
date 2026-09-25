@@ -1,0 +1,753 @@
+{
+ "convention": "claim = hypothesis, evidence = premise; string = opaque leaf NodeRef; '@x' = operator NodeRef op:x; list = apply(op:head, *args)",
+ "items": [
+  {
+   "id": "W-054",
+   "source": "test1",
+   "category": "S-SUB",
+   "premise": "Right now the ambassador is giving a speech in Oslo.",
+   "hypothesis": "Right now the ambassador is giving a speech in Cairo.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "now",
+    [
+     "in",
+     [
+      "give_speech",
+      "ambassador"
+     ],
+     "oslo"
+    ]
+   ],
+   "struct_hypothesis": [
+    "now",
+    [
+     "in",
+     [
+      "give_speech",
+      "ambassador"
+     ],
+     "cairo"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-055",
+   "source": "test1",
+   "category": "S-SUB",
+   "premise": "Right now the surgeon is operating in Berlin.",
+   "hypothesis": "Right now the surgeon is operating in Madrid.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "now",
+    [
+     "in",
+     [
+      "operate",
+      "surgeon"
+     ],
+     "berlin"
+    ]
+   ],
+   "struct_hypothesis": [
+    "now",
+    [
+     "in",
+     [
+      "operate",
+      "surgeon"
+     ],
+     "madrid"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-056",
+   "source": "test1",
+   "category": "S-SUB",
+   "premise": "Right now the conductor is rehearsing in Vienna.",
+   "hypothesis": "Right now the conductor is rehearsing in Sydney.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "now",
+    [
+     "in",
+     [
+      "rehearse",
+      "conductor"
+     ],
+     "vienna"
+    ]
+   ],
+   "struct_hypothesis": [
+    "now",
+    [
+     "in",
+     [
+      "rehearse",
+      "conductor"
+     ],
+     "sydney"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-090",
+   "source": "v01",
+   "category": "S-SUB",
+   "premise": "The car is parked at the school.",
+   "hypothesis": "The car is parked at the hospital.",
+   "human_label": "UNKNOWN",
+   "struct_premise": [
+    "at",
+    [
+     "park",
+     "car"
+    ],
+    "school"
+   ],
+   "struct_hypothesis": [
+    "at",
+    [
+     "park",
+     "car"
+    ],
+    "hospital"
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-087",
+   "source": "v01",
+   "category": "S-SUB",
+   "premise": "The man works in 2024.",
+   "hypothesis": "The man works in 2025.",
+   "human_label": "UNKNOWN",
+   "struct_premise": [
+    "in",
+    [
+     "work",
+     "man"
+    ],
+    "2024"
+   ],
+   "struct_hypothesis": [
+    "in",
+    [
+     "work",
+     "man"
+    ],
+    "2025"
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-052",
+   "source": "v01",
+   "category": "S-SUB",
+   "premise": "A man holds a red ball.",
+   "hypothesis": "The man is holding a blue ball.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "hold",
+    "man",
+    [
+     "attr",
+     "ball",
+     "red"
+    ]
+   ],
+   "struct_hypothesis": [
+    "hold",
+    "man",
+    [
+     "attr",
+     "ball",
+     "blue"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-041",
+   "source": "test1",
+   "category": "S-SUB",
+   "premise": "The attorney questioned the witness.",
+   "hypothesis": "The lawyer questioned the witness.",
+   "human_label": "SUPPORTED",
+   "struct_premise": [
+    "question",
+    "attorney",
+    "witness"
+   ],
+   "struct_hypothesis": [
+    "question",
+    "lawyer",
+    "witness"
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-096",
+   "source": "test1",
+   "category": "S-SUB",
+   "premise": "The festival began on Friday evening.",
+   "hypothesis": "The festival began on Sunday morning.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "on",
+    [
+     "begin",
+     "festival"
+    ],
+    [
+     "attr",
+     "friday",
+     "evening"
+    ]
+   ],
+   "struct_hypothesis": [
+    "on",
+    [
+     "begin",
+     "festival"
+    ],
+    [
+     "attr",
+     "sunday",
+     "morning"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-001",
+   "source": "v01",
+   "category": "S-ID",
+   "premise": "The man runs in the park.",
+   "hypothesis": "The man is running in the park.",
+   "human_label": "SUPPORTED",
+   "struct_premise": [
+    "in",
+    [
+     "run",
+     "man"
+    ],
+    "park"
+   ],
+   "struct_hypothesis": [
+    "in",
+    [
+     "run",
+     "man"
+    ],
+    "park"
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-005",
+   "source": "v01",
+   "category": "S-ID",
+   "premise": "A dog eats food.",
+   "hypothesis": "The dog is eating food.",
+   "human_label": "SUPPORTED",
+   "struct_premise": [
+    "eat",
+    "dog",
+    "food"
+   ],
+   "struct_hypothesis": [
+    "eat",
+    "dog",
+    "food"
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-001",
+   "source": "test1",
+   "category": "S-ID",
+   "premise": "The librarian stamps the new books on Tuesday.",
+   "hypothesis": "The new books are stamped by the librarian on Tuesday.",
+   "human_label": "SUPPORTED",
+   "struct_premise": [
+    "on",
+    [
+     "stamp",
+     "librarian",
+     [
+      "attr",
+      "books",
+      "new"
+     ]
+    ],
+    "tuesday"
+   ],
+   "struct_hypothesis": [
+    "on",
+    [
+     "stamp",
+     "librarian",
+     [
+      "attr",
+      "books",
+      "new"
+     ]
+    ],
+    "tuesday"
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-002",
+   "source": "test1",
+   "category": "S-ID",
+   "premise": "A plumber is fixing the leaking pipe in the cellar.",
+   "hypothesis": "The leaking pipe is being fixed by a plumber in the cellar.",
+   "human_label": "SUPPORTED",
+   "struct_premise": [
+    "in",
+    [
+     "fix",
+     "plumber",
+     [
+      "attr",
+      "pipe",
+      "leaking"
+     ]
+    ],
+    "cellar"
+   ],
+   "struct_hypothesis": [
+    "in",
+    [
+     "fix",
+     "plumber",
+     [
+      "attr",
+      "pipe",
+      "leaking"
+     ]
+    ],
+    "cellar"
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-003",
+   "source": "test1",
+   "category": "S-ID",
+   "premise": "The coach praised the young goalkeeper after the match.",
+   "hypothesis": "The young goalkeeper was praised by the coach after the match.",
+   "human_label": "SUPPORTED",
+   "struct_premise": [
+    "after",
+    [
+     "praise",
+     "coach",
+     [
+      "attr",
+      "goalkeeper",
+      "young"
+     ]
+    ],
+    "match"
+   ],
+   "struct_hypothesis": [
+    "after",
+    [
+     "praise",
+     "coach",
+     [
+      "attr",
+      "goalkeeper",
+      "young"
+     ]
+    ],
+    "match"
+   ],
+   "relations": []
+  },
+  {
+   "id": "C-01",
+   "source": "constructed",
+   "category": "S-PERM",
+   "premise": "The dog bites the man.",
+   "hypothesis": "The man bites the dog.",
+   "human_label": null,
+   "struct_premise": [
+    "bite",
+    "dog",
+    "man"
+   ],
+   "struct_hypothesis": [
+    "bite",
+    "man",
+    "dog"
+   ],
+   "relations": []
+  },
+  {
+   "id": "C-02",
+   "source": "constructed",
+   "category": "S-PERM",
+   "premise": "The cat chases the mouse.",
+   "hypothesis": "The mouse chases the cat.",
+   "human_label": null,
+   "struct_premise": [
+    "chase",
+    "cat",
+    "mouse"
+   ],
+   "struct_hypothesis": [
+    "chase",
+    "mouse",
+    "cat"
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-081",
+   "source": "v01",
+   "category": "NEG",
+   "premise": "The man is running.",
+   "hypothesis": "The man is not running.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "run",
+    "man"
+   ],
+   "struct_hypothesis": [
+    "neg",
+    [
+     "run",
+     "man"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-082",
+   "source": "v01",
+   "category": "NEG",
+   "premise": "The woman is not sleeping.",
+   "hypothesis": "The woman is sleeping.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "neg",
+    [
+     "sleep",
+     "woman"
+    ]
+   ],
+   "struct_hypothesis": [
+    "sleep",
+    "woman"
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-083",
+   "source": "v01",
+   "category": "NEG",
+   "premise": "A child is holding a ball.",
+   "hypothesis": "A child is not holding a ball.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "hold",
+    "child",
+    "ball"
+   ],
+   "struct_hypothesis": [
+    "neg",
+    [
+     "hold",
+     "child",
+     "ball"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "P1-057",
+   "source": "v01",
+   "category": "NEG",
+   "premise": "The child drinks water.",
+   "hypothesis": "The child does not drink water.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "drink",
+    "child",
+    "water"
+   ],
+   "struct_hypothesis": [
+    "neg",
+    [
+     "drink",
+     "child",
+     "water"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "C-03",
+   "source": "constructed",
+   "category": "NEG-CONTROL",
+   "premise": "The woman is running.",
+   "hypothesis": "The man is not running.",
+   "human_label": null,
+   "struct_premise": [
+    "run",
+    "woman"
+   ],
+   "struct_hypothesis": [
+    "neg",
+    [
+     "run",
+     "man"
+    ]
+   ],
+   "relations": []
+  },
+  {
+   "id": "W-030",
+   "source": "test1",
+   "category": "OPP",
+   "premise": "The guests arrived before sunset.",
+   "hypothesis": "The guests arrived after sunset.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "before",
+    [
+     "arrive",
+     "guests"
+    ],
+    "sunset"
+   ],
+   "struct_hypothesis": [
+    "after",
+    [
+     "arrive",
+     "guests"
+    ],
+    "sunset"
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "@before",
+     "@after"
+    ]
+   ]
+  },
+  {
+   "id": "W-028",
+   "source": "test1",
+   "category": "OPP",
+   "premise": "The red car reached the finish line first.",
+   "hypothesis": "The red car reached the finish line last.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "first",
+    [
+     "reach",
+     [
+      "attr",
+      "car",
+      "red"
+     ],
+     "finish_line"
+    ]
+   ],
+   "struct_hypothesis": [
+    "last",
+    [
+     "reach",
+     [
+      "attr",
+      "car",
+      "red"
+     ],
+     "finish_line"
+    ]
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "@first",
+     "@last"
+    ]
+   ]
+  },
+  {
+   "id": "W-031",
+   "source": "test1",
+   "category": "OPP",
+   "premise": "The old man opened the gate slowly.",
+   "hypothesis": "The old man closed the gate slowly.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "slowly",
+    [
+     "open",
+     [
+      "attr",
+      "man",
+      "old"
+     ],
+     "gate"
+    ]
+   ],
+   "struct_hypothesis": [
+    "slowly",
+    [
+     "close",
+     [
+      "attr",
+      "man",
+      "old"
+     ],
+     "gate"
+    ]
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "@open",
+     "@close"
+    ]
+   ]
+  },
+  {
+   "id": "W-032",
+   "source": "test1",
+   "category": "OPP",
+   "premise": "The temperature rose during the night.",
+   "hypothesis": "The temperature fell during the night.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "during",
+    [
+     "rise",
+     "temperature"
+    ],
+    "night"
+   ],
+   "struct_hypothesis": [
+    "during",
+    [
+     "fall",
+     "temperature"
+    ],
+    "night"
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "@rise",
+     "@fall"
+    ]
+   ]
+  },
+  {
+   "id": "P1-054",
+   "source": "v01",
+   "category": "OPP",
+   "premise": "The woman is inside the house.",
+   "hypothesis": "The woman is outside the house.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "inside",
+    "woman",
+    "house"
+   ],
+   "struct_hypothesis": [
+    "outside",
+    "woman",
+    "house"
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "@inside",
+     "@outside"
+    ]
+   ]
+  },
+  {
+   "id": "W-050",
+   "source": "test1",
+   "category": "OPP",
+   "premise": "The front door is wide open.",
+   "hypothesis": "The front door is firmly shut.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "attr",
+    [
+     "attr",
+     "door",
+     "front"
+    ],
+    "wide_open"
+   ],
+   "struct_hypothesis": [
+    "attr",
+    [
+     "attr",
+     "door",
+     "front"
+    ],
+    "firmly_shut"
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "wide_open",
+     "firmly_shut"
+    ]
+   ]
+  },
+  {
+   "id": "W-054-R",
+   "source": "test1",
+   "category": "OPP",
+   "premise": "Right now the ambassador is giving a speech in Oslo.",
+   "hypothesis": "Right now the ambassador is giving a speech in Cairo.",
+   "human_label": "CONTRADICTED",
+   "struct_premise": [
+    "now",
+    [
+     "in",
+     [
+      "give_speech",
+      "ambassador"
+     ],
+     "oslo"
+    ]
+   ],
+   "struct_hypothesis": [
+    "now",
+    [
+     "in",
+     [
+      "give_speech",
+      "ambassador"
+     ],
+     "cairo"
+    ]
+   ],
+   "relations": [
+    [
+     "incompatible",
+     "oslo",
+     "cairo"
+    ]
+   ]
+  }
+ ]
+}
