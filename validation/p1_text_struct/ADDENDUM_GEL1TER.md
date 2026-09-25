@@ -1,8 +1,8 @@
-# Addendum GEL n°1-ter — P1-TEXT-STRUCT v0 — PROJET (2026-09-25), non figé
+# Addendum GEL n°1-ter — P1-TEXT-STRUCT v0 (2026-09-25)
 
-**Statut : projet soumis au porteur du projet.** Une fois validé, il sera renommé
-`ADDENDUM_GEL1TER.md` et figé par empreinte SHA-256 **avant** la rédaction du corpus
-tenu à l'écart. Il ne touche ni la passerelle A, ni `run_heldout.py`, ni le rapport de
+**Statut : validé tel quel par le porteur du projet le 2026-09-25, y compris
+l'adjudication T3.4.** Il est figé par empreinte SHA-256 (`GEL1TER.sha256`) **avant** la
+rédaction du corpus tenu à l'écart. Il ne touche ni la passerelle A, ni `run_heldout.py`, ni le rapport de
 conformité (GEL n°3, `d2dd51a`), ni `scorer.py`, ni la convention (GEL n°1 et n°1-bis).
 
 **Motif.** Les annotations humaines existantes (v0.1, test n°1, et une annotation
@@ -66,8 +66,8 @@ rapport final.
 4. **Adjudicateur** : A étant aussi le porteur, un désaccord entre A et B est tranché
    par un **accord écrit entre A et B**, chaque décision étant motivée par la règle de
    la convention invoquée (R1 à R15, A1 à A4). À défaut d'accord, la phrase reçoit
-   `none` : elle est jugée hors convention, et cette décision est consignée. C'est une
-   **proposition** : le porteur peut préférer un adjudicateur tiers.
+   `none` : elle est jugée hors convention, et cette décision est consignée. Retenu par
+   le porteur le 2026-09-25.
 5. Le résultat est `gold_adjudicated.tsv`, avec la liste des décisions et leur motif.
    Il n'est **jamais** transmis aux annotateurs avant la fin de l'adjudication.
 
