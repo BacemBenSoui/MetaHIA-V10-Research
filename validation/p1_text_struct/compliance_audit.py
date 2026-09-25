@@ -20,7 +20,7 @@ ALLOWED_IMPORTS = {"__future__", "re", "dataclasses", "typing", "collections", "
                    "string", "unicodedata", "json"}
 ALLOWED_RESOURCE_CATEGORIES = {"determiners", "pronouns", "prepositions", "auxiliaries", "negators",
                                "conjunctions", "quantifiers", "number_words", "suffix_rules", "irregular_forms",
-                               "adverb_classes_by_suffix"}
+                               "adverb_classes_by_suffix", "deictic_adverbs"}  # deictic_adverbs: addendum GEL 1-bis, A4
 FORBIDDEN_HINTS = ("synonym", "antonym", "hypernym", "hyponym", "gazetteer", "entity", "entities", "sentiment",
                    "embedding", "wordnet", "colour", "color", "city", "cities", "profession", "idiom", "meaning",
                    "semantic", "opposite", "incompatib")
