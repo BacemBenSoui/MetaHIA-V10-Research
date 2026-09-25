@@ -1,0 +1,40 @@
+H-001	The package was delivered by the driver.
+H-002	The wall was painted by the artist.
+H-003	The song was written by the teacher.
+H-004	The cake was baked by the neighbor.
+H-005	The window was closed.
+H-006	The lights were turned off.
+H-007	The child did not eat the soup.
+H-008	The gardener did not water the flowers.
+H-009	The clerk did not file the report.
+H-010	The old cat never chases mice.
+H-011	The owner never locks the back door.
+H-012	The team had no water during the hike.
+H-013	Nobody found the lost key.
+H-014	The tall tree is green.
+H-015	The angry dog barked loudly.
+H-016	The small child is sleepy.
+H-017	The fresh bread smells sweet.
+H-018	The cold river is deep.
+H-019	Slowly the woman walked home yesterday.
+H-020	In the park the children played happily this morning.
+H-021	The driver stopped abruptly near the market today.
+H-022	At midnight the train arrived quietly at the station.
+H-023	Carefully the boy carried the box upstairs.
+H-024	Yesterday the family ate lunch together outside.
+H-025	Four birds built a nest.
+H-026	Two students carried six chairs.
+H-027	Seven apples fell from the branch.
+H-028	All dogs barked at the stranger.
+H-029	Every guest brought a small gift.
+H-030	Some workers fixed the old roof.
+H-031	The mother called the daughter.
+H-032	The horse kicked the boy.
+H-033	The teacher praised the student.
+H-034	The lion chased the monkey.
+H-035	Did the children find the ball?
+H-036	Where did the bus park at night?
+H-037	The sun rose and the birds sang.
+H-038	The man cooked and the woman cleaned.
+H-039	The girl who wore a red hat left.
+H-040	The book that you lent me is interesting.

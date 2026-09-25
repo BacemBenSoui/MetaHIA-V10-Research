@@ -1,0 +1,1434 @@
+{
+ "experiment": "P1-TEXT-STRUCT-A (held-out, single run)",
+ "aggregate": {
+  "items": 40,
+  "in_convention": 37,
+  "answered": 25,
+  "out_of_convention": 3,
+  "safety_gates": {
+   "gate_negation_preserved": 1.0,
+   "gate_negation_scope": 1.0,
+   "gate_roles_preserved": 0.68
+  },
+  "safety_gates_pass": false,
+  "exact_in_convention": 0.4054,
+  "exact_in_convention_ci95": [
+   0.2432,
+   0.5676
+  ],
+  "exact_answered": 0.6,
+  "coverage_in_convention": 0.6757,
+  "correct_abstention_out_of_convention": 1.0,
+  "arguments_f1": 0.9507,
+  "heads_f1": 0.8276
+ },
+ "by_category": {
+  "adjective": {
+   "items": 5,
+   "in_convention": 5,
+   "answered": 4,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 0.75
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.6,
+   "exact_in_convention_ci95": [
+    0.2,
+    1.0
+   ],
+   "exact_answered": 0.75,
+   "coverage_in_convention": 0.8,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 0.875
+  },
+  "coordination": {
+   "items": 2,
+   "in_convention": 2,
+   "answered": 0,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": null,
+    "gate_negation_scope": null,
+    "gate_roles_preserved": null
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.0,
+   "exact_in_convention_ci95": [
+    0.0,
+    0.0
+   ],
+   "exact_answered": null,
+   "coverage_in_convention": 0.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": null,
+   "heads_f1": null
+  },
+  "neg_never": {
+   "items": 2,
+   "in_convention": 2,
+   "answered": 1,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 1.0
+   },
+   "safety_gates_pass": true,
+   "exact_in_convention": 0.5,
+   "exact_in_convention_ci95": [
+    0.0,
+    1.0
+   ],
+   "exact_answered": 1.0,
+   "coverage_in_convention": 0.5,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 1.0
+  },
+  "neg_no_noun": {
+   "items": 1,
+   "in_convention": 1,
+   "answered": 0,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": null,
+    "gate_negation_scope": null,
+    "gate_roles_preserved": null
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.0,
+   "exact_in_convention_ci95": [
+    0.0,
+    0.0
+   ],
+   "exact_answered": null,
+   "coverage_in_convention": 0.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": null,
+   "heads_f1": null
+  },
+  "neg_nobody_nothing": {
+   "items": 1,
+   "in_convention": 1,
+   "answered": 1,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 1.0
+   },
+   "safety_gates_pass": true,
+   "exact_in_convention": 1.0,
+   "exact_in_convention_ci95": [
+    1.0,
+    1.0
+   ],
+   "exact_answered": 1.0,
+   "coverage_in_convention": 1.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 1.0
+  },
+  "neg_not": {
+   "items": 3,
+   "in_convention": 3,
+   "answered": 3,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 1.0
+   },
+   "safety_gates_pass": true,
+   "exact_in_convention": 0.6667,
+   "exact_in_convention_ci95": [
+    0.0,
+    1.0
+   ],
+   "exact_answered": 0.6667,
+   "coverage_in_convention": 1.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 0.8333,
+   "heads_f1": 1.0
+  },
+  "number": {
+   "items": 3,
+   "in_convention": 3,
+   "answered": 2,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 0.0
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.0,
+   "exact_in_convention_ci95": [
+    0.0,
+    0.0
+   ],
+   "exact_answered": 0.0,
+   "coverage_in_convention": 0.6667,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 0.7333,
+   "heads_f1": 0.4166
+  },
+  "passive_by": {
+   "items": 4,
+   "in_convention": 4,
+   "answered": 4,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 1.0
+   },
+   "safety_gates_pass": true,
+   "exact_in_convention": 1.0,
+   "exact_in_convention_ci95": [
+    1.0,
+    1.0
+   ],
+   "exact_answered": 1.0,
+   "coverage_in_convention": 1.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 1.0
+  },
+  "passive_no_by": {
+   "items": 2,
+   "in_convention": 2,
+   "answered": 1,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 1.0
+   },
+   "safety_gates_pass": true,
+   "exact_in_convention": 0.5,
+   "exact_in_convention_ci95": [
+    0.0,
+    1.0
+   ],
+   "exact_answered": 1.0,
+   "coverage_in_convention": 0.5,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 1.0
+  },
+  "quantifier": {
+   "items": 3,
+   "in_convention": 3,
+   "answered": 3,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 0.0
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.0,
+   "exact_in_convention_ci95": [
+    0.0,
+    0.0
+   ],
+   "exact_answered": 0.0,
+   "coverage_in_convention": 1.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 0.6667
+  },
+  "question": {
+   "items": 2,
+   "in_convention": 0,
+   "answered": 0,
+   "out_of_convention": 2,
+   "safety_gates": {
+    "gate_negation_preserved": null,
+    "gate_negation_scope": null,
+    "gate_roles_preserved": null
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": null,
+   "exact_in_convention_ci95": null,
+   "exact_answered": null,
+   "coverage_in_convention": null,
+   "correct_abstention_out_of_convention": 1.0,
+   "arguments_f1": null,
+   "heads_f1": null
+  },
+  "subordinate": {
+   "items": 2,
+   "in_convention": 1,
+   "answered": 0,
+   "out_of_convention": 1,
+   "safety_gates": {
+    "gate_negation_preserved": null,
+    "gate_negation_scope": null,
+    "gate_roles_preserved": null
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.0,
+   "exact_in_convention_ci95": [
+    0.0,
+    0.0
+   ],
+   "exact_answered": null,
+   "coverage_in_convention": 0.0,
+   "correct_abstention_out_of_convention": 1.0,
+   "arguments_f1": null,
+   "heads_f1": null
+  },
+  "two_complements": {
+   "items": 6,
+   "in_convention": 6,
+   "answered": 2,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 0.0
+   },
+   "safety_gates_pass": false,
+   "exact_in_convention": 0.0,
+   "exact_in_convention_ci95": [
+    0.0,
+    0.0
+   ],
+   "exact_answered": 0.0,
+   "coverage_in_convention": 0.3333,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 0.9,
+   "heads_f1": 0.6785
+  },
+  "two_roles": {
+   "items": 4,
+   "in_convention": 4,
+   "answered": 4,
+   "out_of_convention": 0,
+   "safety_gates": {
+    "gate_negation_preserved": 1.0,
+    "gate_negation_scope": 1.0,
+    "gate_roles_preserved": 1.0
+   },
+   "safety_gates_pass": true,
+   "exact_in_convention": 0.75,
+   "exact_in_convention_ci95": [
+    0.25,
+    1.0
+   ],
+   "exact_answered": 0.75,
+   "coverage_in_convention": 1.0,
+   "correct_abstention_out_of_convention": null,
+   "arguments_f1": 1.0,
+   "heads_f1": 0.75
+  }
+ },
+ "inter_annotator": {
+  "agreement_before_adjudication": 1.0,
+  "adjudicated_items": 0
+ },
+ "compliance_report_sha256": "4b736d65fadab8cebfe987332a971e4c90fa3273f0e493b00f67dd23bf73c5e2",
+ "rows": [
+  {
+   "id": "H-001",
+   "pred": [
+    "deliver",
+    "driver",
+    "package"
+   ],
+   "gold": [
+    "deliver",
+    "driver",
+    "package"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-002",
+   "pred": [
+    "paint",
+    "artist",
+    "wall"
+   ],
+   "gold": [
+    "paint",
+    "artist",
+    "wall"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-003",
+   "pred": [
+    "write",
+    "teacher",
+    "song"
+   ],
+   "gold": [
+    "write",
+    "teacher",
+    "song"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-004",
+   "pred": [
+    "bake",
+    "neighbor",
+    "cake"
+   ],
+   "gold": [
+    "bake",
+    "neighbor",
+    "cake"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-005",
+   "pred": [
+    "close",
+    "_",
+    "window"
+   ],
+   "gold": [
+    "close",
+    "_",
+    "window"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-006",
+   "pred": null,
+   "gold": [
+    "turn_off",
+    "_",
+    "lights"
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-007",
+   "pred": [
+    "neg",
+    [
+     "eat",
+     "child",
+     "soup"
+    ]
+   ],
+   "gold": [
+    "neg",
+    [
+     "eat",
+     "child",
+     "soup"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-008",
+   "pred": [
+    "neg",
+    [
+     "water",
+     "gardener",
+     "flower"
+    ]
+   ],
+   "gold": [
+    "neg",
+    [
+     "water",
+     "gardener",
+     "flowers"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 0.5,
+    "recall": 0.5,
+    "f1": 0.5
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-009",
+   "pred": [
+    "neg",
+    [
+     "file",
+     "clerk",
+     "report"
+    ]
+   ],
+   "gold": [
+    "neg",
+    [
+     "file",
+     "clerk",
+     "report"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-010",
+   "pred": null,
+   "gold": [
+    "neg",
+    [
+     "chase",
+     [
+      "attr",
+      "cat",
+      "old"
+     ],
+     "mice"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-011",
+   "pred": [
+    "neg",
+    [
+     "lock",
+     "owner",
+     [
+      "attr",
+      "door",
+      "back"
+     ]
+    ]
+   ],
+   "gold": [
+    "neg",
+    [
+     "lock",
+     "owner",
+     [
+      "attr",
+      "door",
+      "back"
+     ]
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-012",
+   "pred": null,
+   "gold": [
+    "neg",
+    [
+     "have",
+     "team",
+     "water"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-013",
+   "pred": [
+    "neg",
+    [
+     "find",
+     "_",
+     [
+      "attr",
+      "key",
+      "lost"
+     ]
+    ]
+   ],
+   "gold": [
+    "neg",
+    [
+     "find",
+     "_",
+     [
+      "attr",
+      "key",
+      "lost"
+     ]
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-014",
+   "pred": [
+    "attr",
+    [
+     "attr",
+     "tree",
+     "tall"
+    ],
+    "green"
+   ],
+   "gold": [
+    "attr",
+    [
+     "attr",
+     "tree",
+     "tall"
+    ],
+    "green"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-015",
+   "pred": [
+    "loudly",
+    [
+     "bark",
+     [
+      "attr",
+      "dog",
+      "angry"
+     ]
+    ]
+   ],
+   "gold": [
+    "attr",
+    "dog",
+    "angry"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 0.3333,
+    "recall": 1.0,
+    "f1": 0.5
+   }
+  },
+  {
+   "id": "H-016",
+   "pred": [
+    "attr",
+    [
+     "attr",
+     "child",
+     "small"
+    ],
+    "sleepy"
+   ],
+   "gold": [
+    "attr",
+    [
+     "attr",
+     "child",
+     "small"
+    ],
+    "sleepy"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-017",
+   "pred": null,
+   "gold": [
+    "attr",
+    [
+     "attr",
+     "bread",
+     "fresh"
+    ],
+    "sweet"
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-018",
+   "pred": [
+    "attr",
+    [
+     "attr",
+     "river",
+     "cold"
+    ],
+    "deep"
+   ],
+   "gold": [
+    "attr",
+    [
+     "attr",
+     "river",
+     "cold"
+    ],
+    "deep"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-019",
+   "pred": null,
+   "gold": [
+    "yesterday",
+    [
+     "walk",
+     "woman",
+     "home"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-020",
+   "pred": null,
+   "gold": [
+    "in",
+    [
+     "play",
+     "children"
+    ],
+    "park"
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-021",
+   "pred": [
+    "today",
+    [
+     "near",
+     [
+      "abruptly",
+      [
+       "stop",
+       "driver"
+      ]
+     ],
+     "market"
+    ]
+   ],
+   "gold": [
+    "near",
+    [
+     "today",
+     [
+      "stop",
+      "driver"
+     ]
+    ],
+    "market"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 0.75,
+    "recall": 1.0,
+    "f1": 0.8571
+   }
+  },
+  {
+   "id": "H-022",
+   "pred": null,
+   "gold": [
+    "at",
+    [
+     "arrive",
+     "train"
+    ],
+    "station"
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-023",
+   "pred": [
+    "carefully",
+    [
+     "carry",
+     "boy",
+     [
+      "attr",
+      "upstair",
+      "box"
+     ]
+    ]
+   ],
+   "gold": [
+    "carry",
+    "boy",
+    "box"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 0.6667,
+    "recall": 1.0,
+    "f1": 0.8
+   },
+   "heads": {
+    "precision": 0.3333,
+    "recall": 1.0,
+    "f1": 0.5
+   }
+  },
+  {
+   "id": "H-024",
+   "pred": null,
+   "gold": [
+    "yesterday",
+    [
+     "eat",
+     "family",
+     "lunch"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-025",
+   "pred": [
+    "build",
+    [
+     "card",
+     "bird",
+     "4"
+    ],
+    "nest"
+   ],
+   "gold": [
+    "four",
+    [
+     "build",
+     "bird",
+     "nest"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 0.6667,
+    "recall": 1.0,
+    "f1": 0.8
+   },
+   "heads": {
+    "precision": 0.5,
+    "recall": 0.5,
+    "f1": 0.5
+   }
+  },
+  {
+   "id": "H-026",
+   "pred": [
+    "carry",
+    [
+     "card",
+     "student",
+     "2"
+    ],
+    [
+     "card",
+     "chair",
+     "6"
+    ]
+   ],
+   "gold": [
+    "two",
+    [
+     "carry",
+     "student",
+     [
+      "six",
+      "chair"
+     ]
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 0.5,
+    "recall": 1.0,
+    "f1": 0.6667
+   },
+   "heads": {
+    "precision": 0.3333,
+    "recall": 0.3333,
+    "f1": 0.3333
+   }
+  },
+  {
+   "id": "H-027",
+   "pred": null,
+   "gold": [
+    "seven",
+    [
+     "from",
+     [
+      "fall",
+      "apple"
+     ],
+     "branch"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-028",
+   "pred": [
+    "at",
+    [
+     "bark",
+     [
+      "q_all",
+      "dog"
+     ]
+    ],
+    "stranger"
+   ],
+   "gold": [
+    "all",
+    [
+     "at",
+     [
+      "bark",
+      "dog"
+     ],
+     "stranger"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 0.6667,
+    "recall": 0.6667,
+    "f1": 0.6667
+   }
+  },
+  {
+   "id": "H-029",
+   "pred": [
+    "bring",
+    [
+     "q_all",
+     "guest"
+    ],
+    [
+     "attr",
+     "gift",
+     "small"
+    ]
+   ],
+   "gold": [
+    "every",
+    [
+     "bring",
+     "guest",
+     [
+      "attr",
+      "gift",
+      "small"
+     ]
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 0.6667,
+    "recall": 0.6667,
+    "f1": 0.6667
+   }
+  },
+  {
+   "id": "H-030",
+   "pred": [
+    "fix",
+    [
+     "q_some",
+     "worker"
+    ],
+    [
+     "attr",
+     "roof",
+     "old"
+    ]
+   ],
+   "gold": [
+    "some",
+    [
+     "fix",
+     "worker",
+     [
+      "attr",
+      "roof",
+      "old"
+     ]
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": false,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 0.6667,
+    "recall": 0.6667,
+    "f1": 0.6667
+   }
+  },
+  {
+   "id": "H-031",
+   "pred": [
+    "call",
+    "mother",
+    "daughter"
+   ],
+   "gold": [
+    "call",
+    "mother",
+    "daughter"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-032",
+   "pred": [
+    "kick",
+    "horse",
+    "boy"
+   ],
+   "gold": [
+    "kick",
+    "horse",
+    "boy"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-033",
+   "pred": [
+    "prais",
+    "teacher",
+    "student"
+   ],
+   "gold": [
+    "praise",
+    "teacher",
+    "student"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": false,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+   }
+  },
+  {
+   "id": "H-034",
+   "pred": [
+    "chase",
+    "lion",
+    "monkey"
+   ],
+   "gold": [
+    "chase",
+    "lion",
+    "monkey"
+   ],
+   "in_convention": true,
+   "pred_abstain": false,
+   "exact": true,
+   "gate_negation_preserved": true,
+   "gate_negation_scope": true,
+   "gate_roles_preserved": true,
+   "arguments": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "heads": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   }
+  },
+  {
+   "id": "H-035",
+   "pred": null,
+   "gold": null,
+   "in_convention": false,
+   "pred_abstain": true,
+   "exact": true
+  },
+  {
+   "id": "H-036",
+   "pred": null,
+   "gold": null,
+   "in_convention": false,
+   "pred_abstain": true,
+   "exact": true
+  },
+  {
+   "id": "H-037",
+   "pred": null,
+   "gold": [
+    "and",
+    [
+     "rise",
+     "sun"
+    ],
+    [
+     "sing",
+     "birds"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-038",
+   "pred": null,
+   "gold": [
+    "and",
+    [
+     "cook",
+     "man"
+    ],
+    [
+     "clean",
+     "woman"
+    ]
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-039",
+   "pred": null,
+   "gold": [
+    "leave",
+    "girl"
+   ],
+   "in_convention": true,
+   "pred_abstain": true,
+   "exact": false
+  },
+  {
+   "id": "H-040",
+   "pred": null,
+   "gold": null,
+   "in_convention": false,
+   "pred_abstain": true,
+   "exact": true
+  }
+ ]
+}

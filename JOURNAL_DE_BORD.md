@@ -2496,3 +2496,27 @@ NEG dans K3        : représentable sans primitive nouvelle ; exploitation hors 
 Manquant           : passerelle texte -> Node/Apply ; source contrôlée des relations
 kernel2.py         : INCHANGÉ (c76adfd2…)
 V6                 : aucune intégration (décision du porteur requise)
+
+## 2026-09-25 — P1-TEXT-STRUCT-A : exécution unique sur le corpus tenu à l'écart — FAIL (rôles 0,68), mesure non concluante
+
+Chaîne : GEL 1 → GEL 1-bis `7e4ea4c` → GEL 3 `d2dd51a` (passerelle figée avant toute
+remise) → GEL 1-ter `a28dbf3` → GEL 2 `4a4a3fe`. Rapport :
+`documentation/P1_TEXT_STRUCT_A_RESULT_2026-09-25.md`.
+
+- **Barrières** : négation 1,00, portée 1,00, **rôles 0,68 → FAIL**, enregistré tel quel.
+- **Descriptif** : exactitude 0,41 [0,24 ; 0,57], couverture 0,68, abstention correcte hors
+  convention 1,00.
+- **Référence** : annotation commune (deux fichiers identiques octet pour octet), acceptée
+  par décision du porteur. Son indépendance n'est pas démontrée par les données.
+- **Diagnostic** : 7 des 8 échecs de rôles viennent d'écarts entre la référence et la
+  convention figée (R9, R11, R12 et omissions) ; 1 vient d'un défaut réel de la
+  passerelle (H-023, *upstairs*). Mesure non concluante sur la capacité de la
+  passerelle.
+
+### État après cette entrée
+```text
+P1-TEXT-STRUCT-A : FAIL enregistré (rôles), non concluant
+Négation         : 5/5 préservée (portée incluse)
+Passerelle A     : figée ; 1 défaut réel consigné (H-023), non corrigé
+Prochain         : nouveau paquet + annotations indépendantes + contrôle R8–R15 des références
+kernel2.py       : INCHANGÉ
