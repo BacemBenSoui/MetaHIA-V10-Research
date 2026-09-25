@@ -1,23 +1,27 @@
-"""Scorer for H-P1-TEXT-STRUCT: compares predicted and gold target structures (STRUCTURE_CONVENTION.md).
+"""Scorer for P1-TEXT-STRUCT v0: compares predicted and gold target structures (STRUCTURE_CONVENTION.md).
+
+Purely functional: (predicted_structure, gold_structure) -> metrics. It never produces or reads an
+epistemic verdict, never runs the Core or any verifier, and does NOT audit the gateway's resources:
+that is a system-compliance check (compliance_audit.py), not observable from (prediction, reference).
 
 Structures are JSON trees: a leaf is a string, an application is [head, *args], abstention is None.
-The scorer never produces or reads an epistemic verdict and never runs the Core or any verifier.
-Measures (numbering of the owner's request, 2026-09-25):
-  1 exact structure   2 argument conservation   3 negation conservation   4 role conservation
-  5 morpho-syntactic normalisation (heads)   6 abstention   7 resource audit (audit_resources)
+
+Safety gates (hard, pre-registered = 1.00) are computed on position addresses (child indices only,
+never head labels), so a morphology error on a head is never counted as a role or scope fault:
+  - negation preservation: same number of neg nodes;
+  - negation scope: same set of neg addresses;
+  - role preservation: every leaf present in both trees sits at the same address.
+Descriptive measures: exact structure (with bootstrap CI), argument F1, head F1, coverage/abstention.
+An in-convention None counts as a coverage failure and as a non-exact item: abstention can never
+raise the headline exactness.
 """
 from __future__ import annotations
 
+import random
 from collections import Counter
 from typing import Iterable, Optional
 
-RESERVED = {"attr", "neg", "card", "q_all", "q_some"}
-ALLOWED_RESOURCE_CATEGORIES = {
-    "determiners", "pronouns", "prepositions", "auxiliaries", "negators", "conjunctions",
-    "quantifiers", "number_words", "suffix_rules", "irregular_forms",
-}
-FORBIDDEN_RESOURCE_HINTS = ("synonym", "antonym", "hypernym", "hyponym", "gazetteer", "entity", "sentiment",
-                            "embedding", "wordnet", "colour", "color", "city", "profession", "idiom")
+BOOTSTRAP_SEED, BOOTSTRAP_N = 20260925, 10_000
 
 
 def leaves(tree) -> Counter:
@@ -39,27 +43,24 @@ def heads(tree) -> Counter:
     return out
 
 
-def neg_paths(tree, path=()) -> set:
-    """Position of every neg node, as the sequence of (head, child index) from the root."""
+def neg_addresses(tree, address=()) -> set:
+    """Address (tuple of child indices from the root) of every neg node."""
     if isinstance(tree, str):
         return set()
-    here = {path} if tree[0] == "neg" else set()
+    here = {address} if tree[0] == "neg" else set()
     for i, child in enumerate(tree[1:], start=1):
-        here |= neg_paths(child, path + ((tree[0], i),))
+        here |= neg_addresses(child, address + (i,))
     return here
 
 
-def _label(tree) -> str:
-    return tree if isinstance(tree, str) else tree[0]
-
-
-def role_triples(tree) -> Counter:
-    """(head, argument position, head-or-leaf of the argument) for every application."""
+def leaf_addresses(tree, address=()) -> dict:
+    """leaf -> set of addresses where it occurs (index-only paths)."""
     if isinstance(tree, str):
-        return Counter()
-    out = Counter((tree[0], i, _label(child)) for i, child in enumerate(tree[1:], start=1))
-    for child in tree[1:]:
-        out += role_triples(child)
+        return {tree: {address}}
+    out: dict = {}
+    for i, child in enumerate(tree[1:], start=1):
+        for leaf, addrs in leaf_addresses(child, address + (i,)).items():
+            out.setdefault(leaf, set()).update(addrs)
     return out
 
 
@@ -72,49 +73,50 @@ def _prf(pred: Counter, gold: Counter) -> dict:
 
 
 def score_item(pred: Optional[object], gold: Optional[object]) -> dict:
-    if gold is None:  # sentence out of convention: correct behaviour is to abstain
-        return {"gold_abstain": True, "pred_abstain": pred is None, "exact": pred is None}
+    if gold is None:  # out of convention: the correct output is an abstention
+        return {"in_convention": False, "pred_abstain": pred is None, "exact": pred is None}
     if pred is None:
-        return {"gold_abstain": False, "pred_abstain": True, "exact": False}
+        return {"in_convention": True, "pred_abstain": True, "exact": False}
+    pa, ga = leaf_addresses(pred), leaf_addresses(gold)
+    shared = set(pa) & set(ga)
     return {
-        "gold_abstain": False, "pred_abstain": False,
-        "exact": pred == gold,                                          # 1
-        "arguments": _prf(leaves(pred), leaves(gold)),                   # 2
-        "negation_count_match": len(neg_paths(pred)) == len(neg_paths(gold)),   # 3
-        "negation_scope_match": neg_paths(pred) == neg_paths(gold),     # 3
-        "roles": _prf(role_triples(pred), role_triples(gold)),           # 4
-        "heads": _prf(heads(pred), heads(gold)),                         # 5
+        "in_convention": True, "pred_abstain": False,
+        "exact": pred == gold,
+        "gate_negation_preserved": len(neg_addresses(pred)) == len(neg_addresses(gold)),
+        "gate_negation_scope": neg_addresses(pred) == neg_addresses(gold),
+        "gate_roles_preserved": all(pa[leaf] == ga[leaf] for leaf in shared),
+        "arguments": _prf(leaves(pred), leaves(gold)),
+        "heads": _prf(heads(pred), heads(gold)),
     }
 
 
-def aggregate(scores: Iterable[dict]) -> dict:
+def bootstrap_ci(values: list[bool], n: int = BOOTSTRAP_N, seed: int = BOOTSTRAP_SEED) -> Optional[list]:
+    if not values:
+        return None
+    rng = random.Random(seed)
+    k = len(values)
+    means = sorted(sum(values[rng.randrange(k)] for _ in range(k)) / k for _ in range(n))
+    return [round(means[int(0.025 * n)], 4), round(means[int(0.975 * n) - 1], 4)]
+
+
+def aggregate(scores: Iterable[dict], bootstrap_n: int = BOOTSTRAP_N) -> dict:
     scores = list(scores)
-    in_conv = [s for s in scores if not s["gold_abstain"]]
+    in_conv = [s for s in scores if s["in_convention"]]
     answered = [s for s in in_conv if not s["pred_abstain"]]
-    out_conv = [s for s in scores if s["gold_abstain"]]
-
-    def mean(key, sub):
-        return round(sum(s[key][sub] for s in answered) / len(answered), 4) if answered else None
-
+    out_conv = [s for s in scores if not s["in_convention"]]
+    rate = lambda xs, key: round(sum(x[key] for x in xs) / len(xs), 4) if xs else None
+    mean = lambda key, sub: round(sum(s[key][sub] for s in answered) / len(answered), 4) if answered else None
+    gates = {g: rate(answered, g) for g in ("gate_negation_preserved", "gate_negation_scope", "gate_roles_preserved")}
+    exact_in_conv = [s["exact"] for s in in_conv]
     return {
-        "items": len(scores),
-        "exact_rate_all": round(sum(s["exact"] for s in scores) / len(scores), 4) if scores else None,   # 1
-        "exact_rate_answered": round(sum(s["exact"] for s in answered) / len(answered), 4) if answered else None,
-        "arguments_f1": mean("arguments", "f1"),                                                          # 2
-        "negation_scope_match_rate": round(sum(s["negation_scope_match"] for s in answered) / len(answered), 4) if answered else None,  # 3
-        "roles_f1": mean("roles", "f1"),                                                                  # 4
-        "heads_f1": mean("heads", "f1"),                                                                  # 5
-        "abstention_rate_in_convention": round(sum(s["pred_abstain"] for s in in_conv) / len(in_conv), 4) if in_conv else None,  # 6
-        "correct_abstention_rate_out_of_convention": round(sum(s["pred_abstain"] for s in out_conv) / len(out_conv), 4) if out_conv else None,
+        "items": len(scores), "in_convention": len(in_conv), "answered": len(answered), "out_of_convention": len(out_conv),
+        "safety_gates": gates,
+        "safety_gates_pass": bool(answered) and all(v == 1.0 for v in gates.values()),
+        "exact_in_convention": rate(in_conv, "exact"),  # headline: an abstention counts as not exact
+        "exact_in_convention_ci95": bootstrap_ci(exact_in_conv, bootstrap_n),
+        "exact_answered": rate(answered, "exact"),
+        "coverage_in_convention": round(len(answered) / len(in_conv), 4) if in_conv else None,
+        "correct_abstention_out_of_convention": rate(out_conv, "pred_abstain"),
+        "arguments_f1": mean("arguments", "f1"),
+        "heads_f1": mean("heads", "f1"),
     }
-
-
-def audit_resources(resources: dict) -> list[str]:
-    """Measure 7: every declared resource must be a permitted closed class; returns violations."""
-    problems = []
-    for name in resources:
-        if name not in ALLOWED_RESOURCE_CATEGORIES:
-            problems.append(f"resource {name!r} is not a permitted closed class")
-        if any(hint in name.lower() for hint in FORBIDDEN_RESOURCE_HINTS):
-            problems.append(f"resource {name!r} looks like semantic knowledge")
-    return problems
