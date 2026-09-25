@@ -1,0 +1,9 @@
+82ada40f3770f5bd1ce8663a5a77947055297ea28dc2cba431f6c129bfa359cb  heldout_sentences.txt
+8a011bd441cc109b37c96baed71138f8d2a0e64ae7fb63aca7c5097150d83732  categories.tsv
+eeaff09c791d97da76cd36535f4371c90e21ebcd42076397c213b9247858671e  annotation_soumaya.xlsx
+6253ef9a2121e266e630667361a36245e70b4c8aad3b00e4a733a6d602c51bee  annotation_karim.xlsx
+# Réception du 2026-09-25T16:01:30Z (fichiers tels que reçus, conservés hors dépôt).
+# Écart consigné : les fichiers ont été remis au développeur en une fois, avant le GEL n°2, et sans
+# gold_adjudicated.tsv. La passerelle était déjà figée au GEL n°3 (d2dd51a), donc non contaminée.
+# Annotateurs : deux tiers (Soumaya, Karim), au lieu de « porteur = A, tiers = B » prévu par GEL 1-ter T2.
+# Aucune exécution de la passerelle sur ces phrases avant le GEL n°2 complet.
