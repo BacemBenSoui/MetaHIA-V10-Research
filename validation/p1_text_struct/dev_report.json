@@ -1,0 +1,25 @@
+{
+ "status": "DEVELOPMENT_INFORMATION_NOT_A_MEASURE",
+ "aggregate": {
+  "items": 58,
+  "in_convention": 53,
+  "answered": 45,
+  "out_of_convention": 5,
+  "safety_gates": {
+   "gate_negation_preserved": 1.0,
+   "gate_negation_scope": 1.0,
+   "gate_roles_preserved": 1.0
+  },
+  "safety_gates_pass": true,
+  "exact_in_convention": 0.8491,
+  "exact_in_convention_ci95": [
+   0.7547,
+   0.9434
+  ],
+  "exact_answered": 1.0,
+  "coverage_in_convention": 0.8491,
+  "correct_abstention_out_of_convention": 1.0,
+  "arguments_f1": 1.0,
+  "heads_f1": 1.0
+ }
+}
