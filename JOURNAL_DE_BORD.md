@@ -2463,3 +2463,38 @@ Prochaine étape : décision explicite du porteur du projet -- lancer une
 confirmation à plus grande échelle, ou passer à l'intégration du
 support comme statistique candidate (décision architecturale distincte)
 ```
+
+## 2026-09-25 — Archivage C8.1-confirmation et C9 : branche C9 CLOSE, aucun code modifié
+
+Archive dans ce dépôt les artefacts des campagnes C8.1-confirmation, C9-1, C9-2 et C9-C,
+menées le 24/09 dans une session cloud et transportés par le dépôt MetaHIA-V6
+(`documentation/handoff/2026-09-25_p4u2_c81_c9/`, commit `4f3b53d` de la branche
+`claude/exciting-ramanujan-bjnkfi`). Copie octet par octet vérifiée (37 fichiers) ;
+empreintes des 4 pré-enregistrements et des 2 addenda vérifiées (`sha256sum -c`, 6/6 OK).
+Synthèse : `documentation/MetaHIA_Roadmap_Complete_v0.5.5_2026-09-17.md` section 16.
+
+- **C8.1-confirmation** : null uniforme calibré (correction de sélection globale
+  confirmée, K de 25 à 71), mais **A-bis (degrés hétérogènes) : FPR 88 %** — la
+  « détection » venait des degrés. Défaut de production `MAX_PATHS=1000` découvert.
+- **C9-1** (null conditionnel aux degrés) : puissance de T effondrée (B1 72 % → 11 %,
+  McNemar p ≈ 7×10⁻¹⁶), arg-max saturé par le bucket d'impasses. FAIL C9-A2/N3
+  enregistré, réplication compatible.
+- **C9-2** (T′ non triviale, hypothèse générée par C9-1) : motif isolé détecté à 100 %,
+  SBM calibré. FAIL A2/P2 (χ² marginal) enregistré.
+- **C9-C** (FFL encastré, degrés et doublons neutralisés) : **hypothèse rejetée**
+  (M12 4/100, S12 12/99) — excès du motif dispersé sur ~31 signatures.
+- **Conclusion** : la limite est la génération de candidats par égalité exacte de
+  signature. T′ non intégré à Gate I, V1-V4 gelés, garde-fou road map adopté.
+- **Vérifications** : `kernel2.py` sha256 `c76adfd2…efc9aa9`, inchangé et conforme à
+  `release_manifest.json` ; tests déterministes 747 passed (serveur 192.168.1.11,
+  Python 3.10.12, démos live Ollama exclues).
+
+### État après cette entrée
+```text
+P4-U.2 BRANCHE C9 : CLOSE
+T′ dans Gate I : NON intégré
+V1-V4 : TOUJOURS GELÉS
+Ticket R1 MAX_PATHS : OUVERT (option A ou B, décision du porteur)
+Production code : INCHANGÉ
+E20-D : OPEN
+```

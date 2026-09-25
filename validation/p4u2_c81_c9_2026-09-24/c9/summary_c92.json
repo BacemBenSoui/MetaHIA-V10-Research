@@ -1,0 +1,745 @@
+{
+ "C92A0": {
+  "config": "C92A0",
+  "T": {
+   "rej": 1,
+   "n": 100,
+   "rate": 0.01,
+   "wilson": [
+    0.0017674320641406505,
+    0.054486196178705315
+   ],
+   "alpha_eff": 0.0439,
+   "p_two": 0.13605969325731948,
+   "p_greater": 0.9887712394859866,
+   "ks": 0.18116633290204825,
+   "chi2": 0.26224875459496494,
+   "deciles": [
+    15,
+    15,
+    6,
+    7,
+    12,
+    8,
+    10,
+    10,
+    12,
+    5
+   ],
+   "obs_median": 14.0,
+   "null_median": 14.0,
+   "tie": 0.706,
+   "pct_median": 41.25
+  },
+  "Tp": {
+   "rej": 6,
+   "n": 100,
+   "rate": 0.06,
+   "wilson": [
+    0.027786123963188192,
+    0.1247681544589592
+   ],
+   "alpha_eff": 0.04685,
+   "p_two": 0.47494428146172385,
+   "p_greater": 0.3275914464198789,
+   "ks": 0.4206522724495124,
+   "chi2": 0.4749856866480098,
+   "deciles": [
+    13,
+    7,
+    11,
+    7,
+    10,
+    9,
+    9,
+    6,
+    16,
+    12
+   ],
+   "obs_median": 5.0,
+   "null_median": 4.0,
+   "tie": 0.31575,
+   "pct_median": 50.49999999999999
+  },
+  "paired": {
+   "both": 0,
+   "only_T": 1,
+   "only_Tp": 6,
+   "neither": 93,
+   "mcnemar_p": 0.125
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=1, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE'), ('FORWARD', 'REVERSE', 'FORWARD')}))",
+    20
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE')}))",
+    17
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    14
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 4.75,
+  "argmax_Tp_bucket_null_mean": 2.88495
+ },
+ "C92A1": {
+  "config": "C92A1",
+  "T": {
+   "rej": 1,
+   "n": 100,
+   "rate": 0.01,
+   "wilson": [
+    0.0017674320641406505,
+    0.054486196178705315
+   ],
+   "alpha_eff": 0.0438,
+   "p_two": 0.13584580626006565,
+   "p_greater": 0.9886531859966854,
+   "ks": 0.32538711250642405,
+   "chi2": 0.21330930508341653,
+   "deciles": [
+    11,
+    14,
+    5,
+    11,
+    11,
+    6,
+    15,
+    13,
+    9,
+    5
+   ],
+   "obs_median": 14.0,
+   "null_median": 14.0,
+   "tie": 0.65415,
+   "pct_median": 40.0
+  },
+  "Tp": {
+   "rej": 4,
+   "n": 100,
+   "rate": 0.04,
+   "wilson": [
+    0.01566330399154762,
+    0.0983707143588792
+   ],
+   "alpha_eff": 0.04085,
+   "p_two": 1.0,
+   "p_greater": 0.5872897138932038,
+   "ks": 0.5374268610010405,
+   "chi2": 0.3838265173713841,
+   "deciles": [
+    7,
+    6,
+    15,
+    11,
+    6,
+    10,
+    8,
+    13,
+    10,
+    14
+   ],
+   "obs_median": 4.0,
+   "null_median": 4.0,
+   "tie": 0.3661,
+   "pct_median": 53.375
+  },
+  "paired": {
+   "both": 1,
+   "only_T": 0,
+   "only_Tp": 3,
+   "neither": 96,
+   "mcnemar_p": 0.25
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE')}))",
+    22
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    13
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=1, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE'), ('FORWARD', 'REVERSE', 'FORWARD')}))",
+    12
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 3.99,
+  "argmax_Tp_bucket_null_mean": 1.8561
+ },
+ "C92A2": {
+  "config": "C92A2",
+  "T": {
+   "rej": 8,
+   "n": 100,
+   "rate": 0.08,
+   "wilson": [
+    0.041093461484380624,
+    0.14998107700948735
+   ],
+   "alpha_eff": 0.04005,
+   "p_two": 0.06458049595090733,
+   "p_greater": 0.04779781669348079,
+   "ks": 0.24957232137708943,
+   "chi2": 0.23680981521773165,
+   "deciles": [
+    10,
+    13,
+    6,
+    10,
+    10,
+    11,
+    7,
+    6,
+    9,
+    18
+   ],
+   "obs_median": 16.0,
+   "null_median": 16.0,
+   "tie": 0.47735,
+   "pct_median": 38.5
+  },
+  "Tp": {
+   "rej": 3,
+   "n": 100,
+   "rate": 0.03,
+   "wilson": [
+    0.010254524024038925,
+    0.0845193642905276
+   ],
+   "alpha_eff": 0.04225,
+   "p_two": 0.8018764783931082,
+   "p_greater": 0.7992822692994324,
+   "ks": 0.47249417939979754,
+   "chi2": 0.010988016145239969,
+   "deciles": [
+    13,
+    12,
+    9,
+    6,
+    7,
+    21,
+    6,
+    4,
+    11,
+    11
+   ],
+   "obs_median": 3.0,
+   "null_median": 3.0,
+   "tie": 0.38265,
+   "pct_median": 43.75
+  },
+  "paired": {
+   "both": 0,
+   "only_T": 8,
+   "only_Tp": 3,
+   "neither": 89,
+   "mcnemar_p": 0.2265625
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    16
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE')}))",
+    12
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=1, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD', 'FORWARD'), ('FORWARD', 'FORWARD')}))",
+    8
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 3.45,
+  "argmax_Tp_bucket_null_mean": 1.1433
+ },
+ "C92SBM": {
+  "config": "C92SBM",
+  "T": {
+   "rej": 18,
+   "n": 100,
+   "rate": 0.18,
+   "wilson": [
+    0.1170022549894635,
+    0.2666735838630073
+   ],
+   "alpha_eff": 0.04805,
+   "p_two": 1.2830339331725595e-06,
+   "p_greater": 1.2830339331725595e-06,
+   "ks": 0.0004973074628595314,
+   "chi2": 9.682582734421882e-05,
+   "deciles": [
+    9,
+    12,
+    3,
+    6,
+    10,
+    7,
+    5,
+    13,
+    10,
+    25
+   ],
+   "obs_median": 14.0,
+   "null_median": 13.0,
+   "tie": 0.54205,
+   "pct_median": 42.0
+  },
+  "Tp": {
+   "rej": 3,
+   "n": 100,
+   "rate": 0.03,
+   "wilson": [
+    0.010254524024038925,
+    0.0845193642905276
+   ],
+   "alpha_eff": 0.04605,
+   "p_two": 0.6321718428749258,
+   "p_greater": 0.8443441231653233,
+   "ks": 0.24360673918276288,
+   "chi2": 0.8977625971214902,
+   "deciles": [
+    13,
+    12,
+    10,
+    13,
+    9,
+    9,
+    10,
+    7,
+    7,
+    10
+   ],
+   "obs_median": 4.5,
+   "null_median": 5.0,
+   "tie": 0.3181,
+   "pct_median": 46.625
+  },
+  "paired": {
+   "both": 0,
+   "only_T": 18,
+   "only_Tp": 3,
+   "neither": 79,
+   "mcnemar_p": 0.0014896392822265625
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=1, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD', 'FORWARD'), ('FORWARD', 'FORWARD')}))",
+    16
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=3, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE'), ('FORWARD', 'REVERSE', 'FORWARD'), ('FORWARD', 'REVERSE', 'REVERSE')}))",
+    13
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=2, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE'), ('FORWARD', 'REVERSE', 'FORWARD'), ('FORWARD', 'REVERSE', 'REVERSE')}))",
+    13
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 4.58,
+  "argmax_Tp_bucket_null_mean": 2.91845
+ },
+ "C92Abis": {
+  "config": "C92Abis",
+  "T": {
+   "rej": 5,
+   "n": 100,
+   "rate": 0.05,
+   "wilson": [
+    0.02154367915436796,
+    0.11175046923191913
+   ],
+   "alpha_eff": 0.0507,
+   "p_two": 1.0,
+   "p_greater": 0.5765304236034434,
+   "ks": 0.8576975402826768,
+   "chi2": 0.40119928658025733,
+   "deciles": [
+    14,
+    9,
+    5,
+    15,
+    8,
+    7,
+    8,
+    11,
+    13,
+    10
+   ],
+   "obs_median": 10.0,
+   "null_median": 10.0,
+   "tie": 0.1653,
+   "pct_median": 50.875
+  },
+  "Tp": {
+   "rej": 6,
+   "n": 100,
+   "rate": 0.06,
+   "wilson": [
+    0.027786123963188192,
+    0.1247681544589592
+   ],
+   "alpha_eff": 0.036,
+   "p_two": 0.17787609148663078,
+   "p_greater": 0.15230770100303895,
+   "ks": 0.9157181949348466,
+   "chi2": 0.3345381516340064,
+   "deciles": [
+    10,
+    9,
+    13,
+    5,
+    14,
+    8,
+    7,
+    16,
+    9,
+    9
+   ],
+   "obs_median": 3.0,
+   "null_median": 3.0,
+   "tie": 0.39695,
+   "pct_median": 44.125
+  },
+  "paired": {
+   "both": 0,
+   "only_T": 5,
+   "only_Tp": 6,
+   "neither": 89,
+   "mcnemar_p": 1.0
+  },
+  "truncated_obs": 95,
+  "truncated_null": 18868,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    53
+   ],
+   [
+    "TRUNCATED_EMPTY",
+    49
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'REVERSE')}))",
+    2
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    2
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=17, depth3_count=65, directions=frozenset({('FORWARD', 'FORWARD', 'FORWARD'), ('FORWARD', 'REVERSE', 'FORWARD'), ('FORWARD',), ('FORWARD', 'REVERSE', 'REVERSE'), ('FORWARD', 'FORWARD', 'REVERSE'), ('FORWARD', 'REVERSE'), ('FORWARD', 'FORWARD')}))",
+    2
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 3.57,
+  "argmax_Tp_bucket_null_mean": 0.16435
+ },
+ "C92B2": {
+  "config": "C92B2",
+  "T": {
+   "rej": 5,
+   "n": 100,
+   "rate": 0.05,
+   "wilson": [
+    0.02154367915436796,
+    0.11175046923191913
+   ],
+   "alpha_eff": 0.0497,
+   "p_two": 1.0,
+   "p_greater": 0.5586020695905208,
+   "ks": 0.18376796973842915,
+   "chi2": 0.03756608354257088,
+   "deciles": [
+    11,
+    19,
+    7,
+    7,
+    15,
+    5,
+    13,
+    9,
+    7,
+    7
+   ],
+   "obs_median": 13.0,
+   "null_median": 14.0,
+   "tie": 0.71135,
+   "pct_median": 40.0
+  },
+  "Tp": {
+   "rej": 100,
+   "n": 100,
+   "rate": 1.0,
+   "wilson": [
+    0.9630065017930143,
+    1.0
+   ],
+   "alpha_eff": 0.04525,
+   "p_two": 3.646350012088216e-135,
+   "p_greater": 3.646350012088216e-135,
+   "ks": 9.10964820006908e-166,
+   "chi2": 6.186801032394592e-188,
+   "deciles": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "obs_median": 8.0,
+   "null_median": 4.0,
+   "tie": 0.0026,
+   "pct_median": 100.0
+  },
+  "paired": {
+   "both": 5,
+   "only_T": 0,
+   "only_Tp": 95,
+   "neither": 0,
+   "mcnemar_p": 5.048709793414476e-29
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    100
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 8.56,
+  "argmax_Tp_bucket_null_mean": 2.19615,
+  "argmax_Tp_chain_share_mean": 0.9412727272727273
+ },
+ "C92B1": {
+  "config": "C92B1",
+  "T": {
+   "rej": 2,
+   "n": 100,
+   "rate": 0.02,
+   "wilson": [
+    0.00550196755016235,
+    0.07001179072854388
+   ],
+   "alpha_eff": 0.05425,
+   "p_two": 0.18053496528890373,
+   "p_greater": 0.9745288115263651,
+   "ks": 0.42694478008689185,
+   "chi2": 0.3345381516340064,
+   "deciles": [
+    9,
+    17,
+    9,
+    10,
+    11,
+    8,
+    9,
+    13,
+    10,
+    4
+   ],
+   "obs_median": 21.0,
+   "null_median": 21.0,
+   "tie": 0.68525,
+   "pct_median": 39.75
+  },
+  "Tp": {
+   "rej": 100,
+   "n": 100,
+   "rate": 1.0,
+   "wilson": [
+    0.9630065017930143,
+    1.0
+   ],
+   "alpha_eff": 0.0462,
+   "p_two": 2.912041471319923e-134,
+   "p_greater": 2.912041471319923e-134,
+   "ks": 6.964377011565214e-231,
+   "chi2": 6.186801032394592e-188,
+   "deciles": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "obs_median": 15.0,
+   "null_median": 6.0,
+   "tie": 0.0,
+   "pct_median": 100.0
+  },
+  "paired": {
+   "both": 2,
+   "only_T": 0,
+   "only_Tp": 98,
+   "neither": 0,
+   "mcnemar_p": 6.310887241768095e-30
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    100
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 15.44,
+  "argmax_Tp_bucket_null_mean": 4.243,
+  "argmax_Tp_chain_share_mean": 0.973014705882353
+ },
+ "C92B3": {
+  "config": "C92B3",
+  "T": {
+   "rej": 6,
+   "n": 100,
+   "rate": 0.06,
+   "wilson": [
+    0.027786123963188192,
+    0.1247681544589592
+   ],
+   "alpha_eff": 0.0513,
+   "p_two": 0.6472094918536754,
+   "p_greater": 0.4074055005792058,
+   "ks": 0.1109895556451369,
+   "chi2": 0.26224875459496483,
+   "deciles": [
+    11,
+    19,
+    7,
+    11,
+    9,
+    10,
+    7,
+    9,
+    7,
+    10
+   ],
+   "obs_median": 31.0,
+   "null_median": 31.0,
+   "tie": 0.6729,
+   "pct_median": 39.625
+  },
+  "Tp": {
+   "rej": 100,
+   "n": 100,
+   "rate": 1.0,
+   "wilson": [
+    0.9630065017930143,
+    1.0
+   ],
+   "alpha_eff": 0.0459,
+   "p_two": 1.5179887526710353e-134,
+   "p_greater": 1.5179887526710353e-134,
+   "ks": 6.964377011565214e-231,
+   "chi2": 6.186801032394592e-188,
+   "deciles": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    100
+   ],
+   "obs_median": 25.0,
+   "null_median": 9.0,
+   "tie": 0.0,
+   "pct_median": 100.0
+  },
+  "paired": {
+   "both": 6,
+   "only_T": 0,
+   "only_Tp": 94,
+   "neither": 0,
+   "mcnemar_p": 1.0097419586828951e-28
+  },
+  "truncated_obs": 0,
+  "truncated_null": 0,
+  "argmax_T_family": [
+   [
+    "DEADEND",
+    100
+   ],
+   [
+    "NONTRIVIAL",
+    1
+   ]
+  ],
+  "argmax_Tp_top": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD',), ('FORWARD', 'FORWARD')}))",
+    100
+   ]
+  ],
+  "argmax_Tp_bucket_obs_mean": 25.59,
+  "argmax_Tp_bucket_null_mean": 7.7803,
+  "argmax_Tp_chain_share_mean": 0.9779135264480092
+ },
+ "trend_Tp": {
+  "z": 0.0,
+  "p": 0.5
+ }
+}

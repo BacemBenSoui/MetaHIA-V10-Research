@@ -661,3 +661,63 @@ chantier est l'implémentation minimale de P4-U.2 (protocole Sec. 17) et
 la construction du futur benchmark verrouillé V1-V4 — pas une
 réimplémentation du set-valued replay de P4-U.1, qui est un mécanisme
 distinct, déjà achevé et déjà validé par tiers.
+
+## 16. État au 25 septembre 2026 : branche C9 CLOSE
+
+Mise à jour de synchronisation. Les campagnes C8.1-confirmation et C9 ont été menées
+le 24/09 dans une session cloud, puis transportées par le dépôt MetaHIA-V6
+(`documentation/handoff/2026-09-25_p4u2_c81_c9/`) et archivées ici. **Aucun code de
+production modifié** ; `kernel2.py` inchangé (sha256 courant
+`c76adfd2…efc9aa9`, conforme à `release_manifest.json` clé `kernel2_sha256` ; le hash
+de la section 4, `98783917…9ea3d9`, est celui du noyau d'origine avant les 4
+corrections du 17/09, clé `kernel2_sha256_original`). **E20-D reste `OPEN`.**
+
+### 16.1 Chaîne expérimentale
+
+```text
+C8.1-conf  null uniforme      T « détecte » -> en fait les degrés (A-bis FPR 88 %)
+C9-1       null à degrés      T quasi aveugle : arg-max saturé par le bucket d'impasses
+                              (B1 72 % -> 11 %, McNemar p ≈ 7×10⁻¹⁶)
+C9-2       T′ non triviale    motif ISOLÉ : 100 % ; SBM calibré (hypothèse générée
+                              par C9-1, non présentée comme validation indépendante)
+C9-C       motif ENCASTRÉ     hypothèse REJETÉE (M12 4/100, S12 12/99) : excès du
+                              motif dispersé sur ~31 signatures
+```
+
+FAIL enregistrés et conservés tels quels : C9-A2/N3 (C9-1, réplication compatible) et
+A2/P2 (C9-2, χ² marginal).
+
+### 16.2 Conclusion
+
+Le mécanisme P4-U.2 (signature exacte + `group_by_signature()` + support maximal)
+mesure la répétition d'une **topologie locale identique**, pas une relation encastrée
+dans un contexte hétérogène. La limite est la **génération de candidats par égalité
+exacte de signature**, ni le null (corrigé par C9-1) ni la statistique (corrigée par
+C9-2).
+
+```text
+P4-U.2 branche C9                     ✅ CLOSE (2026-09-24)
+T′ dans Gate I                        ❌ NON intégré
+Benchmark verrouillé V1-V4            🧊 GELÉ
+Suite de P4-U.2                       ⏸ nouvelle conception (génération de
+                                         candidats par similarité/motif),
+                                         soumise au garde-fou 16.3
+Ticket R1 MAX_PATHS                   🟠 OUVERT, ingénierie sans campagne,
+                                         option A ou B à choisir par le porteur
+E20-D                                 🔴 OPEN, sans changement
+```
+
+### 16.3 Garde-fou adopté par le porteur du projet
+
+> Aucune nouvelle expérience de caractérisation de cette branche ne doit être lancée
+> sans démontrer qu'elle change une décision de la road map.
+
+### 16.4 Pièces
+
+Rapports : `documentation/P4U2_Campaign8_1_Confirmation_2026-09-24.md`,
+`documentation/P4U2_Campaign9_1_Degree_Conditioned_Null_2026-09-24.md`,
+`documentation/P4U2_Branch_C9_Closure_2026-09-24.md`,
+`documentation/TICKET_P4U2_R1_MAX_PATHS.md`. Pré-enregistrements empreintés, addenda,
+harnais jetables et données brutes : `validation/p4u2_c81_c9_2026-09-24/`
+(`c81_confirmation/`, `c9/`). Les harnais importent le module de production via un
+chemin passé en argument ; ils ne sont jamais importés par le code de production.

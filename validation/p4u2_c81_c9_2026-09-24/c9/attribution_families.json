@@ -1,0 +1,46 @@
+{
+ "C9A0": {
+  "dead_obs": 13.94,
+  "dead_null": 14.01,
+  "max_nontrivial_obs": 4.68,
+  "max_nontrivial_null": 4.62,
+  "top_nontrivial_sig": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=1, directions=frozenset({('FORWARD', 'REVERSE', 'FORWARD'), ('FORWARD',), ('FORWARD', 'REVERSE')}))",
+    9
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=3, directions=frozenset({('FORWARD', 'REVERSE', 'FORWARD'), ('FORWARD',), ('FORWARD', 'REVERSE', 'REVERSE'), ('FORWARD', 'REVERSE')}))",
+    8
+   ]
+  ]
+ },
+ "C9SBM": {
+  "dead_obs": 14.35,
+  "dead_null": 14.09,
+  "max_nontrivial_obs": 4.67,
+  "max_nontrivial_null": 4.59,
+  "top_nontrivial_sig": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=3, directions=frozenset({('FORWARD', 'REVERSE', 'FORWARD'), ('FORWARD',), ('FORWARD', 'REVERSE', 'REVERSE'), ('FORWARD', 'REVERSE')}))",
+    12
+   ],
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=1, directions=frozenset({('FORWARD', 'FORWARD'), ('FORWARD', 'FORWARD', 'FORWARD'), ('FORWARD',)}))",
+    8
+   ]
+  ]
+ },
+ "C9B1": {
+  "dead_obs": 20.89,
+  "dead_null": 20.79,
+  "max_nontrivial_obs": 15.46,
+  "max_nontrivial_null": 5.75,
+  "top_nontrivial_sig": [
+   [
+    "Signature(depth1_count=1, depth2_count=1, depth3_count=0, directions=frozenset({('FORWARD', 'FORWARD'), ('FORWARD',)}))",
+    100
+   ]
+  ]
+ }
+}
