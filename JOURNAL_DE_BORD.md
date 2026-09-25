@@ -2463,3 +2463,36 @@ Prochaine étape : décision explicite du porteur du projet -- lancer une
 confirmation à plus grande échelle, ou passer à l'intégration du
 support comme statistique candidate (décision architecturale distincte)
 ```
+
+## 2026-09-25 — Audit de couche du vérificateur P1 et expérience de capacité du Core K3 : PASS, frontière du Core localisée
+
+L'audit (`documentation/P1_VERIFIER_LAYER_AUDIT_2026-09-25.md`) établit que le
+vérificateur P1 de V6 (`PredicateEntailment`) est **disjoint du Core** : purement
+lexical, il ne passe ni par K3, ni par M1, ni par M2. Les faux SUPPORTED (*Oslo /
+Cairo*, *before / after*) venaient de ce raccourci, pas de l'algèbre.
+
+Expérience pré-enregistrée (commit `72efe0d`, avant exécution) : 27 éléments
+structurés à la main, `kernel2.py` inchangé, une seule exécution. Rapport :
+`documentation/P1_CORE_CAPABILITY_RESULT_2026-09-25.md`.
+
+- **H-P1-STRUCT PASS** : 0 SUPPORTED sur les substitutions ; SUPPORTED seulement sur
+  les structures identiques.
+- **H-P1-NEG-A PASS** : `neg(P)` représentable sans nouvelle primitive, portée
+  conservée et discriminante.
+- **H-P1-PROJ-NEG PASS** et **H-P1-NEG-B PASS** : CONTRADICTED seulement via
+  `neg(P)` contre `P`, ou via une relation d'incompatibilité **fournie**. K3 seul
+  (`compare`) ne relie pas les opposés.
+- **Précision sur le contrat de K3** : `compare()` découvre des transformations et
+  renvoie `None` aussi bien sur l'identité que sur une substitution. Une projection
+  doit donc s'appuyer sur `structural_equal`.
+- **Limites** : confirmatoire par construction ; passerelle texte → structure non
+  testée (structuration manuelle).
+
+### État après cette entrée
+```text
+P1 VERIFIER (V6)   : lexical, disjoint du Core (audit)
+CORE K3            : séparation structure / projection / épistémique démontrée (27 éléments)
+NEG dans K3        : représentable sans primitive nouvelle ; exploitation hors K3
+Manquant           : passerelle texte -> Node/Apply ; source contrôlée des relations
+kernel2.py         : INCHANGÉ (c76adfd2…)
+V6                 : aucune intégration (décision du porteur requise)

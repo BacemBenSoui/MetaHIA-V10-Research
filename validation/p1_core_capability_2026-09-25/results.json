@@ -1,0 +1,261 @@
+{
+ "kernel2_sha256": "c76adfd2eed8e3ba6022200e7eba6c381f262602f626850cd80af65a0efc9aa9",
+ "rows": [
+  {
+   "id": "W-054",
+   "category": "S-SUB",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "W-055",
+   "category": "S-SUB",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "W-056",
+   "category": "S-SUB",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "P1-090",
+   "category": "S-SUB",
+   "human_label": "UNKNOWN",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "P1-087",
+   "category": "S-SUB",
+   "human_label": "UNKNOWN",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "P1-052",
+   "category": "S-SUB",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "W-041",
+   "category": "S-SUB",
+   "human_label": "SUPPORTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "W-096",
+   "category": "S-SUB",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 2,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "P1-001",
+   "category": "S-ID",
+   "human_label": "SUPPORTED",
+   "k3_compare": "None",
+   "leaf_differences": 0,
+   "projection": "SUPPORTED"
+  },
+  {
+   "id": "P1-005",
+   "category": "S-ID",
+   "human_label": "SUPPORTED",
+   "k3_compare": "None",
+   "leaf_differences": 0,
+   "projection": "SUPPORTED"
+  },
+  {
+   "id": "W-001",
+   "category": "S-ID",
+   "human_label": "SUPPORTED",
+   "k3_compare": "None",
+   "leaf_differences": 0,
+   "projection": "SUPPORTED"
+  },
+  {
+   "id": "W-002",
+   "category": "S-ID",
+   "human_label": "SUPPORTED",
+   "k3_compare": "None",
+   "leaf_differences": 0,
+   "projection": "SUPPORTED"
+  },
+  {
+   "id": "W-003",
+   "category": "S-ID",
+   "human_label": "SUPPORTED",
+   "k3_compare": "None",
+   "leaf_differences": 0,
+   "projection": "SUPPORTED"
+  },
+  {
+   "id": "C-01",
+   "category": "S-PERM",
+   "human_label": null,
+   "k3_compare": "PATTERN",
+   "leaf_differences": 2,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "C-02",
+   "category": "S-PERM",
+   "human_label": null,
+   "k3_compare": "PATTERN",
+   "leaf_differences": 2,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "P1-081",
+   "category": "NEG",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 2,
+   "projection": "CONTRADICTED",
+   "neg_a1_representable": true,
+   "neg_a2_inner_preserved": true,
+   "neg_a3_scope_distinct": true
+  },
+  {
+   "id": "P1-082",
+   "category": "NEG",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 2,
+   "projection": "CONTRADICTED",
+   "neg_a1_representable": true,
+   "neg_a2_inner_preserved": true,
+   "neg_a3_scope_distinct": true
+  },
+  {
+   "id": "P1-083",
+   "category": "NEG",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "CONTRADICTED",
+   "neg_a1_representable": true,
+   "neg_a2_inner_preserved": true,
+   "neg_a3_scope_distinct": true
+  },
+  {
+   "id": "P1-057",
+   "category": "NEG",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "CONTRADICTED",
+   "neg_a1_representable": true,
+   "neg_a2_inner_preserved": true,
+   "neg_a3_scope_distinct": true
+  },
+  {
+   "id": "C-03",
+   "category": "NEG-CONTROL",
+   "human_label": null,
+   "k3_compare": "None",
+   "leaf_differences": 2,
+   "projection": "UNKNOWN"
+  },
+  {
+   "id": "W-030",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  },
+  {
+   "id": "W-028",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  },
+  {
+   "id": "W-031",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  },
+  {
+   "id": "W-032",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  },
+  {
+   "id": "P1-054",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  },
+  {
+   "id": "W-050",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  },
+  {
+   "id": "W-054-R",
+   "category": "OPP",
+   "human_label": "CONTRADICTED",
+   "k3_compare": "None",
+   "leaf_differences": 1,
+   "projection": "UNKNOWN",
+   "opp_b1_no_relation": "UNKNOWN",
+   "opp_b2_relation": "CONTRADICTED",
+   "opp_b3_reversed_relation": "CONTRADICTED",
+   "opp_b4_irrelevant_relation": "UNKNOWN"
+  }
+ ]
+}
