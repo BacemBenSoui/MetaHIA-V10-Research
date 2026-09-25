@@ -1,0 +1,27 @@
+{
+ "level_1_static_audit": {
+  "violations": [],
+  "count": 0
+ },
+ "level_2_negative_tests": {
+  "returncode": 0,
+  "summary": [
+   "13 passed, 116 deselected in 0.13s"
+  ]
+ },
+ "level_3_manifest": {
+  "gateway": "validation/p1_text_struct/gateway_a.py",
+  "gateway_sha256": "9d37f75efb1f6a21e8a84d0081ab76a2282aecb621d0d9ef285b339cb4d1f5c8",
+  "modules_newly_loaded_by_import": [
+   "typing",
+   "typing.io",
+   "typing.re"
+  ],
+  "python": "3.10.12"
+ },
+ "not_checked": [
+  "semantic knowledge encoded in control flow or string literals inside functions (review only)",
+  "correctness of the closed-class lists themselves (review only)"
+ ],
+ "compliant": true
+}

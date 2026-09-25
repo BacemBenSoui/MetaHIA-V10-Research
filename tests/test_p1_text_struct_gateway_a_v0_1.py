@@ -64,12 +64,30 @@ def test_mandatory_case(sentence, expected):
     assert parse(sentence) == expected
 
 
-def test_nobody_is_an_abstention_pending_convention():
-    assert parse("Nobody opened the door.") is None
+# ------------------------------------------------------------------ addendum GEL 1-bis (A1-A4)
+
+def test_a1_participle_after_copula_is_passive_even_without_by():
+    assert parse("The letter was signed.") == ["sign", "_", "letter"]
+    assert parse("The door is open.") == ["attr", "door", "open"]  # adjective: R4
 
 
-def test_passive_without_by_is_an_abstention_pending_convention():
-    assert parse("The letter was signed.") is None
+def test_a2_negative_subject_is_neg_over_reserved_agent():
+    assert parse("Nobody opened the gate.") == ["neg", ["open", "_", "gate"]]
+    assert parse("Nothing broke the window.") == ["neg", ["break", "_", "window"]]
+    assert parse("The man saw nobody.") is None  # subject position only
+    assert parse("No one opened the gate.") is None  # not covered by A2
+
+
+def test_a3_possessives_are_never_deleted_silently():
+    assert parse("Her brother opened the gate.") is None
+    assert parse("The man opened their gate.") is None
+
+
+def test_a4_deictic_adverbs_exactly_four():
+    assert parse("The boy crossed the bridge yesterday.") == ["yesterday", ["cross", "boy", "bridge"]]
+    assert parse("Tonight the baker closes the shop.") == ["tonight", ["close", "baker", "shop"]]
+    assert set(GW.DEICTIC_ADVERBS) == {"yesterday", "today", "now", "tonight"}
+    assert parse("Tomorrow the baker closes the shop.") is None  # not in the closed class
 
 
 # ------------------------------------------------------------------ adversarial cases (mandate section 5)

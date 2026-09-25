@@ -6,13 +6,16 @@ declared in RESOURCES), no open-class lexicon, no statistics, no I/O. Whenever t
 closed classes do not decide a structure, it abstains (returns None) instead of guessing: a guess could
 misplace a role or a negation, which are hard safety gates.
 
+Addendum GEL 1-bis applied: A1 copula + morphological past participle -> R2 (by optional);
+A2 subject nobody/nothing -> neg(verb(_, ...)); A3 possessive determiners -> null; A4 deictic
+adverbs yesterday/today/now/tonight (sentence-initial or final) -> R8 time adverbs.
+
 Known deliberate abstentions (documented in the development report):
-  - sentence-initial or bare post-verbal words not introduced by a closed-class item (e.g. deictic
-    time adverbs such as "yesterday", "today", "right now", bare objects such as "eats food"):
-    without an open-class lexicon they cannot be told apart from arguments;
-  - copula + participle without "by": R2 (passive) and R4 (attribute with participle) both apply;
-  - "nobody"/"no one"/"nothing" subjects: R10 names them but gives no structure for the subject;
-  - possessive determiners, "of" phrases, other prepositions (with, for, to, from...), two adjuncts
+  - sentence-initial or bare post-verbal words not introduced by a closed-class item (bare objects
+    such as "eats food", "right now"): without an open-class lexicon they cannot be told apart from
+    arguments; deictic adverbs anywhere but the sentence edges;
+  - "none"/"no one" and negative pronouns outside the subject position;
+  - possessive determiners (A3), "of" phrases, other prepositions (with, for, to, from...), two adjuncts
     whose serialisation order would depend on an ambiguous preposition (in/on/at);
   - questions, coordination, subordination (R15).
 """
@@ -28,7 +31,8 @@ RESOURCES = {
     "PREPOSITIONS_AMBIGUOUS": "prepositions", "PREPOSITIONS_UNCOVERED": "prepositions",
     "COPULAS": "auxiliaries", "HAVE_FORMS": "auxiliaries", "DO_FORMS": "auxiliaries", "MODALS": "auxiliaries",
     "NEGATIVE_CONTRACTIONS": "auxiliaries",
-    "NEGATORS": "negators", "NEGATIVE_PRONOUNS": "negators",
+    "NEGATORS": "negators", "NEGATIVE_PRONOUNS": "negators", "NEGATIVE_SUBJECTS": "negators",
+    "DEICTIC_ADVERBS": "deictic_adverbs",
     "CLAUSE_MARKERS": "conjunctions",
     "QUANTIFIERS_ALL": "quantifiers", "QUANTIFIERS_SOME": "quantifiers",
     "NUMBER_WORDS": "number_words",
@@ -56,7 +60,9 @@ NEGATIVE_CONTRACTIONS = {"isn't": "is", "aren't": "are", "wasn't": "was", "weren
                          "won't": "will", "wouldn't": "would", "can't": "can", "cannot": "can", "couldn't": "could",
                          "shouldn't": "should", "mustn't": "must"}
 NEGATORS = {"not", "never"}
-NEGATIVE_PRONOUNS = {"nobody", "nothing", "none", "noone"}
+NEGATIVE_PRONOUNS = {"none", "noone"}  # still not covered
+NEGATIVE_SUBJECTS = {"nobody", "nothing"}  # addendum A2: subject only, neg(verb(_, ...))
+DEICTIC_ADVERBS = {"yesterday", "today", "now", "tonight"}  # addendum A4: exclusively these four
 CLAUSE_MARKERS = {"and", "or", "but", "because", "while", "although", "though", "if", "unless", "whereas",
                   "so", "nor", "whether"}
 QUANTIFIERS_ALL = {"all", "every", "each"}
@@ -170,6 +176,7 @@ def _closed(word: str) -> bool:
             or word in PREPOSITIONS_TIME or word in PREPOSITIONS_PLACE or word in PREPOSITIONS_AMBIGUOUS
             or word in PREPOSITIONS_UNCOVERED or word in COPULAS or word in HAVE_FORMS or word in DO_FORMS
             or word in MODALS or word in NEGATORS or word in NEGATIVE_PRONOUNS or word in CLAUSE_MARKERS
+            or word in NEGATIVE_SUBJECTS or word in DEICTIC_ADVERBS
             or word in QUANTIFIERS_ALL or word in QUANTIFIERS_SOME or word in NUMBER_WORDS or word == "by"
             or word == "no")
 
@@ -189,12 +196,14 @@ def _verbal_morphology(word: str) -> bool:
 
 # ------------------------------------------------------------------ noun phrases (R5, R11, R12)
 
-def noun_phrase(tokens: list, allow_bare: bool) -> Optional[tuple]:
+def noun_phrase(tokens: list, allow_bare: bool, subject: bool = False) -> Optional[tuple]:
     """(structure, negated_by_no) for a complete token span, or None when not covered."""
     if not tokens:
         return None
     i, card, quant, negated = 0, None, None, False
     first = tokens[0]
+    if first in NEGATIVE_SUBJECTS:  # addendum A2: only as the whole subject
+        return ("_", True) if subject and len(tokens) == 1 else None
     if first in POSSESSIVE_DETERMINERS:
         return None
     if first in PRONOUNS:
@@ -290,6 +299,13 @@ def parse(text: str) -> Optional[object]:
     if any(t in CLAUSE_MARKERS or t in WH_WORDS or t in NEGATIVE_PRONOUNS or t in PREPOSITIONS_UNCOVERED
            or t == "no-one" for t in tokens):
         return None  # coordination, subordination, questions, uncovered negative subjects/prepositions
+    deictic, deictic_initial = None, False  # addendum A4: sentence edges only
+    if tokens and tokens[0] in DEICTIC_ADVERBS:
+        deictic, deictic_initial, tokens = tokens[0], True, tokens[1:]
+    elif tokens and tokens[-1] in DEICTIC_ADVERBS:
+        deictic, tokens = tokens[-1], tokens[:-1]
+    if any(t in DEICTIC_ADVERBS for t in tokens):
+        return None  # a second deictic adverb, or one inside the sentence: position undecidable
     removed = _manner_adverbs(tokens)
     if removed is None:
         return None
@@ -302,7 +318,7 @@ def parse(text: str) -> Optional[object]:
     k = _verb_group_start(tokens)
     if k is None:
         return None
-    subject = noun_phrase(tokens[:k], allow_bare=True)
+    subject = noun_phrase(tokens[:k], allow_bare=True, subject=True)
     if subject is None:
         return None
     subj, subject_neg = subject
@@ -400,8 +416,6 @@ def parse(text: str) -> Optional[object]:
             if parsed is None or parsed[1]:
                 return None
             agent = parsed[0]
-        elif passive:
-            return None  # copula + participle without "by": R2 and R4 both apply (convention ambiguity)
         adjuncts = [t for t in tail if t[0] != "by"]
         if attribute is not None:
             core = ["attr", subj, attribute]
@@ -420,13 +434,17 @@ def parse(text: str) -> Optional[object]:
             return None
         (times if prep in PREPOSITIONS_TIME else places if prep in PREPOSITIONS_PLACE else ambiguous).append(
             (prep, parsed[0]))
-    if ambiguous and len(places) + len(times) + len(ambiguous) > 1:
+    if ambiguous and len(places) + len(times) + len(ambiguous) + (deictic is not None) > 1:
         return None  # serialisation order would depend on an in/on/at phrase whose class is undecidable
+    if deictic is not None and deictic_initial and times:
+        return None  # closeness to the verb of an initial deictic vs a time phrase is undecidable
     struct: object = core
     for adverb in manner:
         struct = [adverb, struct]
     for prep, np_struct in places + ambiguous + times:
         struct = [prep, struct, np_struct]
+    if deictic is not None:
+        struct = [deictic, struct]  # R8 time adverb, outermost of the time class (R9)
     if negated:
         struct = ["neg", struct]  # R10: outermost canonical layer
     return struct

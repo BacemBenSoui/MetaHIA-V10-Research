@@ -44,7 +44,8 @@ def main() -> int:
     _load(args.gateway, "p1ts_gateway_under_audit")
     loaded = sorted(m for m in set(sys.modules) - before if not m.startswith("p1ts_"))
     tests = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
-                            "tests/test_p1_text_struct_scorer_v0_1.py", "-k", "compliant or non_compliant or forbidden"],
+                            "tests/test_p1_text_struct_scorer_v0_1.py", "tests/test_p1_text_struct_gateway_a_v0_1.py",
+                            "-k", "compliant or non_compliant or forbidden or contaminated or compliance_audit"],
                            cwd=ROOT, capture_output=True, text=True)
     report = {
         "level_1_static_audit": {"violations": static, "count": len(static)},

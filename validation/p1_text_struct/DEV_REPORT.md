@@ -109,3 +109,35 @@ Selon les décisions sur le §5 :
   adaptation de la passerelle sur `dev`, nouvel audit, et enfin GEL n°3.
 
 Dans les deux cas, le GEL n°3 reste antérieur à toute remise du corpus tenu à l'écart.
+
+## 7. Révision après le GEL n°1-bis (même jour)
+
+Le porteur du projet a tranché les cinq lacunes du §5 par l'addendum
+`ADDENDUM_GEL1BIS.md`, figé et poussé **avant** toute modification de la passerelle
+(commit `7e4ea4c`). La passerelle a été réadaptée **sur `dev` uniquement** :
+
+| Point | Mise en œuvre |
+|---|---|
+| A1 | Copule suivie d'un participe passé morphologique → R2, `by` facultatif (*The letter was signed.* → `sign(_, letter)`). Adjectif → R4. Conséquence morphologique : *The nurse is tired.* → `tire(_, nurse)` |
+| A2 | *nobody* ou *nothing* sujet → `neg(verbe(_, …))`. Hors position sujet, ou *no one* / *none* → `null` |
+| A3 | Possessifs → `null`, sans suppression (comportement déjà en place, désormais conforme à l'addendum) |
+| A4 | `DEICTIC_ADVERBS` = *yesterday, today, now, tonight*, déclarée `deictic_adverbs`. Traités **aux bords de la phrase** seulement ; au milieu (*is now running*) → `null`. Un déictique initial avec un groupe temporel → `null` (proximité au verbe indécidable) |
+| A5 | `run_heldout.py` accepte déjà `categories.tsv`, qui sera vérifié contre le GEL n°2 |
+
+**Information de développement** (ce n'est pas une mesure ; 67 phrases, attentes écrites
+par le développeur) :
+- barrières 1,00 / 1,00 / 1,00 ;
+- exactitude et couverture dans la convention : 0,90 ;
+- abstention correcte hors convention : 1,00.
+
+Ce chiffre **n'est pas un objectif à pousser vers 1,00** : la couverture est une propriété
+mesurée du système (addendum A7).
+
+**Vérifications** :
+- 129 tests P1-TEXT-STRUCT ;
+- suite V10 complète : **876 passed** (747 préexistants inchangés, plus 129) ;
+- audit de conformité : 0 violation ;
+- fichiers du GEL n°1 intacts, hormis `compliance_audit.py`, modifié d'une ligne selon A6 et
+  empreinté au GEL n°1-bis ;
+- `kernel2.py` inchangé ;
+- aucun contact avec le corpus tenu à l'écart.
